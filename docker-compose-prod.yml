@@ -1,0 +1,37 @@
+version: "3"
+services:
+  xxxxxxxxxxxxx:
+    build: .
+    container_name: xxxxxxxxxxxxx
+    restart: unless-stopped
+    networks:
+      - traefik-global-proxy
+    command:
+      - "-Xmx256m"
+      - "-Xms64m"
+      - "-Xss256k"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.xxxxxxxxxxxxx.rule=Host(`${TRAEFIK_HOST}`)"
+      - "traefik.http.routers.xxxxxxxxxxxxx.entrypoints=${TRAEFIK_ENTRYPOINT}"
+      # - "traefik.http.routers.xxxxxxxxxxxxx.tls=true"
+      - "traefik.http.services.xxxxxxxxxxxxx.loadbalancer.server.port=${PORT}"
+      - "traefik.http.routers.xxxxxxxxxxxxx.middlewares=xxxxxxxxxxxxx-compress"
+      - "traefik.http.middlewares.xxxxxxxxxxxxx-compress.compress=true"
+    volumes:
+      - "${HOME}/.m2:/root/.m2"
+    environment:
+      - "MYSQL_URL=${MYSQL_URL}"
+      - "MYSQL_DB=${MYSQL_DB}"
+      - "MYSQL_USERNAME=${MYSQL_USERNAME}"
+      - "MYSQL_PASSWORD=${MYSQL_PASSWORD}"
+      - "PORT=${PORT}"
+      - "JWT_SECRET=${JWT_SECRET}"
+      - "JWT_EXPIRATION_DELAY=${JWT_EXPIRATION_DELAY}"
+    expose:
+      - "${PORT}"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+networks:
+  traefik-global-proxy:
+    external: true
