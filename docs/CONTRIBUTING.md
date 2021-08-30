@@ -42,12 +42,14 @@
 header 是必须的，格式如下：
 
 ```
-<type>: <short summary>
-  │    │     │
-  │    │     └─⫸ 原则上使用英文；使用动词原形开头，首字母不需要大写，句尾不需要句号（整句尽量不超过60词）
-  │    │ 
-  │    └─⫸ 冒号后面需要一个半角空格
-  │ 
+<type>(<scope>): <short summary>
+  │       │     │     │
+  │       │     │     └─⫸ 原则上使用英文；使用动词原形开头，首字母不需要大写，句尾不需要句号（整句尽量不超过60词）
+  │       │     │ 
+  │       │     └─⫸ 冒号后面需要一个半角空格
+  │       │ 
+  │       └─⫸ Commit Scope: backend|frontend-admin|frontend-user
+  │
   └─⫸ Commit Type: build|ci|docs|feat|fix|perf|refactor|test|style|chore|revert
 ```
 
@@ -65,6 +67,15 @@ header 是必须的，格式如下：
 * **chore**: 其他不改变 `src` 或测试代码的修改
 * **revert**: 撤回之前的 `commit`
 
+#### scope
+
+commit 所属的范围
+
+- backend 后端
+- frontend-admin 前端（管理员）
+- frontend-user 前端（用户）
+
+如果 commit 不属于以上范围，则不用加 scope
 #### body
 
 body 是可选的，与 header 一样，需要使用动词原形。body 中可以书写比 header 中更详细的信息，比如：
