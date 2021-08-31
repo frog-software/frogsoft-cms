@@ -26,22 +26,31 @@ public class DateFormatConfig {
   @Bean
   public Jackson2ObjectMapperBuilderCustomizer jackson2ObjectMapperBuilderCustomizer() {
     return builder -> builder
-        .serializerByType(LocalDateTime.class,
+        .serializerByType(
+            LocalDateTime.class,
             new LocalDateTimeSerializer(DateTimeFormatter.ofPattern(DEFAULT_DATETIME_PATTERN)))
-        .serializerByType(LocalDate.class,
+        .serializerByType(
+            LocalDate.class,
             new LocalDateSerializer(DateTimeFormatter.ofPattern(DEFAULT_DATE_PATTERN)))
-        .serializerByType(LocalTime.class,
+        .serializerByType(
+            LocalTime.class,
             new LocalTimeSerializer(DateTimeFormatter.ofPattern(DEFAULT_TIME_PATTERN)))
-        .serializerByType(Date.class,
+        .serializerByType(
+            Date.class,
             new DateSerializer(false, new SimpleDateFormat(DEFAULT_DATETIME_PATTERN)))
-        .deserializerByType(LocalDateTime.class,
+        .deserializerByType(
+            LocalDateTime.class,
             new LocalDateTimeDeserializer(DateTimeFormatter.ofPattern(DEFAULT_DATETIME_PATTERN)))
-        .deserializerByType(LocalDate.class,
+        .deserializerByType(
+            LocalDate.class,
             new LocalDateDeserializer(DateTimeFormatter.ofPattern(DEFAULT_DATE_PATTERN)))
-        .deserializerByType(LocalTime.class,
+        .deserializerByType(
+            LocalTime.class,
             new LocalTimeDeserializer(DateTimeFormatter.ofPattern(DEFAULT_TIME_PATTERN)))
-        .deserializerByType(Date.class,
+        .deserializerByType(
+            Date.class,
             new DateDeserializers.DateDeserializer(DateDeserializers.DateDeserializer.instance,
-                new SimpleDateFormat(DEFAULT_DATETIME_PATTERN), DEFAULT_DATETIME_PATTERN));
+                new SimpleDateFormat(DEFAULT_DATETIME_PATTERN),
+                DEFAULT_DATETIME_PATTERN));
   }
 }

@@ -1,12 +1,54 @@
 package com.frogsoft.frogsoftcms.controller.v1.api;
 
+import com.frogsoft.frogsoftcms.controller.v1.request.AuthRequest;
+import com.frogsoft.frogsoftcms.exception.basic.unauthorized.UnauthorizedException;
+import com.frogsoft.frogsoftcms.security.jwt.JwtTokenProvider;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1/auth")
+@RequestMapping("/v1/auth")
 public class AuthController {
 
+  private final AuthenticationManager authenticationManager;
+  private final JwtTokenProvider jwtTokenProvider;
+
+
+  @PostMapping("/login")
+  public ResponseEntity<?> login(@RequestBody AuthRequest authenticationRequest) {
+    try {
+      String username = authenticationRequest.getUsername();
+
+      Authentication authentication = authenticationManager.authenticate(
+          new UsernamePasswordAuthenticationToken(username, authenticationRequest.getPassword()));
+
+      String token = jwtTokenProvider.createToken(authentication);
+      Map<Object, Object> model = new HashMap<>();
+
+      model.put("username", username);
+      model.put("token", token);
+
+      return ResponseEntity.status(201).body(model);
+
+    } catch (AuthenticationException e) {
+      throw new UnauthorizedException("用户名/密码错误");
+
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new InternalAuthenticationServiceException("服务器错误");
+
+    }
+  }
 }
