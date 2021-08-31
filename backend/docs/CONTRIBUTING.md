@@ -23,7 +23,7 @@
 > 1. [怎样用通俗的语言解释REST，以及RESTful？ - 知乎 (zhihu.com)](https://www.zhihu.com/question/28557115/answer/48094438)
 > 2. [Getting Started | Building a RESTful Web Service (spring.io)](https://spring.io/guides/gs/rest-service/)
 > 3. [Getting Started | Accessing Data with JPA (spring.io)](https://spring.io/guides/gs/accessing-data-jpa/)
-> 4. **[Tutorial | Building REST services with Spring（建议阅读，有助于理解整个项目）](https://spring.io/guides/tutorials/rest/)**
+> 4. **[Tutorial | Building REST services with Spring（有助于实战编写符合 REST 的项目，但是较长，建议先看前面的）](https://spring.io/guides/tutorials/rest/)**
 > 5. [What is REST (restfulapi.net)](https://restfulapi.net/)
 
 ### 其他注意点
