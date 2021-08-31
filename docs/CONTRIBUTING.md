@@ -98,6 +98,21 @@ this issue is fixed by improving error handling in the request parser
 4. 进行测试与修复bug
 5. 使用 `pull request` 将本分支合并至 `develop` 分支，随后删除本分支
 
+#### 功能再开发
+
+极少数情况下，对于某个功能再次进行开发，此时创建的功能分支应该加上序号。
+
+举例来说，对于功能 `GN0101` 来说：
+
+| 开发次数 |    功能分支命名     |
+| :------: | :-----------------: |
+|    1     |  `feature-GN0101`   |
+|    2     | `feature-GN0101-02` |
+|    3     | `feature-GN0101-03` |
+|    ……    | `feature-GN0101-XX` |
+
+> 相信我们不会对同一个功能开发100次。
+
 #### 预发布版本
 
 1. 从最新的 `develop` 分支中创建预发布分支，并命名为 `release-YYYYMMDD-版本号` 
