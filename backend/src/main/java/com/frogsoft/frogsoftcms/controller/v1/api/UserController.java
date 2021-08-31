@@ -50,7 +50,8 @@ public class UserController {
    */
   @GetMapping("/{username}")
   public ResponseEntity<EntityModel<User>> getOneUser(
-      @PathVariable(value = "username") String username) {
+      @PathVariable(value = "username") String username
+  ) {
 
     return ResponseEntity.ok().body(userService.getOneUser(username));
   }
