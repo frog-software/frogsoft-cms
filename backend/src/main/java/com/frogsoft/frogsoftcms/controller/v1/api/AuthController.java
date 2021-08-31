@@ -43,7 +43,7 @@ public class AuthController {
       return ResponseEntity.status(201).body(model);
 
     } catch (AuthenticationException e) {
-      throw new UnauthorizedException("用户名/密码错误");
+      throw new UnauthorizedException("用户名或密码错误");
 
     } catch (Exception e) {
       e.printStackTrace();
