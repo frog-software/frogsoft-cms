@@ -1,0 +1,56 @@
+# 后端设计V1-API
+
+- AU 权限
+  - AU01 `POST /auth/login` 登录
+    - AU0101  用户名登录
+  - AU02  `POST /auth/forget`  忘记密码：输入用户名，返回用户邮箱并向邮箱发送验证码
+  - AU03 `PUT /auth/forget`  重置密码：输入用户名+新密码+验证码，重置密码为新密码
+- AT 文章
+  - AT01 Articles
+    - AT0101  `GET /articles` 获取文章（批量）：过滤器，例如search
+    - AT0102  `POST /articles` 创建文章
+  - AT02 Article
+    - AT0201 `GET /articles/{id}` 获取文章（单一）
+    - AT0202 `PUT /articles/{id}` 修改文章（单一）
+    - AT0203 `DELETE /articles/{id}` 删除文章（单一）
+  - AT03 Article 点赞
+    - AT0301 `POST /articles/{id}/like` 点赞文章
+    - AT0302 `DELETE /articles/{id}/like` 取消点赞
+  - AT04 Article 收藏
+    - AT0401 `POST /articles/{id}/favor` 收藏文章
+    - AT0402 `DELETE /articles/{id}/favor` 取消收藏
+  - AT05 Article 评论
+    - AT0501 `POST /articles/{id}/comments` 发表文章评论
+    - AT0502 `GET /articles/{id}/comments` 获取文章评论
+- US 用户
+  - US01 users
+    - US0101 `GET /users` 获取用户列表
+    - US0102 `POST /users` 创建用户
+  - US02 user
+    - US0201 `GET /users/{username}` 获取用户信息
+    - US0202 `PUT /users/{username}` 修改用户信息：非敏感信息
+    - US0203 `DELETE /users/{username}` 删除用户信息
+  - US03 修改用户敏感信息
+    - US0301  `PUT /users/{username}/password`  修改密码：输入新旧密码
+    - US0302  `PUT /users/{username}/email`  修改邮箱：需要验证码
+  - US04 用户文章访问历史记录
+    - US0401 `GET /users/{username}/history`  获取历史记录
+- CM 评论
+  - CM01 comments
+    - CM0101 `GET /comments`  获取评论（批量）：输入若干过滤器，如文章id，用户id
+  - CM02 comment
+    - CM0201 `GET /comments/{id}` 获取评论
+    - CM0202 `PUT /comments/{id}` 修改评论
+    - CM0203 `DELETE /comments/{id}` 删除评论：一并删除子评论
+- HM 首页
+  - HM01 `GET /home/recommandations` 推荐阅读
+  - HM02 `GET /home/daily` 每日推荐
+  - HM03 `GET /home/hot-articles` 热门文章
+  - HM04 `GET /home/announcements`  本站公告
+- GL 全局
+  - GL01 访问鉴权
+  - GL02 `POST /global/email` 发送邮件
+  - GL03 全局配置
+    - GL0301 `GET /global/config` 获取配置
+    - GL0302 `PUT /global/config` 修改配置
+
