@@ -1,5 +1,4 @@
-package com.frogsoft.frogsoftcms.exception.basic.conflict;
-
+package com.frogsoft.frogsoftcms.exception.basic.forbidden;
 
 import com.frogsoft.frogsoftcms.exception.basic.ExceptionResponseBody;
 import org.springframework.http.HttpStatus;
@@ -9,16 +8,16 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ControllerAdvice
-public class ConflictAdvice {
+public class ForbiddenAdvice {
 
   @ResponseBody
-  @ExceptionHandler(ConflictException.class)
-  @ResponseStatus(HttpStatus.CONFLICT)
-  public ExceptionResponseBody conflictAdvice(ConflictException ex) {
+  @ExceptionHandler(ForbiddenException.class)
+  @ResponseStatus(HttpStatus.FORBIDDEN)
+  public ExceptionResponseBody forbiddenException(ForbiddenException ex) {
     return new ExceptionResponseBody(
-        HttpStatus.CONFLICT.value(),
+        HttpStatus.FORBIDDEN.value(),
         ex.getMessage(),
-        "Conflict"
+        "Forbidden"
     );
   }
 }
