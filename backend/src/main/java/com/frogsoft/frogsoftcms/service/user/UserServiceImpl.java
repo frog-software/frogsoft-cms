@@ -1,6 +1,8 @@
 package com.frogsoft.frogsoftcms.service.user;
 
-import com.frogsoft.frogsoftcms.dto.mapper.UserModelAssembler;
+import com.frogsoft.frogsoftcms.dto.assembler.user.UserModelAssembler;
+import com.frogsoft.frogsoftcms.dto.mapper.user.UserMapper;
+import com.frogsoft.frogsoftcms.dto.model.user.UserDto;
 import com.frogsoft.frogsoftcms.exception.user.UserNotFoundException;
 import com.frogsoft.frogsoftcms.model.user.User;
 import com.frogsoft.frogsoftcms.repository.user.UserRepository;
@@ -18,18 +20,21 @@ public class UserServiceImpl implements UserService {
 
   private final UserRepository userRepository;
   private final UserModelAssembler userModelAssembler;
-  private final PagedResourcesAssembler<User> pagedResourcesAssembler;
+  private final PagedResourcesAssembler<UserDto> pagedResourcesAssembler;
+  private final UserMapper userMapper;
 
 
   @Override
-  public PagedModel<EntityModel<User>> getAllUsers(Pageable pageable) {
+  public PagedModel<EntityModel<UserDto>> getAllUsers(Pageable pageable) {
 
-    Page<User> users = userRepository.findAllBy(pageable);
+    Page<UserDto> users = userRepository.findAllBy(pageable)
+        .map(userMapper::toUserDto);
+
     return pagedResourcesAssembler.toModel(users, userModelAssembler);
   }
 
   @Override
-  public EntityModel<User> getOneUser(String username) {
+  public EntityModel<UserDto> getOneUser(String username) {
 
     User user = userRepository.findByUsername(username);
 
@@ -37,7 +42,7 @@ public class UserServiceImpl implements UserService {
       throw new UserNotFoundException(username);
     }
 
-    return userModelAssembler.toModel(user);
+    return userModelAssembler.toModel(userMapper.toUserDto(user));
   }
 
 }

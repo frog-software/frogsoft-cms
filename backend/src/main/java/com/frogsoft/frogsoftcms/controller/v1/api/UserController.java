@@ -1,6 +1,6 @@
 package com.frogsoft.frogsoftcms.controller.v1.api;
 
-import com.frogsoft.frogsoftcms.model.user.User;
+import com.frogsoft.frogsoftcms.dto.model.user.UserDto;
 import com.frogsoft.frogsoftcms.service.user.UserService;
 import javax.annotation.security.RolesAllowed;
 import lombok.RequiredArgsConstructor;
@@ -29,11 +29,11 @@ public class UserController {
    *
    * @param page current page
    * @param size items per page
-   * @return PagedModel<EntityModel < User>>
+   * @return PagedModel<EntityModel<UserDto>>
    */
   @RolesAllowed("ROLE_ADMIN")
   @GetMapping("")
-  public ResponseEntity<PagedModel<EntityModel<User>>> getAllUsers(
+  public ResponseEntity<PagedModel<EntityModel<UserDto>>> getAllUsers(
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size
   ) {
@@ -46,10 +46,10 @@ public class UserController {
    * Return information about one specific user
    *
    * @param username username
-   * @return EntityModel<User>
+   * @return EntityModel<UserDto>
    */
   @GetMapping("/{username}")
-  public ResponseEntity<EntityModel<User>> getOneUser(
+  public ResponseEntity<EntityModel<UserDto>> getOneUser(
       @PathVariable(value = "username") String username
   ) {
 
