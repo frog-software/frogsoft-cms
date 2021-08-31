@@ -34,8 +34,6 @@ public class AuthController {
       Authentication authentication = authenticationManager.authenticate(
           new UsernamePasswordAuthenticationToken(username, authenticationRequest.getPassword()));
 
-      System.out.println(authenticationRequest.getUsername() + authenticationRequest.getPassword());
-
       String token = jwtTokenProvider.createToken(authentication);
       Map<Object, Object> model = new HashMap<>();
 

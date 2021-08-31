@@ -46,22 +46,30 @@ public class JwtTokenAuthenticationFilter extends GenericFilterBean {
       objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssSSS"));
 
       ExceptionResponseBody exceptionResponseBody = new ExceptionResponseBody(
-          HttpStatus.UNAUTHORIZED.value(), "Token 无效", "Unauthorized");
+          HttpStatus.UNAUTHORIZED.value(),
+          "Token 无效",
+          "Unauthorized"
+      );
+
       res.setCharacterEncoding("utf-8");
 
       res.getWriter().write(objectMapper.writeValueAsString(exceptionResponseBody));
       HttpServletResponse httpServletResponse = (HttpServletResponse) res;
       httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
+
       return;
     }
+
     filterChain.doFilter(req, res);
   }
 
   private String resolveToken(HttpServletRequest request) {
+
     String bearerToken = request.getHeader(HttpHeaders.AUTHORIZATION);
     if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
       return bearerToken.substring(7);
     }
+
     return null;
   }
 }

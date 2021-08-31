@@ -32,10 +32,11 @@ public class User implements UserDetails {
 
   private String email;
 
+  private String username;
+
   @JsonBackReference
   private String password;
 
-  private String username;
 
   @ElementCollection(fetch = FetchType.EAGER)
   private List<String> roles = new ArrayList<>();

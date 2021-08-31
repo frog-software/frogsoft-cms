@@ -22,17 +22,32 @@ public class UserController {
   private final UserService userService;
 
 
+  /**
+   * Return a list of all users
+   * <p>
+   * Requires Admin privileges
+   *
+   * @param page current page
+   * @param size items per page
+   * @return PagedModel<EntityModel < User>>
+   */
   @RolesAllowed("ROLE_ADMIN")
   @GetMapping("")
-  // can be replaced by <?>
   public ResponseEntity<PagedModel<EntityModel<User>>> getAllUsers(
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size
   ) {
+
     return ResponseEntity.ok().body(userService.getAllUsers(PageRequest.of(page, size)));
   }
 
 
+  /**
+   * Return information about one specific user
+   *
+   * @param username username
+   * @return EntityModel<User>
+   */
   @GetMapping("/{username}")
   public ResponseEntity<EntityModel<User>> getOneUser(
       @PathVariable(value = "username") String username) {

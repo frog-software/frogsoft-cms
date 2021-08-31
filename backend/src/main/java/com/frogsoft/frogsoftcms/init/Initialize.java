@@ -12,9 +12,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class Initialize {
 
   @Bean
-  CommandLineRunner init(UserRepository userRepository,
-      PasswordEncoder passwordEncoder) {
+  CommandLineRunner init(
+      UserRepository userRepository,
+      PasswordEncoder passwordEncoder
+  ) {
+
     return args -> {
+
+      // store a default admin user in the user repository
       User user = userRepository.findByUsername("admin");
 
       if (user == null) {
@@ -24,6 +29,7 @@ public class Initialize {
             .setUsername("admin")
             .setRoles(Arrays.asList("ROLE_USER", "ROLE_ADMIN")));
       }
+
     };
   }
 }

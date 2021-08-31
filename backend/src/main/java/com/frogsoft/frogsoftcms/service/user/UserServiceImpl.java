@@ -23,12 +23,14 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public PagedModel<EntityModel<User>> getAllUsers(Pageable pageable) {
+
     Page<User> users = userRepository.findAllBy(pageable);
     return pagedResourcesAssembler.toModel(users, userModelAssembler);
   }
 
   @Override
   public EntityModel<User> getOneUser(String username) {
+
     User user = userRepository.findByUsername(username);
 
     if (user == null) {

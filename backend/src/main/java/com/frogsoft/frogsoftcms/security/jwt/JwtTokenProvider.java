@@ -60,13 +60,19 @@ public class JwtTokenProvider {
   }
 
   public Authentication getAuthentication(String token) {
-    Claims claims = Jwts.parserBuilder().setSigningKey(this.secretKey).build().parseClaimsJws(token)
+    Claims claims = Jwts
+        .parserBuilder()
+        .setSigningKey(this.secretKey)
+        .build()
+        .parseClaimsJws(token)
         .getBody();
+
     Object authoritiesClaim = claims.get(AUTHORITIES_KEY);
 
-    Collection<? extends GrantedAuthority> authorities = authoritiesClaim == null
-        ? AuthorityUtils.NO_AUTHORITIES
-        : AuthorityUtils.commaSeparatedStringToAuthorityList(authoritiesClaim.toString());
+    Collection<? extends GrantedAuthority> authorities =
+        authoritiesClaim == null
+            ? AuthorityUtils.NO_AUTHORITIES
+            : AuthorityUtils.commaSeparatedStringToAuthorityList(authoritiesClaim.toString());
 
     User principal = new User(claims.getSubject(), "", authorities);
 
