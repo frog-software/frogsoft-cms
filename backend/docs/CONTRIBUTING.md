@@ -21,12 +21,15 @@
 > 参考资料：
 >
 > 1. [怎样用通俗的语言解释REST，以及RESTful？ - 知乎 (zhihu.com)](https://www.zhihu.com/question/28557115/answer/48094438)
-> 2. [Getting Started | Building a RESTful Web Service (spring.io)](https://spring.io/guides/gs/rest-service/)
-> 3. [Getting Started | Accessing Data with JPA (spring.io)](https://spring.io/guides/gs/accessing-data-jpa/)
-> 4. **[Tutorial | Building REST services with Spring（有助于实战编写符合 REST 的项目，但是较长，建议先看前面的）](https://spring.io/guides/tutorials/rest/)**
+> 2. [Getting Started | Building a RESTful Web Service (spring.io) REST 样例](https://spring.io/guides/gs/rest-service/)
+> 4. **[Tutorial | Building REST services with Spring（有助于实战编写符合 REST 的项目，但是较长，建议放最后看）](https://spring.io/guides/tutorials/rest/)**
 > 5. [What is REST (restfulapi.net)](https://restfulapi.net/)
-> 6. [Spring Boot 2.0 — Project Structure and Best Practices (Part 2) 项目结构说明](https://medium.com/the-resonant-web/spring-boot-2-0-project-structure-and-best-practices-part-2-7137bdcba7d3)
 
 ### 其他注意点
 
 - 每个 API 需要有对应的 Apifox 文档和测试用例
+
+## 参考资料
+
+1. [Spring Boot 2.0 — Project Structure and Best Practices (Part 2) 项目结构说明](https://medium.com/the-resonant-web/spring-boot-2-0-project-structure-and-best-practices-part-2-7137bdcba7d3)
+2. [Getting Started | Accessing Data with JPA (spring.io) JPA 样例](https://spring.io/guides/gs/accessing-data-jpa/)
