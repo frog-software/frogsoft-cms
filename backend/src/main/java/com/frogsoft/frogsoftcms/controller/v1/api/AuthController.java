@@ -1,6 +1,6 @@
 package com.frogsoft.frogsoftcms.controller.v1.api;
 
-import com.frogsoft.frogsoftcms.controller.v1.request.AuthRequest;
+import com.frogsoft.frogsoftcms.controller.v1.request.auth.AuthRequest;
 import com.frogsoft.frogsoftcms.exception.basic.unauthorized.UnauthorizedException;
 import com.frogsoft.frogsoftcms.security.jwt.JwtTokenProvider;
 import java.util.HashMap;

@@ -1,4 +1,4 @@
-package com.frogsoft.frogsoftcms.controller.v1.request;
+package com.frogsoft.frogsoftcms.controller.v1.request.auth;
 
 import java.io.Serializable;
 import lombok.Data;
