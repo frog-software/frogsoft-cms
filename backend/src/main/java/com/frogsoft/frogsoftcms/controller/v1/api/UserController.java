@@ -2,6 +2,7 @@ package com.frogsoft.frogsoftcms.controller.v1.api;
 
 import com.frogsoft.frogsoftcms.dto.model.user.UserDto;
 import com.frogsoft.frogsoftcms.exception.basic.forbidden.ForbiddenException;
+import com.frogsoft.frogsoftcms.model.user.User;
 import com.frogsoft.frogsoftcms.service.user.UserService;
 import javax.annotation.security.RolesAllowed;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +11,6 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -56,11 +56,11 @@ public class UserController {
   @GetMapping("/{username}")
   public ResponseEntity<EntityModel<UserDto>> getOneUser(
       @PathVariable(value = "username") String username,
-      @AuthenticationPrincipal UserDetails userDetails
+      @AuthenticationPrincipal User authenticatedUser
   ) {
 
-    if (!username.equals(userDetails.getUsername())
-        && userDetails.getAuthorities()
+    if (!username.equals(authenticatedUser.getUsername())
+        && authenticatedUser.getAuthorities()
         .stream()
         .noneMatch(i -> i.getAuthority().equals("ROLE_ADMIN"))
     ) {

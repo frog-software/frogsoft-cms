@@ -14,6 +14,7 @@ import javax.persistence.Id;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -24,6 +25,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @NoArgsConstructor
 @Accessors(chain = true)
 @Entity
+@ToString
 public class User implements UserDetails {
 
   @Id
