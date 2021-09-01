@@ -60,9 +60,7 @@ public class UserController {
   ) {
 
     if (!username.equals(authenticatedUser.getUsername())
-        && authenticatedUser.getAuthorities()
-        .stream()
-        .noneMatch(i -> i.getAuthority().equals("ROLE_ADMIN"))
+        && !authenticatedUser.getRoles().contains("ROLE_ADMIN")
     ) {
       throw new ForbiddenException("你只能查看自己的信息");
     }
