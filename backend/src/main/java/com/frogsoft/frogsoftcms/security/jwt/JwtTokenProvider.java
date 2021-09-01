@@ -81,13 +81,20 @@ public class JwtTokenProvider {
             ? AuthorityUtils.NO_AUTHORITIES
             : AuthorityUtils.commaSeparatedStringToAuthorityList(authoritiesClaim.toString());
 
-    User principal = new User()
-        .setId(Long.parseLong(claims.getId()))
-        .setUsername(claims.getSubject())
-        .setRoles(
-            authorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()));
+    try {
+      User principal = new User()
+          .setId(Long.parseLong(claims.getId()))
+          .setUsername(claims.getSubject())
+          .setRoles(authorities
+              .stream()
+              .map(GrantedAuthority::getAuthority)
+              .collect(Collectors.toList()));
 
-    return new UsernamePasswordAuthenticationToken(principal, token, authorities);
+      return new UsernamePasswordAuthenticationToken(principal, token, authorities);
+
+    } catch (NumberFormatException e) {
+      return null;
+    }
   }
 
   public boolean validateToken(String token) {
