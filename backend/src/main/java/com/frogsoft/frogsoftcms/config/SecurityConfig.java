@@ -1,5 +1,6 @@
 package com.frogsoft.frogsoftcms.config;
 
+import com.frogsoft.frogsoftcms.exception.basic.unauthorized.UnauthorizedException;
 import com.frogsoft.frogsoftcms.exception.user.UserNotFoundException;
 import com.frogsoft.frogsoftcms.model.user.User;
 import com.frogsoft.frogsoftcms.repository.user.UserRepository;
@@ -78,10 +79,10 @@ public class SecurityConfig {
       String password = authentication.getCredentials() + "";
       UserDetails user = userDetailsService.loadUserByUsername(username);
       if (!encoder.matches(password, user.getPassword())) {
-        throw new BadCredentialsException("Bad credentials");
+        throw new UnauthorizedException("密码错误");
       }
       if (!user.isEnabled()) {
-        throw new DisabledException("User account is not active");
+        throw new DisabledException("账户未启用");
       }
       return new UsernamePasswordAuthenticationToken(username, null, user.getAuthorities());
     };

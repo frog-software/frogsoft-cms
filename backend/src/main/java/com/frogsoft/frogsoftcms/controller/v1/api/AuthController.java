@@ -44,11 +44,6 @@ public class AuthController {
 
     } catch (AuthenticationException e) {
       throw new UnauthorizedException("用户名或密码错误");
-
-    } catch (Exception e) {
-      e.printStackTrace();
-      throw new InternalAuthenticationServiceException("服务器错误");
-
     }
   }
 }
