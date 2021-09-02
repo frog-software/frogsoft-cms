@@ -12,6 +12,19 @@
     "max-len": "warn",
     "import/no-extraneous-dependencies": "warn",
     "import/prefer-default-export": "warn",
-    "linebreak-style": "off"
+    "linebreak-style": "off",
+    "no-multi-spaces": "off",
+    "spaced-comment": "off",
+    "@typescript-eslint/semi": "warn",
+    "no-underscore-dangle": "off",
+    "@typescript-eslint/comma-dangle": "warn",
+    "@typescript-eslint/object-curly-spacing": "warn",
+    "no-trailing-spaces": "warn",
+    "arrow-parens": "warn",
+    "@typescript-eslint/quotes": "warn",
+    "@typescript-eslint/dot-notation": "off",
+    "no-param-reassign": "warn",
+    "padded-blocks":"warn",
+    "arrow-body-style": "warn"
   }
 }
