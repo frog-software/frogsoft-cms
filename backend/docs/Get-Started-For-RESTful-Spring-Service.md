@@ -114,8 +114,7 @@ import ...
 public class Initialize {  
   
   @Bean  
-  CommandLineRunner init(  
-      UserRepository userRepository, ...) 
+  CommandLineRunner init(UserRepository userRepository, ...) 
   {
 	  return args -> {
 		  userRepository.save(new User()...)
@@ -322,7 +321,7 @@ HATEOAS是Spring中用来实现链接（Link）的工具，链接的存在使得
 返回的链接 “_links”部分将告诉前端，用户当前的操作（或是所在的位置）可以跳转到哪些可能的地址，因此前端可以根据这些链接为用户提供更方便的操作。
 
 ### 返回带链接的数据包
-> 注意，以下代码可以简化，写这些的目的是为了更好的理解链接，如果要俗称，请跳转到[简化生成链接的步骤](#1)一节
+> 注意，以下代码可以简化，写这些的目的是为了更好的理解链接，如果要速成，请跳转到[简化生成链接的步骤](#1)一节
 
 以下是一个向前端返回带链接的数据的例子：
 ```java
@@ -494,3 +493,163 @@ CollectionModel<EntityModel<Employee>> all() {
 
 代码简洁了很多呢！
 
+
+
+## SpringMVC的ResponseEntity
+
+（待翻译）
+
+Another step in the right direction involves ensuring that each of your REST methods returns a proper response. Update the POST method like this:
+
+POST that handles "old" and "new" client requests
+
+```java
+@PostMapping("/employees")
+ResponseEntity<?> newEmployee(@RequestBody Employee newEmployee) {
+
+  EntityModel<Employee> entityModel = assembler.toModel(repository.save(newEmployee));
+
+  return ResponseEntity //
+      .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()) //
+      .body(entityModel);
+}COPY
+```
+
+- The new `Employee` object is saved as before. But the resulting object is wrapped using the `EmployeeModelAssembler`.
+- Spring MVC’s `ResponseEntity` is used to create an **HTTP 201 Created** status message. This type of response typically includes a **Location** response header, and we use the URI derived from the model’s self-related link.
+- Additionally, return the model-based version of the saved object.
+
+With these tweaks in place, you can use the same endpoint to create a new employee resource, and use the legacy `name` field:
+
+```shell
+$ curl -v -X POST localhost:8080/employees -H 'Content-Type:application/json' -d '{"name": "Samwise Gamgee", "role": "gardener"}'
+```
+
+The output is shown below:
+
+```shell
+> POST /employees HTTP/1.1
+> Host: localhost:8080
+> User-Agent: curl/7.54.0
+> Accept: */*
+> Content-Type:application/json
+> Content-Length: 46
+>
+< Location: http://localhost:8080/employees/3
+< Content-Type: application/hal+json;charset=UTF-8
+< Transfer-Encoding: chunked
+< Date: Fri, 10 Aug 2018 19:44:43 GMT
+<
+{
+  "id": 3,
+  "firstName": "Samwise",
+  "lastName": "Gamgee",
+  "role": "gardener",
+  "name": "Samwise Gamgee",
+  "_links": {
+    "self": {
+      "href": "http://localhost:8080/employees/3"
+    },
+    "employees": {
+      "href": "http://localhost:8080/employees"
+    }
+  }
+}
+```
+
+This not only has the resulting object rendered in HAL (both `name` as well as `firstName`/`lastName`), but also the **Location** header populated with `http://localhost:8080/employees/3`. A hypermedia powered client could opt to "surf" to this new resource and proceed to interact with it.
+
+The PUT controller method needs similar tweaks:
+
+Handling a PUT for different clients
+
+```java
+@PutMapping("/employees/{id}")
+ResponseEntity<?> replaceEmployee(@RequestBody Employee newEmployee, @PathVariable Long id) {
+
+  Employee updatedEmployee = repository.findById(id) //
+      .map(employee -> {
+        employee.setName(newEmployee.getName());
+        employee.setRole(newEmployee.getRole());
+        return repository.save(employee);
+      }) //
+      .orElseGet(() -> {
+        newEmployee.setId(id);
+        return repository.save(newEmployee);
+      });
+
+  EntityModel<Employee> entityModel = assembler.toModel(updatedEmployee);
+
+  return ResponseEntity //
+      .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()) //
+      .body(entityModel);
+}COPY
+```
+
+The `Employee` object built from the `save()` operation is then wrapped using the `EmployeeModelAssembler` into an `EntityModel<Employee>` object. Using the `getRequiredLink()` method, you can retrieve the `Link` created by the `EmployeeModelAssembler` with a `SELF` rel. This method returns a `Link` which must be turned into a `URI` with the `toUri` method.
+
+Since we want a more detailed HTTP response code than **200 OK**, we will use Spring MVC’s `ResponseEntity` wrapper. It has a handy static method `created()` where we can plug in the resource’s URI. It’s debatable if **HTTP 201 Created** carries the right semantics since we aren’t necessarily "creating" a new resource. But it comes pre-loaded with a **Location** response header, so run with it.
+
+```shell
+$ curl -v -X PUT localhost:8080/employees/3 -H 'Content-Type:application/json' -d '{"name": "Samwise Gamgee", "role": "ring bearer"}'
+
+* TCP_NODELAY set
+* Connected to localhost (::1) port 8080 (#0)
+> PUT /employees/3 HTTP/1.1
+> Host: localhost:8080
+> User-Agent: curl/7.54.0
+> Accept: */*
+> Content-Type:application/json
+> Content-Length: 49
+>
+< HTTP/1.1 201
+< Location: http://localhost:8080/employees/3
+< Content-Type: application/hal+json;charset=UTF-8
+< Transfer-Encoding: chunked
+< Date: Fri, 10 Aug 2018 19:52:56 GMT
+{
+	"id": 3,
+	"firstName": "Samwise",
+	"lastName": "Gamgee",
+	"role": "ring bearer",
+	"name": "Samwise Gamgee",
+	"_links": {
+		"self": {
+			"href": "http://localhost:8080/employees/3"
+		},
+		"employees": {
+			"href": "http://localhost:8080/employees"
+		}
+	}
+}
+```
+
+That employee resource has now been updated and the location URI sent back. Finally, update the DELETE operation suitably:
+
+Handling DELETE requests
+
+```java
+@DeleteMapping("/employees/{id}")
+ResponseEntity<?> deleteEmployee(@PathVariable Long id) {
+
+  repository.deleteById(id);
+
+  return ResponseEntity.noContent().build();
+}COPY
+```
+
+This returns an **HTTP 204 No Content** response.
+
+```shell
+$ curl -v -X DELETE localhost:8080/employees/1
+
+* TCP_NODELAY set
+* Connected to localhost (::1) port 8080 (#0)
+> DELETE /employees/1 HTTP/1.1
+> Host: localhost:8080
+> User-Agent: curl/7.54.0
+> Accept: */*
+>
+< HTTP/1.1 204
+< Date: Fri, 10 Aug 2018 21:30:26 GMT
+```
