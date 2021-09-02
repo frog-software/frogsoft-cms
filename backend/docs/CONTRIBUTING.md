@@ -205,7 +205,7 @@ public class UserNotFoundException extends NotFoundException {
 > }
 > ```
 >
-> 但是我们必须创建一个类……所以就有了 UserDto
+> 但是我们必须创建一个类……所以就有了 `UserDto`
 >
 > ```java
 > @Data
@@ -227,7 +227,9 @@ public class XXXDto {
 }
 ```
 
-我们分别解释一下这些注解
+> 这样的 model 明显可以对应到 apifox 中的 `数据模型` 
+
+接下来分别解释一下这些注解。
 
 ##### `@data`
 
@@ -382,7 +384,35 @@ public class XyzModelAssembler implements
 > - `.withSelfRel()`  在 `_links` 中产生 `self` 字段，即把这个方法链接到自身的 `self`链接
 > - `.withRel("string")`  在 `_links` 中产生 `string` 字段，即把这个方法链接到自身的 `string`链接
 
+### controller
 
+#### 目录介绍
+
+- 为什么有 `v1` ？ 
+
+  有`v1` 当然就会有 `v2` ， 其实这是为了保证我们所设计的 api 可以向后兼容
+
+- `/api`
+
+  真正存放相关 `controller` 的位置
+
+- `/request`
+
+  Java 中无法直接创建类似 `json` 的对象，因而我们需要为请求中的 `json` 创建一个类。我们将请求中用到的类统一放在此处。
+
+#### controller
+
+> [王皓天的学习笔记](Get-Started-For-RESTful-Spring-Service.md)
+
+控制路由访问
+
+#### request classes
+
+其实这些类的作用和 `dto` 的作用类似。
+
+同样是因为 Java 中不能直接使用 json ，所以需要对于每一种 json 建一个类
+
+同样的，可以把这些类放到 apifox 的数据模型中
 
 ## 参考资料
 
