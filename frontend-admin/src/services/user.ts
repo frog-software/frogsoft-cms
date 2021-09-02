@@ -10,7 +10,6 @@
 //
 //--------------------------------------------------------------------------
 
-import { VITE_BACKEND_URL }                     from 'consts/url';
 import http                                     from 'utils/http';
 import { pagedModelSimplifier }                 from 'utils/common';
 import { JavaPagedModel, SimplifiedPagedModel } from 'types/common';
@@ -25,7 +24,7 @@ export const getUserList = (queryContext: QueryFunctionContext<any, any>) => {
     http.get<JavaPagedModel<User>>(USER_V1_URL, { page, size })
       .then((res) => {
         const simplifiedModel = pagedModelSimplifier(res);
-        simplifiedModel.list.forEach((item) => {
+        simplifiedModel?.list?.forEach((item) => {
           item['authorities'] = item.roles.includes('ROLE_ADMIN')
             ? '管理员'
             : '用户';
