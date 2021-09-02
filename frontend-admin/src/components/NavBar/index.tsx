@@ -20,7 +20,7 @@ const entryTree: EntryTree[] = [
     icon: <CrownOutlined />,
     children: [
       {
-        key: '1.1',
+        key: '0.1',
         title: '二级目录',
         // link: '/reserve/resource'
       },

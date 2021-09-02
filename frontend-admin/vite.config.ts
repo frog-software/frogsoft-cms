@@ -13,9 +13,6 @@ export default defineConfig({
       "types": path.resolve(__dirname, './src/types'),
     }
   },
-  define: {
-    'process.env.API': JSON.stringify(process.env.API)
-  },
   css: {
     preprocessorOptions: {
       less: {

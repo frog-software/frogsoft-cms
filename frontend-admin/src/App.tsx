@@ -15,7 +15,6 @@ const Home = React.lazy(() => import('./pages/Home'));
 
 function App() {
   const history = useHistory();
-
   const { app: { configure } } = useSelector((state: RootState) => state);
   const dispatch = useDispatch<Dispatch>().app;
 

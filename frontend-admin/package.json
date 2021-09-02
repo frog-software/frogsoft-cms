@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "license": "MIT",
   "scripts": {
-    "start": "export API=http://localhost && vite",
+    "start": "vite",
     "build": "vite build",
     "serve": "vite preview",
     "lint": "eslint src --ext .tsx,.ts,.js,.jsx && tsc -b --verbose",
@@ -24,7 +24,8 @@
     "react-query": "^3.19.2",
     "react-redux": "^7.2.4",
     "react-router-dom": "^5.2.0",
-    "react-sortable-hoc": "^2.0.0"
+    "react-sortable-hoc": "^2.0.0",
+    "styled-components": "^5.3.1"
   },
   "devDependencies": {
     "@types/node": "^16.4.13",
