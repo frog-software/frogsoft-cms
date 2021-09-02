@@ -17,7 +17,7 @@ public class ArticleMapper {
     return new ArticleDto()
         .setId(article.getId())
         .setContent(article.getContent())
-        .setAuthor(userMapper.toUserDto(article.getUser()))
+        .setAuthor(userMapper.toUserDto(article.getAuthor()))
         .setCover(article.getCover())
         .setDescription(article.getDescription())
         .setPublishDate(article.getPublishDate())

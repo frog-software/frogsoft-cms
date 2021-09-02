@@ -24,8 +24,8 @@ import lombok.experimental.Accessors;
 public class Article {
 
   @ManyToOne
-  @JoinColumn(name = "author", referencedColumnName = "id")
-  User user;
+  @JoinColumn(referencedColumnName = "id")
+  User author;
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;

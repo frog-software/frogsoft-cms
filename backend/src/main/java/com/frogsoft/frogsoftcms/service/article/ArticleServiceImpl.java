@@ -8,6 +8,7 @@ import com.frogsoft.frogsoftcms.model.article.Article;
 import com.frogsoft.frogsoftcms.model.article.Status;
 import com.frogsoft.frogsoftcms.model.user.User;
 import com.frogsoft.frogsoftcms.repository.article.ArticleRepository;
+import com.frogsoft.frogsoftcms.repository.user.UserRepository;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.EntityModel;
@@ -20,6 +21,7 @@ public class ArticleServiceImpl implements ArticleService {
   private final ArticleRepository articleRepository;
   private final ArticleModelAssembler articleModelAssembler;
   private final ArticleMapper articleMapper;
+  private final UserRepository userRepository;
 
   @Override
   public EntityModel<ArticleDto> saveArticles(ArticleRequest articleRequest,
@@ -29,13 +31,12 @@ public class ArticleServiceImpl implements ArticleService {
         .setTitle(articleRequest.getTitle())
         .setDescription(articleRequest.getDescription())
         .setCover(articleRequest.getCover())
-        .setUser(authenticatedUser)
+        .setAuthor(userRepository.findByUsername(authenticatedUser.getUsername()))
         .setPublishDate(LocalDateTime.now())
         .setUpdateDate(LocalDateTime.now())
         .setStatus(Status.Normal)
         .setViews(0));
     return articleModelAssembler.toModel(articleMapper.toArticleDto(article));
   }
-
 
 }
