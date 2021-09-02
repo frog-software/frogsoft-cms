@@ -1,45 +1,56 @@
-import React, { useState } from 'react'
-import logo from './logo.svg'
-import './App.css'
+import React, { Suspense, useEffect } from 'react';
+import { Route, useHistory } from 'react-router-dom';
+import { QueryClientProvider } from 'react-query';
+import { useDispatch, useSelector } from 'react-redux';
+import { Col, ConfigProvider, Row } from 'antd';
+import zhCN from 'antd/lib/locale/zh_CN';
+import 'moment/dist/locale/zh-cn';
+import NavBar from 'components/NavBar';
+import Preview from 'components/Preview';
+import UserNavBar from 'components/UserNavBar';
+import { queryClient } from './store';
+import './customAntd.less';
+
+const Home = React.lazy(() => import('./pages/Home'));
 
 function App() {
-  const [count, setCount] = useState(0)
+  const history = useHistory();
+
+  const { app: { configure } } = useSelector((state: RootState) => state);
+  const dispatch = useDispatch<Dispatch>().app;
+
+  useEffect(() => {
+    dispatch.setConfigure({});
+  }, []);
+
+  // 特殊路径跳转
+  if (window.location.pathname === '/') {
+    history.replace('/home');
+  }
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>Hello Vite + React!</p>
-        <p>
-          <button type="button" onClick={() => setCount((count) => count + 1)}>
-            count is: {count}
-          </button>
-        </p>
-        <p>
-          Edit <code>App.tsx</code> and save to test HMR updates.
-        </p>
-        <p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-          {' | '}
-          <a
-            className="App-link"
-            href="https://vitejs.dev/guide/features.html"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Vite Docs
-          </a>
-        </p>
-      </header>
-    </div>
-  )
+    <QueryClientProvider client={queryClient}>
+      <ConfigProvider locale={zhCN}>
+        <Row className="App">
+          <Col className="g-nav">
+            <NavBar />
+          </Col>
+          <Col className="g-main">
+            <UserNavBar />
+            {
+              configure ? (
+                <Suspense fallback={<Preview />}>
+                  <Route path="/home" component={Home} />
+                </Suspense>
+              ) : (
+                <Preview />
+              )
+            }
+          </Col>
+        </Row>
+      </ConfigProvider>
+    </QueryClientProvider>
+  );
 }
 
-export default App
+export default App;
