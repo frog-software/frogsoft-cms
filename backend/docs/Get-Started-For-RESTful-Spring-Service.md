@@ -100,7 +100,9 @@ interface UserRepository extends JpaRepository<User, long> {
 
 接口类中可以自定义增删改查函数，如：
 ```java
+	// 返回一个对象
 	User findByUsername(String username);
+	// 根据pageable参数返回分页对象（一页的内容）
 	Page<User> findAllBy(Pageable pageable);
 ```
 其中，`findByXXXXX`函数，Spring可以根据“XXXXX”的命名，自动对应模型类中同名（除了主键，不区分大小写）的数据变量，帮助你实现查找函数。即程序员只需声明该函数，并写对参数和返回类型。 
@@ -365,7 +367,8 @@ Employee employee`的模型对象，而是使用
 - `EntityModel<>` 用来容纳单个模型对象及其链接
 - `CollectionModel<>`用来容纳多个模型对象及其链接，一个Collection可以包含多个Entity，写为：`CollectionModel<EntityModel<T>>`
 
-将多个实体模型打包成Collection时，最好将每个模型对象都包装好链接，再为整体的Collection（可以是List、Map或是Dict之类）包装链接，示例如下：
+  将多个实体模型打包成Collection时，最好将每个模型对象都包装好链接，再为整体的Collection（可以是List、Map或是Dict之类）包装链接，示例如下：
+
 ```java
 @GetMapping("/employees")
 CollectionModel<EntityModel<Employee>> all() {
@@ -384,7 +387,7 @@ CollectionModel<EntityModel<Employee>> all() {
   return CollectionModel.of(employees, linkTo(methodOn(EmployeeController.class).all()).withSelfRel());
 }
 ```
-该代码最后返回的json包格式如下：
+​	该代码最后返回的json包格式如下：
 ```json
 {
   "_embedded": {
@@ -426,6 +429,83 @@ CollectionModel<EntityModel<Employee>> all() {
 ```
 这就是一个非常符合REST规范的资源包了。
 
+- `PagedModel<>`也用来容纳多个模型对象及其链接，并且支持分页，生成PageModel必须使用`Page<>`类型的泛型对象，在生成PageModel时提供一个`Pageable `的分页对象，用来记录分页信息：
+
+  ```java
+  // PageModel.of()的函数重载类型：
+  
+  // 不传入Link参数，所有对象自动返回空Link
+  public static <T> PagedModel<T> model = PageModel.of
+      (Collection<T> content, @Nullable PagedModel.PageMetadata metadata);
+  // 传入一组Link参数，每个Link与content一一对应
+  public static <T> PagedModel<T> model = PageModel.of
+      (Collection<T> content, @Nullable PagedModel.PageMetadata metadata, Link... links); 
+  // 传入一个Link迭代对象，每个Link与content一一对应
+  public static <T> PagedModel<T> model = PageModel.of
+      (Collection<T> content, @Nullable PagedModel.PageMetadata metadata, Iterable<Link>);
+  ```
+
+  带有分页信息的返回包格式如下，可以看到除了CollectionModel的信息外，还另外增加一个”Page“字段，存储分页信息：
+
+  ```json
+  {
+      "_embedded": {
+          "userDtoList": [
+              {
+                  "email": "admin@frogsoft.com",
+                  "username": "admin",
+                  "roles": [
+                      "ROLE_USER",
+                      "ROLE_ADMIN"
+                  ],
+                  "_links": {
+                      "self": {
+                          "href": "http://127.0.0.1:8080/v1/users/admin"
+                      },
+                      "allUsers": {
+                          "href": "http://127.0.0.1:8080/v1/users/?page=0&size=10"
+                      }
+                  }
+              }
+          ]
+      },
+      "_links": {
+          "self": {
+              "href": "http://127.0.0.1:8080/v1/users?page=0&size=10"
+          }
+      },
+      "page": {
+          "size": 10,
+          "totalElements": 1,
+          "totalPages": 1,
+          "number": 0
+      }
+  }
+  ```
+
+  可以使用Spring提供的`PagedResourcesAssembler`类，简化`PagedModel<>`的生成，
+
+  *在阅读以下代码之前，先阅读下一节关于`RepresentationModelAssembler`接口的介绍。*
+
+  ```java
+  // 使用单个EntityModel的RepresentationModelAssembler接口生成PageModel的函数。
+  public PagedModel<EntityModel<T>> getPageModelT(Pageable pageable) {
+  	
+      // 获取实体类型T对应的PagedResourcesAssembler类型
+      private final PagedResourcesAssembler<T> pagedResourcesAssembler;
+      
+      // 获取实体类型T的RepresentationModelAssembler（自行实现）
+      private final XXXXModelAssembler tModelAssembler;
+      
+      // 将多个实体类型T打包为Page<T>类型（可以使用前面提到的JpaRepository中的findAllBy()实现）
+      Page<T> contents = /* find the contents and packed in Page*/
+  
+      // 调用.toModel返回分页模型，参数分别为打包的Page<T>类型 和 单个T类型对应的RepresentationModelAssembler对象
+      return pagedResourcesAssembler.toModel(contents, tModelAssembler);
+    }
+  
+  ```
+
 ### 简化生成链接的步骤
 <span id="1"></span>
 为了减少代码复用，不要在每次创建link时都重复写代码，我们可以写一个函数，将模型对象（比如 `Employee`）转换为对应的`EntityModel<T>`对象。这样当我们需要创建link时，只需简单的调用这个方法。
@@ -457,7 +537,7 @@ class EmployeeModelAssembler implements RepresentationModelAssembler<Employee, E
 
 为你的接口实现类起一个 XXXModelAssembler的名字；加入Spring的注入注解`@Component`；实现接口的泛型参数`<Employee, EntityModel<Employee>>`表明其是将模型对象`XXX`转换为`EntityModel<XXX>`
 
-该接口只需要实现一个`toModel`函数，其内容和之前直接在控制器类的函数中创建链接的代码一模一样。
+该接口只需要实现（重载）一个`toModel`函数，其内容和之前直接在控制器类的函数中创建链接的代码一模一样。
 
 使用该接口对象的方法和repository接口对象的方法类似，只需在控制器中声明其静态引用：
 
@@ -495,13 +575,13 @@ CollectionModel<EntityModel<Employee>> all() {
 
 
 
-## SpringMVC的ResponseEntity
+## 使用ResponseEntity返回数据
 
-（待翻译）
+另一个让你的代码符合REST规范的要点是永远返回合适的Respone
 
-Another step in the right direction involves ensuring that each of your REST methods returns a proper response. Update the POST method like this:
+之前返回的json包中的HTTP状态码需要我们自行写入和处理，`ResponseEntity`则帮我们解决了这个问题，同时支持多种格式的返回包数据。
 
-POST that handles "old" and "new" client requests
+更新上面的POST函数，以便使用`ResponseEntity`类来处理返回值：
 
 ```java
 @PostMapping("/employees")
@@ -512,29 +592,14 @@ ResponseEntity<?> newEmployee(@RequestBody Employee newEmployee) {
   return ResponseEntity //
       .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()) //
       .body(entityModel);
-}COPY
+}
 ```
 
-- The new `Employee` object is saved as before. But the resulting object is wrapped using the `EmployeeModelAssembler`.
-- Spring MVC’s `ResponseEntity` is used to create an **HTTP 201 Created** status message. This type of response typically includes a **Location** response header, and we use the URI derived from the model’s self-related link.
-- Additionally, return the model-based version of the saved object.
+和不使用`ResponseEntity`相比，返回值类型变为`ResponseEntity<EntityModel<Employee>>`，也就是说，要在EntityModel外层，再包装一层ResponseEntity类型的泛型。在不至于混淆的情况下，可以使用`ResponseEntity<?> `自动推导类型。
 
-With these tweaks in place, you can use the same endpoint to create a new employee resource, and use the legacy `name` field:
+使用`ResponseEntity.created()`会返回`HTTP 201` 状态码，表示创建Employee的操作成功。当返回这个内容时，前端通常希望能同时获得该操作所对应的URL地址（Location），以便进行下一步操作。由于我们已经在返回包里打包了Link，因此添加响应头非常方便，代码中`.created()`的参数：`entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()`即是将Link的Self部分写入返回包的头部，最后得到的返回数据如下：
 
 ```shell
-$ curl -v -X POST localhost:8080/employees -H 'Content-Type:application/json' -d '{"name": "Samwise Gamgee", "role": "gardener"}'
-```
-
-The output is shown below:
-
-```shell
-> POST /employees HTTP/1.1
-> Host: localhost:8080
-> User-Agent: curl/7.54.0
-> Accept: */*
-> Content-Type:application/json
-> Content-Length: 46
->
 < Location: http://localhost:8080/employees/3
 < Content-Type: application/hal+json;charset=UTF-8
 < Transfer-Encoding: chunked
@@ -557,99 +622,131 @@ The output is shown below:
 }
 ```
 
-This not only has the resulting object rendered in HAL (both `name` as well as `firstName`/`lastName`), but also the **Location** header populated with `http://localhost:8080/employees/3`. A hypermedia powered client could opt to "surf" to this new resource and proceed to interact with it.
+`ResponseEntity.created()`只返回一个特定的状态（201），
 
-The PUT controller method needs similar tweaks:
+通常情况下，我们使用`ResponseEntity.status()`返回一个自定义状态码的数据包，状态码可以用`HttpStatus`枚举表示。
 
-Handling a PUT for different clients
-
-```java
-@PutMapping("/employees/{id}")
-ResponseEntity<?> replaceEmployee(@RequestBody Employee newEmployee, @PathVariable Long id) {
-
-  Employee updatedEmployee = repository.findById(id) //
-      .map(employee -> {
-        employee.setName(newEmployee.getName());
-        employee.setRole(newEmployee.getRole());
-        return repository.save(employee);
-      }) //
-      .orElseGet(() -> {
-        newEmployee.setId(id);
-        return repository.save(newEmployee);
-      });
-
-  EntityModel<Employee> entityModel = assembler.toModel(updatedEmployee);
-
-  return ResponseEntity //
-      .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()) //
-      .body(entityModel);
-}COPY
-```
-
-The `Employee` object built from the `save()` operation is then wrapped using the `EmployeeModelAssembler` into an `EntityModel<Employee>` object. Using the `getRequiredLink()` method, you can retrieve the `Link` created by the `EmployeeModelAssembler` with a `SELF` rel. This method returns a `Link` which must be turned into a `URI` with the `toUri` method.
-
-Since we want a more detailed HTTP response code than **200 OK**, we will use Spring MVC’s `ResponseEntity` wrapper. It has a handy static method `created()` where we can plug in the resource’s URI. It’s debatable if **HTTP 201 Created** carries the right semantics since we aren’t necessarily "creating" a new resource. But it comes pre-loaded with a **Location** response header, so run with it.
-
-```shell
-$ curl -v -X PUT localhost:8080/employees/3 -H 'Content-Type:application/json' -d '{"name": "Samwise Gamgee", "role": "ring bearer"}'
-
-* TCP_NODELAY set
-* Connected to localhost (::1) port 8080 (#0)
-> PUT /employees/3 HTTP/1.1
-> Host: localhost:8080
-> User-Agent: curl/7.54.0
-> Accept: */*
-> Content-Type:application/json
-> Content-Length: 49
->
-< HTTP/1.1 201
-< Location: http://localhost:8080/employees/3
-< Content-Type: application/hal+json;charset=UTF-8
-< Transfer-Encoding: chunked
-< Date: Fri, 10 Aug 2018 19:52:56 GMT
-{
-	"id": 3,
-	"firstName": "Samwise",
-	"lastName": "Gamgee",
-	"role": "ring bearer",
-	"name": "Samwise Gamgee",
-	"_links": {
-		"self": {
-			"href": "http://localhost:8080/employees/3"
-		},
-		"employees": {
-			"href": "http://localhost:8080/employees"
-		}
-	}
-}
-```
-
-That employee resource has now been updated and the location URI sent back. Finally, update the DELETE operation suitably:
-
-Handling DELETE requests
+| HTTP状态码 |          HttpStatus枚举          |     含义     |
+| :--------: | :------------------------------: | :----------: |
+|    100     |       HttpStatus.CONTINUE        |     继续     |
+|    102     |      HttpStatus.PROCESSING       |    处理中    |
+|    200     |          HttpStatus.OK           |     正常     |
+|    201     |        HttpStatus.CREATED        |    已创建    |
+|    202     |       HttpStatus.ACCEPTED        |    已接受    |
+|    204     |      HttpStatus.NO_CONTENT       |   已无内容   |
+|    302     |         HttpStatus.FOUND         |    已找到    |
+|    400     |      HttpStatus.BAD_REQUEST      |   请求错误   |
+|    401     |     HttpStatus.UNAUTHORIZED      |    未授权    |
+|    403     |       HttpStatus.FORBIDDEN       |   禁止访问   |
+|    404     |       HttpStatus.NOT_FOUND       |   无法找到   |
+|    408     |    HttpStatus.REQUEST_TIMEOUT    |   请求超时   |
+|    429     |   HttpStatus.TOO_MANY_REQUESTS   |   请求过多   |
+|    500     | HttpStatus.INTERNAL_SERVER_ERROR | 内部服务错误 |
+|    502     |      HttpStatus.BAD_GATEWAY      |   网关错误   |
+|    503     |  HttpStatus.SERVICE_UNAVAILABLE  |  服务不可用  |
+|    504     |    HttpStatus.GATEWAY_TIMEOUT    |   网关超时   |
 
 ```java
-@DeleteMapping("/employees/{id}")
-ResponseEntity<?> deleteEmployee(@PathVariable Long id) {
-
-  repository.deleteById(id);
-
-  return ResponseEntity.noContent().build();
-}COPY
+ResponseEntity.status(/* http状态码 */HttpStatus.XXX).body(model);
 ```
 
-This returns an **HTTP 204 No Content** response.
+其他一些常用的状态，`ResponseEntity`也为我们封装好了以下常用函数：
 
-```shell
-$ curl -v -X DELETE localhost:8080/employees/1
-
-* TCP_NODELAY set
-* Connected to localhost (::1) port 8080 (#0)
-> DELETE /employees/1 HTTP/1.1
-> Host: localhost:8080
-> User-Agent: curl/7.54.0
-> Accept: */*
->
-< HTTP/1.1 204
-< Date: Fri, 10 Aug 2018 21:30:26 GMT
+```java
+// ok：返回状态码200
+ResponseEntity.ok().body(model);
+// badRequest：返回状态码400
+ResponseEntity.badRequest().body(model);
+// notFound：返回状态码404
+ResponseEntity.notFound().body(model);
 ```
+
+
+
+## Controller、Service、Repository 三层结构
+
+之前我们提到，Spring用来注册Bean的控制接口@Component根据名称不同又分为三种：
+
+> @Controller：控制层，标注返回前端的控制组件
+> @Service：业务逻辑层，标注中间层的控制组件
+> @Repository：DAO层，标注数据库访问的组件
+
+之所以这么设计，是由编写代码中分层规范决定的，通常Controller层最接近前端，Repository(DAO)层最接近后端（数据库），这样的结构最利于代码解耦化，也利于每个部分的代码更加简洁，接下来我们就来整理项目以适应三层结构。
+
+### @Controller控制层
+
+在项目结构中建立一个Controller包，用来处理控制层。
+
+控制层是最接近前端的部分，所以要适应可能随时改变的前端需求。因此最好做好版本控制，可以将Controller包命名为`/Controller.v{版本号}`。当需要修改需求时，可以保留旧版本，重新建立新版本的Controller包，以实现向后兼容。
+
+控制层要实现的内容：
+
+根据设计好的API，建立若干控制类：`XXXXController`，放置于`/Controller/api`包下。
+
+若API需要接受前端请求的数据比较复杂，需要单独用一个数据类存储，可以建立对应的数据类`XXXXRequest`，放置于`/Controller/request`包下。
+
+控制类中要做的事情：
+
+- 路由处理：用`@RequestMapping`索引（这个模块的）根地址（可以写在class的定义前），然后用`@Get/Post/Put/DeleteMapping`索引子地址
+
+- 权限处理：判断访问请求是否具有特殊的权限：
+
+  - token鉴权：从请求中获取username，与授权系统中的列表匹配（见CONTRIBUTING.md）
+  - Roles判断：函数前加入注解`@RolesAllowed("身份名")`，自动拒绝没有对应身份权限的用户的访问，判断用户的身份在登陆时由鉴权系统实现
+
+- 处理请求数据：
+
+  - 读请求数据：函数参数中配置`@RequestParam`和`@PathVariable`，获得请求或URL中的数据
+
+  - 读写数据：调用Service层的接口对象
+
+    > 注意，对于数据的具体处理要在Service层实现，Controller层只简单处理和传输参数，并读取结果（Entity对象）
+
+- 返回状态码，用`ResponseEntity.status()`实现
+
+  
+
+### @Service服务层
+
+服务层，即作为一个承上启下的中间部分，用来处理数据、打包数据。
+
+服务层的基本结构：
+
+建立若干服务接口，在`/service`文件夹下，如果功能细分需要多个功能模块，也可以建立子文件夹
+
+服务接口，以`XXXXService`命名，接口的实现类以`XXXXServiceImpl`命名，使用接口的目的是为了多个类访问同一个数据仓库时方便重载和复用。
+
+服务实现类中要做的事情：
+
+- 读写数据：调用Repository层的接口对象，处理数据
+  - 读数据：使用findBy系列方法（在Repository层定义）
+  - 写数据：使用save方法
+- 打包数据：将要返回的数据通过RepresentationModelAssembler接口对象（这也属于持久层）打包为Entity对象，返回给控制层
+
+### @Repository持久层
+
+持久层，用来和数据库进行直接连接。在这里我们使用JPA来建立持久层，数据库连接变得十分方便，但要满足DTO数据模型的要求，因此持久层分为Repository和Dto两个平行层
+
+持久层的基本结构：
+
+建立若干仓库接口，以`XXXXRepository`命名，接口要继承自`JpaRepository`，以实现数据库连接，接口无需实现（Spring金牌服务，帮您实现！）
+
+建立Dto文件夹，其包含三个部分：
+
+- model文件夹：建立Dto数据类，Dto数据类的命名在基本数据实体类后加Dto即可（如`UserDto`）
+
+  - Dto数据类的成员变量内容和基本数据类一模一样，但无需写与数据库连接的注解，数据的连通由mapper类搞定
+
+- mapper文件夹：对于每个Dto类，建立一个Mapper类，以`XXXXMapper`命名。
+
+  mapper类实现一个函数，将基本数据实体类（如`User`）转化为Dto数据类（如`UserDto`）
+
+  > mapper函数的实现方法：new一个Dto对象，然后将使用setter函数配置所有成员即可。之所以在mapper中new对象，也是处于方便解耦和类嵌套之类的目的
+
+- assemler文件夹，对于每个Dto类，建立一个Assembler类，以`XXXXModelAssembler`命名。该类实现`RepresentationModelAssembler`接口。
+
+  > 注意，这里实现`RepresentationModelAssembler`接口时，传入的实体对象要是已经打包好的Dto类对象，不然我费这么大劲打包Dto干啥（感觉在说废话）	
+
+  Assembler类即主要实现`toModel`函数，实现将Dto数据打包为Entity实体对象，这样，服务层只需调用对应的接口实现类，即可以获得符合REST规范的返回数据包
+
+对于基本数据实体类，建立一个`\Model`文件夹存储，使用`@Entity`实现类与数据库的ORM连接。这些即为持久层所需处理的部分。
