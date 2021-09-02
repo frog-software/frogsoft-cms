@@ -19,7 +19,7 @@ public class ArticleController {
   private final ArticleService articleService;
 
   @PostMapping("")
-  public ResponseEntity<?> createarticles(@RequestBody ArticleRequest articleRequest,
+  public ResponseEntity<?> createArticles(@RequestBody ArticleRequest articleRequest,
       @AuthenticationPrincipal User authenticatedUser
   ) {
     return ResponseEntity.status(201)
