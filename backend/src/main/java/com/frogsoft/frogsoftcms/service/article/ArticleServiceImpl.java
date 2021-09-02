@@ -39,4 +39,11 @@ public class ArticleServiceImpl implements ArticleService {
     return articleModelAssembler.toModel(articleMapper.toArticleDto(article));
   }
 
+  @Override
+  public EntityModel<ArticleDto> getOneArticle(Long id) {
+    Article article = articleRepository.findByid(id);
+    return articleModelAssembler.toModel(articleMapper.toArticleDto(article));
+  }
+
+
 }
