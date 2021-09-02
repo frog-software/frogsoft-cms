@@ -11,6 +11,7 @@
     "@typescript-eslint/no-unused-vars": "warn",
     "max-len": "warn",
     "import/no-extraneous-dependencies": "warn",
-    "import/prefer-default-export": "warn"
+    "import/prefer-default-export": "warn",
+    "linebreak-style": "off"
   }
 }
