@@ -1,30 +1,27 @@
-import React, { FC, ReactNode, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { Menu, Spin, Tag } from 'antd';
-import { CrownOutlined, FormOutlined, DesktopOutlined } from '@ant-design/icons';
+import React, { FC, ReactNode }                        from 'react';
+import { Link }                                        from 'react-router-dom';
+import { Layout, Menu }                                from 'antd';
+import { DesktopOutlined, FormOutlined, UserOutlined } from '@ant-design/icons';
+import './index.css';
+
+const {
+  Header, Content, Footer, Sider,
+} = Layout;
 
 interface EntryTree {
   key: string,
   title: string,
   icon?: ReactNode,
   link?: string,
-  children?: EntryTree[],
-  disabled?: boolean
+  children?: EntryTree[]
 }
 
 const entryTree: EntryTree[] = [
   {
     key: '0',
-    title: '一级目录',
-    icon: <CrownOutlined />,
-    children: [
-      {
-        key: '0.1',
-        title: '二级目录',
-        // link: '/reserve/resource'
-      },
-    ],
+    title: '用户管理',
+    icon: <UserOutlined />,
+    link: '/user',
   },
   {
     key: '1',
@@ -34,7 +31,7 @@ const entryTree: EntryTree[] = [
       {
         key: '1.1',
         title: '二级目录',
-        // link: '/reserve/resource'
+        link: '/user',
       },
     ],
   },
@@ -46,59 +43,60 @@ const entryTree: EntryTree[] = [
       {
         key: '2.1',
         title: '二级目录',
+        link: '/user',
       },
     ],
   },
 ];
 
-const NavBar: FC = () => {
-  const { configure: config } = useSelector((state: RootState) => state.app);
+const NavBar: FC = () => (
+  <div>
+    <Link to="/home">
+      <div className="nav-bar-title">
+        Frogsoft CMS
+      </div>
+    </Link>
+    <Menu
+      mode="inline"
+      style={{
+        zIndex: 99, width: '100%',
+      }}
+    >
+      {entryTree.map((entry) => (
+        entry.children ? (
+          <Menu.SubMenu
+            key={entry.key}
+            icon={entry.icon}
+            title={entry.title}
+          >
+            {
+              entry?.children?.map((subEntry) => (
+                <Menu.Item
+                  key={subEntry.key}
+                  title={subEntry.title}
+                >
+                  <Link to={subEntry.link}>
+                    {subEntry.title}
+                  </Link>
+                </Menu.Item>
+              ))
+            }
+          </Menu.SubMenu>
+        ) : (
+          <Menu.Item
+            key={entry.key}
+            icon={entry.icon}
 
-  const [loading, setLoading] = useState<boolean>(false);
-
-  return (
-    <div>
-      <Link to="/home">
-        {/* <img */}
-        {/*  src={`${ossURL}/img/${isMini ? 'mini_' : ''}logo.svg`} */}
-        {/*  style={isMini ? */}
-        {/*    { width: '36px', margin: '19px 22px 44px' } : */}
-        {/*    { width: '188px', margin: '19px 34px 44px' } */}
-        {/*  } */}
-        {/* /> */}
-      </Link>
-      <Spin spinning={loading}>
-        <Menu
-          mode="inline"
-          style={{
-            borderRight: 'none', zIndex: 99, width: 188, marginTop: 16,
-          }}
-        >
-          {entryTree.map((entry) => (
-            <Menu.SubMenu
-              key={entry.key}
-              icon={entry.icon}
-              title={entry.title}
-            >
-              {
-                entry?.children?.map((subEntry) => (
-                  <Menu.Item
-                    key={subEntry.key}
-                    title={subEntry.title}
-                  >
-                    {
-                      subEntry.title
-                    }
-                  </Menu.Item>
-                ))
-}
-            </Menu.SubMenu>
-          ))}
-        </Menu>
-      </Spin>
-    </div>
-  );
-};
+          >
+            <Link to={entry.link}>
+              {entry.title}
+            </Link>
+          </Menu.Item>
+        )
+      ))}
+    </Menu>
+  </div>
+);
 
 export default NavBar;
 export { entryTree };

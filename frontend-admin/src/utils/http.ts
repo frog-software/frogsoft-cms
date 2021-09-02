@@ -1,27 +1,25 @@
-import axios from 'axios';
-import { baseURL } from 'consts/url';
+import axios                from 'axios';
+import { VITE_BACKEND_URL } from 'consts/url';
 
 const service = axios.create({
-  baseURL,
+  baseURL: VITE_BACKEND_URL,
   timeout: 10000,
   headers: {},
 });
 
 service.interceptors.request.use((conf) => ({
   ...conf,
-  Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
+  headers: {
+    ...conf.headers,
+    Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
+  },
 }), (err) => Promise.reject(err));
 
-// service.interceptors.response.use((res) => {
-//     // Any status code that lie within the range of 2xx cause this function to trigger
-//     // Do something with response data,
-//     return res;
-//   }, (err) => {
-//     // Any status codes that falls outside the range of 2xx cause this function to trigger
-//     // Do something with response error
-//     return Promise.reject(err);
-//   }
-// );
+service.interceptors.response.use((res) => res,
+  (err) => {
+    console.log(err);
+    return Promise.reject(err);
+  });
 
 export function get<T>(url: string, data: object = {}) {
   return new Promise<T>((resolve, reject) => {

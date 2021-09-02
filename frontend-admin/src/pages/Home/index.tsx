@@ -7,7 +7,6 @@ const Home: FC = () => (
     <Block>
       <Title>Hello, world!</Title>
     </Block>
-
   </>
 );
 
