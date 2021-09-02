@@ -23,6 +23,7 @@ public class ArticleMapper {
         .setPublishDate(article.getPublishDate())
         .setUpdateDate(article.getUpdateDate())
         .setStatus(article.getStatus())
-        .setTitle(article.getTitle());
+        .setTitle(article.getTitle())
+        .setViews(article.getViews());
   }
 }
