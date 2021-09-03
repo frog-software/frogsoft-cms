@@ -73,4 +73,11 @@ public class ArticleController {
     Long userId = authenticatedUser.getId();
     return ResponseEntity.status(201).body(articleService.likeArticle(id, userId));
   }
+
+  @DeleteMapping("/{id}/like")
+  public ResponseEntity<?> deleteLike(@PathVariable(value = "id") Long id,
+      @AuthenticationPrincipal User authenticatedUser) {
+    Long userId = authenticatedUser.getId();
+    return ResponseEntity.status(201).body(articleService.deleteLike(id, userId));
+  }
 }

@@ -16,4 +16,6 @@ public interface ArticleService {
   void deleteArticle(Long id, Long userId);
 
   EntityModel<ArticleDto> likeArticle(Long id, Long userId);
+
+  EntityModel<ArticleDto> deleteLike(Long id, Long userId);
 }
