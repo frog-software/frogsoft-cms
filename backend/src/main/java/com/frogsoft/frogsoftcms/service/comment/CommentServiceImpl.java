@@ -12,7 +12,11 @@ import com.frogsoft.frogsoftcms.model.user.User;
 import com.frogsoft.frogsoftcms.repository.article.ArticleRepository;
 import com.frogsoft.frogsoftcms.repository.comment.CommentRepository;
 import java.time.LocalDateTime;
+import java.util.LinkedList;
 import java.util.List;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -26,6 +30,7 @@ public class CommentServiceImpl implements CommentService {
   private final CommentMapper commentMapper;
   private final CommentModelAssembler commentModelAssembler;
   private final ArticleRepository articleRepository;
+  private final EntityManagerFactory entityManagerFactory;
 
   @Override
   public EntityModel<CommentDto> saveComment(Long articleId, CommentRequest commentRequest,
@@ -59,11 +64,18 @@ public class CommentServiceImpl implements CommentService {
   }
 
   @Override
-  public EntityModel<CommentDto> changeContent(Long commentId, String content,
-      User authenticatedUser) {
+  public EntityModel<CommentDto> changeContent(Long commentId,
+      String content,User authenticatedUser){
     Comment comment = commentRepository.save(
         commentRepository.getById(commentId).setContent(content)
     );
     return commentModelAssembler.toModel(commentMapper.toCommentDto(comment));
+  }
+
+  @Override
+  @Transactional
+  public void delete(Long commentId, User authenticatedUser){
+    commentRepository.deleteAllByParent(commentRepository.getById(commentId));
+    commentRepository.deleteById(commentId);
   }
 }

@@ -11,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -45,7 +46,7 @@ public class Comment {
 
   private Integer likes;
 
-  @ManyToOne(cascade = {CascadeType.ALL})
+  @ManyToOne
   @JoinColumn(referencedColumnName = "id")
   private Comment parent;
 
