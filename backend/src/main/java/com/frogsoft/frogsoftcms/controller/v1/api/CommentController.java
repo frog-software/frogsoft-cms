@@ -7,6 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,5 +23,11 @@ public class CommentController {
   public ResponseEntity<?> getComment(@PathVariable(name = "id") Long id,
       @AuthenticationPrincipal User authenticatedUser){
     return ResponseEntity.status(201).body(commentService.get(id, authenticatedUser));
+  }
+
+  @PutMapping("/{id}")
+  public ResponseEntity<?> putComment(@PathVariable(name = "id") Long id,@RequestBody String content,
+      @AuthenticationPrincipal User authenticatedUser){
+    return ResponseEntity.status(201).body(commentService.changeContent(id, content, authenticatedUser));
   }
 }
