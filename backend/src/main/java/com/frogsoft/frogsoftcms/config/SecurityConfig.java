@@ -23,6 +23,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(
@@ -37,6 +40,8 @@ public class SecurityConfig {
       throws Exception {
 
     return http.httpBasic(AbstractHttpConfigurer::disable)
+        .cors()
+        .and()
         .csrf(AbstractHttpConfigurer::disable)
         .sessionManagement(c ->
             c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -50,6 +55,13 @@ public class SecurityConfig {
             new JwtTokenAuthenticationFilter(tokenProvider),
             UsernamePasswordAuthenticationFilter.class)
         .build();
+  }
+
+  @Bean
+  CorsConfigurationSource corsConfigurationSource() {
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", new CorsConfiguration().applyPermitDefaultValues());
+    return source;
   }
 
   @Bean
@@ -86,4 +98,5 @@ public class SecurityConfig {
   public PasswordEncoder passwordEncoder() {
     return PasswordEncoderFactories.createDelegatingPasswordEncoder();
   }
+
 }
