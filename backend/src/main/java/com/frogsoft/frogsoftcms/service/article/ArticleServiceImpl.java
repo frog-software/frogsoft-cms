@@ -42,7 +42,8 @@ public class ArticleServiceImpl implements ArticleService {
 
   @Override
   public EntityModel<ArticleDto> getOneArticle(Long id) {
-    Article article = articleRepository.findByid(id);
+    Article article = articleRepository.findById(id)
+        .orElseThrow(() -> new ArticleNotFoundException(id));
     return articleModelAssembler.toModel(articleMapper.toArticleDto(article));
   }
 
@@ -65,7 +66,7 @@ public class ArticleServiceImpl implements ArticleService {
   }
 
   @Override
-  public boolean deleteArticle(Long id, Long userId) {
+  public void deleteArticle(Long id, Long userId) {
     Article article = articleRepository.findById(id)
         .orElseThrow(() -> new ArticleNotFoundException(id));
     if (userId.equals(article.getAuthor().getId())) {
@@ -73,7 +74,16 @@ public class ArticleServiceImpl implements ArticleService {
     } else {
       throw new ForbiddenException("无权限删除改文章");
     }
-    return true;
   }
 
+  @Override
+  public EntityModel<ArticleDto> likeArticle(Long id, Long userId) {
+    Article article = articleRepository.findById(id)
+        .orElseThrow(() -> new ArticleNotFoundException(id));
+    article.getLikes().add(userRepository
+        .findById(userId)
+        .orElseThrow(() -> new ArticleNotFoundException(userId)));
+    Article newArticle = articleRepository.save(article);
+    return articleModelAssembler.toModel(articleMapper.toArticleDto(newArticle));
+  }
 }
