@@ -1,11 +1,14 @@
 package com.frogsoft.frogsoftcms.controller.v1.api;
 
 import com.frogsoft.frogsoftcms.controller.v1.request.article.ArticleRequest;
+import com.frogsoft.frogsoftcms.controller.v1.request.comment.CommentRequest;
 import com.frogsoft.frogsoftcms.model.user.User;
 import com.frogsoft.frogsoftcms.service.article.ArticleService;
+import com.frogsoft.frogsoftcms.service.comment.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ArticleController {
 
   private final ArticleService articleService;
+  private final CommentService commentService;
 
   @PostMapping("")
   public ResponseEntity<?> createArticles(@RequestBody ArticleRequest articleRequest,
@@ -24,5 +28,12 @@ public class ArticleController {
   ) {
     return ResponseEntity.status(201)
         .body(articleService.saveArticles(articleRequest, authenticatedUser));
+  }
+
+  @PostMapping("/{id}/comments")
+  public ResponseEntity<?> createComments(@PathVariable(name = "id") Long id, @RequestBody
+      CommentRequest commentRequest, @AuthenticationPrincipal User authenticatedUser) {
+    return ResponseEntity.status(201)
+        .body(commentService.saveComment(id, commentRequest, authenticatedUser));
   }
 }
