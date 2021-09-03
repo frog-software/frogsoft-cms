@@ -14,7 +14,7 @@ import { queryClient } from './store';
 import './customAntd.less';
 
 const Home = React.lazy(() => import('./pages/Home'));
-const UserManagement = React.lazy(() => import('./pages/User/UserManagement'));
+const UserPage = React.lazy(() => import('./pages/User'));
 
 function App() {
   const history = useHistory();
@@ -43,7 +43,7 @@ function App() {
               configure ? (
                 <Suspense fallback={<Preview />}>
                   <Route path="/home" component={Home} />
-                  <Route path="/user" component={UserManagement} />
+                  <Route path="/user" component={UserPage} />
                 </Suspense>
               ) : (
                 <Preview />

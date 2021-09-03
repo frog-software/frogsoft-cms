@@ -35,7 +35,7 @@ const tableColumns = [
   },
 ];
 
-const UserManagement: FC = () => {
+const UserList: FC = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pageSize, setPageSize]       = useState<number>(10);
   const [userList, setUserList]       = useState<User[]>();
@@ -83,4 +83,4 @@ const UserManagement: FC = () => {
   );
 };
 
-export default UserManagement;
+export default UserList;
