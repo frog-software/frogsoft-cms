@@ -20,7 +20,7 @@ const UserList = React.lazy(() => import('./UserList'));
 const UserPage: FC = () => (
   <Suspense fallback={<Preview />}>
     <Route path="/user/list" component={UserList} />
-    <Route path="/user/detail/:id" component={UserInfo} />
+    <Route path="/user/detail/:username" component={UserInfo} />
   </Suspense>
 );
 
