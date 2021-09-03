@@ -13,4 +13,6 @@ public interface CommentService {
       User authenticatedUser);
 
   CollectionModel<EntityModel<CommentDto>> getComment(Long articleId, User authenticatedUser);
+
+  EntityModel<CommentDto> get(Long commentId, User authenticatedUser);
 }
