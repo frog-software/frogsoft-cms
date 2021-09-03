@@ -40,6 +40,12 @@ public class ArticleController {
         .body(commentService.saveComment(id, commentRequest, authenticatedUser));
   }
 
+  @GetMapping("/{id}/comments")
+  public ResponseEntity<?> getComments(@PathVariable(name = "id") Long id,
+      @AuthenticationPrincipal User authenticatedUser) {
+    return ResponseEntity.status(201).body(commentService.getComment(id, authenticatedUser));
+  }
+
   @GetMapping("/{id}")
   public ResponseEntity<?> getOneArticle(@PathVariable(value = "id") Long id) {
     return ResponseEntity.status(201).body(articleService.getOneArticle(id));
