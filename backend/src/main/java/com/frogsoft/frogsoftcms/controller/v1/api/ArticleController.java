@@ -8,6 +8,7 @@ import com.frogsoft.frogsoftcms.service.comment.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -50,5 +51,13 @@ public class ArticleController {
       @AuthenticationPrincipal User authenticatedUser) {
     Long userId = authenticatedUser.getId();
     return ResponseEntity.status(201).body(articleService.editArticle(id, userId, articleRequest));
+  }
+
+  @DeleteMapping("/{id}")
+  public ResponseEntity<?> deleteArticle(@PathVariable(value = "id") Long id,
+      @AuthenticationPrincipal User authenticateUser) {
+    Long userId = authenticateUser.getId();
+    articleService.deleteArticle(id, userId);
+    return ResponseEntity.noContent().build();
   }
 }
