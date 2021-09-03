@@ -18,9 +18,9 @@ public class CommentModelAssembler implements
     );
   }
 
-  public List<EntityModel<CommentDto>> toModelList(List<CommentDto> commentDtoList){
+  public List<EntityModel<CommentDto>> toModelList(List<CommentDto> commentDtoList) {
     List<EntityModel<CommentDto>> entityModelList = new LinkedList<>();
-    for (CommentDto commentDto:commentDtoList){
+    for (CommentDto commentDto : commentDtoList) {
       entityModelList.add(EntityModel.of(
           commentDto
       ));

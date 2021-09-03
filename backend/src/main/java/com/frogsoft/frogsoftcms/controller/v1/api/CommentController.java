@@ -21,13 +21,15 @@ public class CommentController {
 
   @GetMapping("/{id}")
   public ResponseEntity<?> getComment(@PathVariable(name = "id") Long id,
-      @AuthenticationPrincipal User authenticatedUser){
+      @AuthenticationPrincipal User authenticatedUser) {
     return ResponseEntity.status(201).body(commentService.get(id, authenticatedUser));
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<?> putComment(@PathVariable(name = "id") Long id,@RequestBody String content,
-      @AuthenticationPrincipal User authenticatedUser){
-    return ResponseEntity.status(201).body(commentService.changeContent(id, content, authenticatedUser));
+  public ResponseEntity<?> putComment(@PathVariable(name = "id") Long id,
+      @RequestBody String content,
+      @AuthenticationPrincipal User authenticatedUser) {
+    return ResponseEntity.status(201)
+        .body(commentService.changeContent(id, content, authenticatedUser));
   }
 }

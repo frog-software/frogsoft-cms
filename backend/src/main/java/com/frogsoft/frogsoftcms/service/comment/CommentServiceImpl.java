@@ -37,7 +37,7 @@ public class CommentServiceImpl implements CommentService {
         .setAuthor(authenticatedUser)
         .setPublishDate(LocalDateTime.now())
         .setLikes(0);
-    if (commentRequest.getParent()!=0L) {
+    if (commentRequest.getParent() != 0L) {
       comment.setParent(commentRepository.getById(commentRequest.getParent()));
     }
     comment = commentRepository.save(comment);
@@ -53,13 +53,14 @@ public class CommentServiceImpl implements CommentService {
   }
 
   @Override
-  public EntityModel<CommentDto> get(Long commentId, User authenticatedUser){
+  public EntityModel<CommentDto> get(Long commentId, User authenticatedUser) {
     Comment comment = commentRepository.getById(commentId);
     return commentModelAssembler.toModel(commentMapper.toCommentDto(comment));
   }
 
   @Override
-  public EntityModel<CommentDto> changeContent(Long commentId, String content,User authenticatedUser){
+  public EntityModel<CommentDto> changeContent(Long commentId, String content,
+      User authenticatedUser) {
     Comment comment = commentRepository.save(
         commentRepository.getById(commentId).setContent(content)
     );
