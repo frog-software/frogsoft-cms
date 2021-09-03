@@ -13,7 +13,13 @@ public class ArticleMapper {
   private final UserMapper userMapper;
 
   public ArticleDto toArticleDto(Article article) {
-
+    int likes = 0, favorites = 0;
+    if (article.getLikes() != null) {
+      likes = article.getLikes().size();
+    }
+    if (article.getFavorites() != null) {
+      favorites = article.getFavorites().size();
+    }
     return new ArticleDto()
         .setId(article.getId())
         .setContent(article.getContent())
@@ -24,6 +30,8 @@ public class ArticleMapper {
         .setUpdateDate(article.getUpdateDate())
         .setStatus(article.getStatus())
         .setTitle(article.getTitle())
-        .setViews(article.getViews());
+        .setViews(article.getViews())
+        .setLikes(likes)
+        .setFavorites(favorites);
   }
 }
