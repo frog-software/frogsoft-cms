@@ -43,7 +43,7 @@ function App() {
               configure ? (
                 <Suspense fallback={<Preview />}>
                   <Route path="/home" component={Home} />
-                  <Route path="/user" component={UserPage} />
+                  <Route path="/users" component={UserPage} />
                 </Suspense>
               ) : (
                 <Preview />

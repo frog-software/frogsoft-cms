@@ -21,7 +21,7 @@ const entryTree: EntryTree[] = [
     key: '0',
     title: '用户管理',
     icon: <UserOutlined />,
-    link: '/user/list',
+    link: '/user',
   },
   {
     key: '1',
