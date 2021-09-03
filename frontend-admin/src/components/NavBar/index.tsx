@@ -1,7 +1,14 @@
-import React, { FC, ReactNode }                        from 'react';
-import { Link }                                        from 'react-router-dom';
-import { Layout, Menu }                                from 'antd';
-import { DesktopOutlined, FormOutlined, UserOutlined } from '@ant-design/icons';
+import React, { FC, ReactNode }                      from 'react';
+import { Link }                                      from 'react-router-dom';
+import { Avatar, Layout, Menu } from 'antd';
+import {
+  TeamOutlined,
+  BarsOutlined,
+  UserOutlined,
+  FacebookOutlined,
+  TrademarkOutlined,
+  ManOutlined, GoogleOutlined,
+} from '@ant-design/icons';
 import './index.css';
 
 const {
@@ -21,31 +28,19 @@ const entryTree: EntryTree[] = [
     key: '0',
     title: '用户管理',
     icon: <UserOutlined />,
-    link: '/user',
+    link: '/users',
   },
   {
     key: '1',
-    title: '一级目录',
-    icon: <FormOutlined />,
-    children: [
-      {
-        key: '1.1',
-        title: '二级目录',
-        link: '/user',
-      },
-    ],
+    title: '文章管理',
+    icon: <BarsOutlined />,
+    link: '/articles',
   },
   {
     key: '2',
-    title: '一级目录',
-    icon: <DesktopOutlined />,
-    children: [
-      {
-        key: '2.1',
-        title: '二级目录',
-        link: '/user',
-      },
-    ],
+    title: '关于我们',
+    icon: <TeamOutlined />,
+    link: '/about',
   },
 ];
 
@@ -53,6 +48,11 @@ const NavBar: FC = () => (
   <div>
     <Link to="/home">
       <div className="nav-bar-title">
+        {/*<FacebookOutlined />*/}
+        {/*<TrademarkOutlined />*/}
+        {/*<ManOutlined />*/}
+        {/*<GoogleOutlined />*/}
+        {/*<Avatar src="public/logo.png" shape="square" />*/}
         Frogsoft CMS
       </div>
     </Link>

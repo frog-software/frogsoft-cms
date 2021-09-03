@@ -1,20 +1,22 @@
 import React, { Suspense, useEffect } from 'react';
 import { Route, useHistory } from 'react-router-dom';
 import { QueryClientProvider } from 'react-query';
-import { useDispatch, useSelector }         from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   Col, ConfigProvider, Layout, Row,
-} from 'antd';
-import zhCN                                 from 'antd/lib/locale/zh_CN';
+}                                   from 'antd';
+import zhCN                         from 'antd/lib/locale/zh_CN';
 import 'moment/dist/locale/zh-cn';
-import NavBar from 'components/NavBar';
-import Preview from 'components/Preview';
-import UserNavBar from 'components/UserNavBar';
-import { queryClient } from './store';
+import NavBar                       from 'components/NavBar';
+import Preview                      from 'components/Preview';
+import UserNavBar                   from 'components/UserNavBar';
+import { queryClient }              from './store';
 import './customAntd.less';
 
 const Home = React.lazy(() => import('./pages/Home'));
 const UserPage = React.lazy(() => import('./pages/User'));
+const ArticlePage = React.lazy(() => import('./pages/Article'));
+const About = React.lazy(() => import('./pages/About'));
 
 function App() {
   const history = useHistory();
@@ -44,6 +46,8 @@ function App() {
                 <Suspense fallback={<Preview />}>
                   <Route path="/home" component={Home} />
                   <Route path="/users" component={UserPage} />
+                  <Route path="/articles" component={ArticlePage} />
+                  <Route path="/about" component={About} />
                 </Suspense>
               ) : (
                 <Preview />
