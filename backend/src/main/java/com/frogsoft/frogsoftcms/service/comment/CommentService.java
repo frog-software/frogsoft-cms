@@ -15,4 +15,6 @@ public interface CommentService {
   CollectionModel<EntityModel<CommentDto>> getComment(Long articleId, User authenticatedUser);
 
   EntityModel<CommentDto> get(Long commentId, User authenticatedUser);
+
+  EntityModel<CommentDto> changeContent(Long commentId, String content,User authenticatedUser);
 }

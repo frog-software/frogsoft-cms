@@ -55,4 +55,12 @@ public class CommentServiceImpl implements CommentService {
     Comment comment = commentRepository.getById(commentId);
     return commentModelAssembler.toModel(commentMapper.toCommentDto(comment));
   }
+
+  @Override
+  public EntityModel<CommentDto> changeContent(Long commentId, String content,User authenticatedUser){
+    Comment comment = commentRepository.save(
+        commentRepository.getById(commentId).setContent(content)
+    );
+    return commentModelAssembler.toModel(commentMapper.toCommentDto(comment));
+  }
 }
