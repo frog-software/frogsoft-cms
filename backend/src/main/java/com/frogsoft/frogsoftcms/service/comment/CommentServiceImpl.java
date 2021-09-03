@@ -49,4 +49,10 @@ public class CommentServiceImpl implements CommentService {
     List<Comment> commentList = commentRepository.findByArticle(article);
     return commentModelAssembler.toCollectionModel(commentMapper.toCommentDto(commentList));
   }
+
+  @Override
+  public EntityModel<CommentDto> get(Long commentId, User authenticatedUser){
+    Comment comment = commentRepository.getById(commentId);
+    return commentModelAssembler.toModel(commentMapper.toCommentDto(comment));
+  }
 }
