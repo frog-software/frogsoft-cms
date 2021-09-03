@@ -1,0 +1,98 @@
+@import 'antd/lib/style/themes/default.less';
+@import 'antd/dist/antd.less';
+
+// 全局主色
+@primary-color: #d07b26;
+
+#root {
+  overflow-x: scroll;
+  overflow-y: hidden;
+}
+
+.App {
+  flex-wrap: nowrap;
+  height: 100vh;
+  min-width: 1366px;
+}
+
+.g-nav {
+  flex: 0 0 auto;
+  height: 100%;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  border-right: 1px solid #f0f0f0;
+  box-shadow: 2px 0px 5px #cccccc;
+  z-index: 99;
+  position: relative;
+}
+
+.g-main {
+  flex: 1 1 auto;
+  height: 100%;
+  overflow: scroll;
+  overflow-x: hidden;
+  background-color: rgb(243, 243, 243);
+  border-bottom: 1px solid rgb(241, 241, 241);
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+.custom-scrollbar .ant-drawer-body::-webkit-scrollbar {
+  display: block;
+  width: 8px;
+  height: 8px;
+}
+
+.custom-scrollbar .ant-drawer-body::-webkit-scrollbar-thumb {
+  background-color: #CECECE;
+  border-radius:8px;
+}
+
+.custom-scrollbar .ant-table-content::-webkit-scrollbar {
+  display: block;
+  height: 8px;
+}
+
+.custom-scrollbar .ant-table-content::-webkit-scrollbar-thumb {
+  background-color: #CECECE;
+  border-radius: 8px;
+}
+
+// Table Styles
+.ant-table-cell {
+  vertical-align: middle;
+}
+
+.thead-center {
+  text-align: center !important;
+}
+
+// Modal
+.ant-popover {
+  z-index: 1000 !important;
+}
+
+.ant-picker-content th {
+font-weight: bold !important;
+}
+
+.ant-tooltip {
+  max-width: 300px;
+}
+
+.row-dragging {
+  display: table;
+  z-index: 10;
+  background: #fafafa;
+  border: 1px solid #ccc;
+}
+
+.row-dragging td {
+  padding: 8px;
+}
+
+.am-list-item .am-list-line .am-list-extra {
+  flex-basis: auto;
+}
