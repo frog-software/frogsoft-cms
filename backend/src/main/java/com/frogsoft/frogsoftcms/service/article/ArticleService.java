@@ -18,4 +18,8 @@ public interface ArticleService {
   EntityModel<ArticleDto> likeArticle(Long id, Long userId);
 
   EntityModel<ArticleDto> deleteLike(Long id, Long userId);
+
+  EntityModel<ArticleDto> favorArticle(Long id, Long userId);
+
+  EntityModel<ArticleDto> deleteFavor(Long id, Long userId);
 }
