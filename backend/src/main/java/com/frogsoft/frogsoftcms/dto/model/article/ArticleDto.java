@@ -16,6 +16,8 @@ public class ArticleDto {
   private LocalDateTime publishDate;
   private LocalDateTime updateDate;
   private Integer views;
+  private int likes;
+  private int favorites;
   private String title;
   private String description;
   private String content;

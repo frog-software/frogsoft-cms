@@ -64,4 +64,16 @@ public class ArticleServiceImpl implements ArticleService {
     }
   }
 
+  @Override
+  public boolean deleteArticle(Long id, Long userId) {
+    Article article = articleRepository.findById(id)
+        .orElseThrow(() -> new ArticleNotFoundException(id));
+    if (userId.equals(article.getAuthor().getId())) {
+      articleRepository.delete(article);
+    } else {
+      throw new ForbiddenException("无权限删除改文章");
+    }
+    return true;
+  }
+
 }
