@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
@@ -21,9 +22,9 @@ public class CommentController {
   private final CommentService commentService;
 
   @GetMapping("/{id}")
-  public ResponseEntity<?> getComment(@PathVariable(name = "id") Long id,
+  public ResponseEntity<?> getCommentByDetail(@PathVariable(name = "id") Long id,
       @AuthenticationPrincipal User authenticatedUser) {
-    return ResponseEntity.status(201).body(commentService.get(id, authenticatedUser));
+    return ResponseEntity.status(201).body(commentService.getByDetail(id, authenticatedUser));
   }
 
   @PutMapping("/{id}")
@@ -39,5 +40,11 @@ public class CommentController {
       @AuthenticationPrincipal User authenticatedUser){
     commentService.delete(id, authenticatedUser);
     return ResponseEntity.ok(201);
+  }
+  @GetMapping("")
+  public ResponseEntity<?> getComment(@RequestParam("article") Long id,
+      @RequestParam("username") String username){
+    return ResponseEntity.status(201)
+        .body(commentService.getComment(id,username));
   }
 }
