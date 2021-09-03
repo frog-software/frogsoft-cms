@@ -16,5 +16,7 @@ public interface CommentService {
 
   EntityModel<CommentDto> get(Long commentId, User authenticatedUser);
 
+  void delete(Long commentId, User authenticatedUser);
+
   EntityModel<CommentDto> changeContent(Long commentId, String content,User authenticatedUser);
 }
