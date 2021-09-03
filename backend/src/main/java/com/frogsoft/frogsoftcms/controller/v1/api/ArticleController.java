@@ -37,6 +37,7 @@ public class ArticleController {
       CommentRequest commentRequest, @AuthenticationPrincipal User authenticatedUser) {
     return ResponseEntity.status(201)
         .body(commentService.saveComment(id, commentRequest, authenticatedUser));
+  }
 
   @GetMapping("/{id}")
   public ResponseEntity<?> getOneArticle(@PathVariable(value = "id") Long id) {
