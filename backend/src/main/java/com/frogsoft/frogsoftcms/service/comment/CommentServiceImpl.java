@@ -4,6 +4,7 @@ import com.frogsoft.frogsoftcms.controller.v1.request.comment.CommentRequest;
 import com.frogsoft.frogsoftcms.dto.assembler.comment.CommentModelAssembler;
 import com.frogsoft.frogsoftcms.dto.mapper.comment.CommentMapper;
 import com.frogsoft.frogsoftcms.dto.model.comment.CommentDto;
+import com.frogsoft.frogsoftcms.exception.article.ArticleNotFoundException;
 import com.frogsoft.frogsoftcms.model.article.Article;
 import com.frogsoft.frogsoftcms.model.commment.Comment;
 import com.frogsoft.frogsoftcms.model.commment.Status;
@@ -44,8 +45,9 @@ public class CommentServiceImpl implements CommentService {
   }
 
   @Override
-  public CollectionModel<EntityModel<CommentDto>> getComment(Long id, User authenticateUser){
-    Article article = articleRepository.findByid(id);
+  public CollectionModel<EntityModel<CommentDto>> getComment(Long id, User authenticateUser) {
+    Article article = articleRepository.findById(id)
+        .orElseThrow(() -> new ArticleNotFoundException(id));
     List<Comment> commentList = commentRepository.findByArticle(article);
     return commentModelAssembler.toCollectionModel(commentMapper.toCommentDto(commentList));
   }

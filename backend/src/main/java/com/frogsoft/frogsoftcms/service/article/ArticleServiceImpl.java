@@ -86,4 +86,15 @@ public class ArticleServiceImpl implements ArticleService {
     Article newArticle = articleRepository.save(article);
     return articleModelAssembler.toModel(articleMapper.toArticleDto(newArticle));
   }
+
+  @Override
+  public EntityModel<ArticleDto> deleteLike(Long id, Long userId) {
+    Article article = articleRepository.findById(id)
+        .orElseThrow(() -> new ArticleNotFoundException(id));
+    article.getLikes().remove(userRepository
+        .findById(userId)
+        .orElseThrow(() -> new ArticleNotFoundException(userId)));
+    Article newArticle = articleRepository.save(article);
+    return articleModelAssembler.toModel(articleMapper.toArticleDto(newArticle));
+  }
 }
