@@ -14,7 +14,7 @@ import { queryClient } from './store';
 import './customAntd.less';
 
 const Home = React.lazy(() => import('./pages/Home'));
-const UserManagement = React.lazy(() => import('./pages/UserManagement'));
+const UserManagement = React.lazy(() => import('./pages/User/UserManagement'));
 
 function App() {
   const history = useHistory();

@@ -4,7 +4,7 @@
 //
 //  File:       index.tsx
 //
-//  Directory:  src/pages/User
+//  Directory:  src/pages/User/UserManagement
 //
 //  History:    Sep-02-2021   Charlie Chiang  Created
 //
