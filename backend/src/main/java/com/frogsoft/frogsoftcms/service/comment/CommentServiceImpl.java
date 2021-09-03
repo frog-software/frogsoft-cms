@@ -4,6 +4,7 @@ import com.frogsoft.frogsoftcms.controller.v1.request.comment.CommentRequest;
 import com.frogsoft.frogsoftcms.dto.assembler.comment.CommentModelAssembler;
 import com.frogsoft.frogsoftcms.dto.mapper.comment.CommentMapper;
 import com.frogsoft.frogsoftcms.dto.model.comment.CommentDto;
+import com.frogsoft.frogsoftcms.exception.article.ArticleNotFoundException;
 import com.frogsoft.frogsoftcms.model.article.Article;
 import com.frogsoft.frogsoftcms.model.commment.Comment;
 import com.frogsoft.frogsoftcms.model.commment.Status;
@@ -41,7 +42,7 @@ public class CommentServiceImpl implements CommentService {
         .setAuthor(authenticatedUser)
         .setPublishDate(LocalDateTime.now())
         .setLikes(0);
-    if (commentRequest.getParent()!=0L) {
+    if (commentRequest.getParent() != 0L) {
       comment.setParent(commentRepository.getById(commentRequest.getParent()));
     }
     comment = commentRepository.save(comment);
@@ -49,14 +50,15 @@ public class CommentServiceImpl implements CommentService {
   }
 
   @Override
-  public CollectionModel<EntityModel<CommentDto>> getComment(Long id, User authenticateUser){
-    Article article = articleRepository.findByid(id);
+  public CollectionModel<EntityModel<CommentDto>> getComment(Long id, User authenticateUser) {
+    Article article = articleRepository.findById(id)
+        .orElseThrow(() -> new ArticleNotFoundException(id));
     List<Comment> commentList = commentRepository.findByArticle(article);
     return commentModelAssembler.toCollectionModel(commentMapper.toCommentDto(commentList));
   }
 
   @Override
-  public EntityModel<CommentDto> get(Long commentId, User authenticatedUser){
+  public EntityModel<CommentDto> get(Long commentId, User authenticatedUser) {
     Comment comment = commentRepository.getById(commentId);
     return commentModelAssembler.toModel(commentMapper.toCommentDto(comment));
   }

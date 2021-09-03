@@ -66,4 +66,32 @@ public class ArticleController {
     articleService.deleteArticle(id, userId);
     return ResponseEntity.noContent().build();
   }
+
+  @PostMapping("/{id}/like")
+  public ResponseEntity<?> likeArticle(@PathVariable(value = "id") Long id,
+      @AuthenticationPrincipal User authenticatedUser) {
+    Long userId = authenticatedUser.getId();
+    return ResponseEntity.status(201).body(articleService.likeArticle(id, userId));
+  }
+
+  @DeleteMapping("/{id}/like")
+  public ResponseEntity<?> deleteLike(@PathVariable(value = "id") Long id,
+      @AuthenticationPrincipal User authenticatedUser) {
+    Long userId = authenticatedUser.getId();
+    return ResponseEntity.status(201).body(articleService.deleteLike(id, userId));
+  }
+
+  @PostMapping("/{id}/favor")
+  public ResponseEntity<?> favorArticle(@PathVariable(value = "id") Long id,
+      @AuthenticationPrincipal User authenticatedUser) {
+    Long userId = authenticatedUser.getId();
+    return ResponseEntity.status(201).body(articleService.favorArticle(id, userId));
+  }
+
+  @DeleteMapping("/{id}/favor")
+  public ResponseEntity<?> deleteFavor(@PathVariable(value = "id") Long id,
+      @AuthenticationPrincipal User authenticatedUser) {
+    Long userId = authenticatedUser.getId();
+    return ResponseEntity.status(201).body(articleService.deleteFavor(id, userId));
+  }
 }

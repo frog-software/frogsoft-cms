@@ -3,7 +3,6 @@ package com.frogsoft.frogsoftcms.service.comment;
 import com.frogsoft.frogsoftcms.controller.v1.request.comment.CommentRequest;
 import com.frogsoft.frogsoftcms.dto.model.comment.CommentDto;
 import com.frogsoft.frogsoftcms.model.user.User;
-import java.util.List;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 
