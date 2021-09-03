@@ -97,4 +97,26 @@ public class ArticleServiceImpl implements ArticleService {
     Article newArticle = articleRepository.save(article);
     return articleModelAssembler.toModel(articleMapper.toArticleDto(newArticle));
   }
+
+  @Override
+  public EntityModel<ArticleDto> favorArticle(Long id, Long userId) {
+    Article article = articleRepository.findById(id)
+        .orElseThrow(() -> new ArticleNotFoundException(id));
+    article.getFavorites().add(userRepository
+        .findById(userId)
+        .orElseThrow(() -> new ArticleNotFoundException(userId)));
+    Article newArticle = articleRepository.save(article);
+    return articleModelAssembler.toModel(articleMapper.toArticleDto(newArticle));
+  }
+
+  @Override
+  public EntityModel<ArticleDto> deleteFavor(Long id, Long userId) {
+    Article article = articleRepository.findById(id)
+        .orElseThrow(() -> new ArticleNotFoundException(id));
+    article.getFavorites().remove(userRepository
+        .findById(userId)
+        .orElseThrow(() -> new ArticleNotFoundException(userId)));
+    Article newArticle = articleRepository.save(article);
+    return articleModelAssembler.toModel(articleMapper.toArticleDto(newArticle));
+  }
 }

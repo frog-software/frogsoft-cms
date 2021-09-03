@@ -24,14 +24,15 @@ public class CommentMapper {
         .setLikes(comment.getLikes())
         .setStatus(comment.getStatus())
         .setLocalDateTime(comment.getPublishDate());
-    if (comment.getParent()!=null){
+    if (comment.getParent() != null) {
       commentDto.setParent(comment.getParent().getId());
     }
     return commentDto;
   }
-  public List<CommentDto> toCommentDto(List<Comment> commentList){
+
+  public List<CommentDto> toCommentDto(List<Comment> commentList) {
     List<CommentDto> commentDtoList = new LinkedList<>();
-    for (Comment comment:commentList){
+    for (Comment comment : commentList) {
       CommentDto commentDto = new CommentDto()
           .setArticle(articleMapper.toArticleDto(comment.getArticle()))
           .setAuthor(userMapper.toUserDto(comment.getAuthor()))
@@ -39,7 +40,7 @@ public class CommentMapper {
           .setLikes(comment.getLikes())
           .setStatus(comment.getStatus())
           .setLocalDateTime(comment.getPublishDate());
-      if (comment.getParent()!=null){
+      if (comment.getParent() != null) {
         commentDto.setParent(comment.getParent().getId());
       }
       commentDtoList.add(commentDto);
