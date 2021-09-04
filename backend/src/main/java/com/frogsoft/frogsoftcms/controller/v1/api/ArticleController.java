@@ -6,6 +6,7 @@ import com.frogsoft.frogsoftcms.model.user.User;
 import com.frogsoft.frogsoftcms.service.article.ArticleService;
 import com.frogsoft.frogsoftcms.service.comment.CommentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
@@ -24,6 +26,18 @@ public class ArticleController {
 
   private final ArticleService articleService;
   private final CommentService commentService;
+
+  @GetMapping("")
+  public ResponseEntity<?> search(@RequestParam(defaultValue = "") String search,
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size) {
+    if (search.equals("")) {
+      return ResponseEntity.ok().body(articleService.findAll(PageRequest.of(page, size)));
+    } else {
+      return ResponseEntity.ok()
+          .body(articleService.findBySearch(search, PageRequest.of(page, size)));
+    }
+  }
 
   @PostMapping("")
   public ResponseEntity<?> createArticles(@RequestBody ArticleRequest articleRequest,

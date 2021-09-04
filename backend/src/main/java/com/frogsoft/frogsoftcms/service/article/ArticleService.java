@@ -3,7 +3,9 @@ package com.frogsoft.frogsoftcms.service.article;
 import com.frogsoft.frogsoftcms.controller.v1.request.article.ArticleRequest;
 import com.frogsoft.frogsoftcms.dto.model.article.ArticleDto;
 import com.frogsoft.frogsoftcms.model.user.User;
+import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.PagedModel;
 
 public interface ArticleService {
 
@@ -22,4 +24,8 @@ public interface ArticleService {
   EntityModel<ArticleDto> favorArticle(Long id, Long userId);
 
   EntityModel<ArticleDto> deleteFavor(Long id, Long userId);
+
+  PagedModel<EntityModel<ArticleDto>> findAll(Pageable pageable);
+
+  PagedModel<EntityModel<ArticleDto>> findBySearch(String search, Pageable pageable);
 }
