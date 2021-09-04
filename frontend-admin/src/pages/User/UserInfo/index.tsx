@@ -179,7 +179,7 @@ const UserInfo: FC = () => {
             <Statistic title="文章发布数量" value="接口都没写" prefix={<BookOutlined />} />
           </Col>
           <Col span={5}>
-            <Statistic title="文章总浏览量" value="接口都没写" prefix={<CloudOutlined />} />
+            <Statistic title="文章总阅读量" value="接口都没写" prefix={<CloudOutlined />} />
           </Col>
           <Col span={5}>
             <Statistic title="文章总点赞量" value="接口都没写" prefix={<LikeOutlined />} />
