@@ -4,6 +4,9 @@ import com.frogsoft.frogsoftcms.model.article.Article;
 import com.frogsoft.frogsoftcms.model.article.Status;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import com.frogsoft.frogsoftcms.model.user.User;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

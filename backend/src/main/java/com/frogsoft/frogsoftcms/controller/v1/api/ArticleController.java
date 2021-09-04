@@ -55,9 +55,8 @@ public class ArticleController {
   }
 
   @GetMapping("/{id}/comments")
-  public ResponseEntity<?> getComments(@PathVariable(name = "id") Long id,
-      @AuthenticationPrincipal User authenticatedUser) {
-    return ResponseEntity.status(201).body(commentService.getComment(id, authenticatedUser));
+  public ResponseEntity<?> getComments(@PathVariable(name = "id") Long id) {
+    return ResponseEntity.status(201).body(commentService.getComment(id));
   }
 
   @GetMapping("/{id}")

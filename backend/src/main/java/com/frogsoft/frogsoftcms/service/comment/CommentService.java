@@ -11,9 +11,13 @@ public interface CommentService {
   EntityModel<CommentDto> saveComment(Long articleId, CommentRequest commentRequest,
       User authenticatedUser);
 
-  CollectionModel<EntityModel<CommentDto>> getComment(Long articleId, User authenticatedUser);
+  CollectionModel<EntityModel<CommentDto>> getComment(Long articleId);
 
-  EntityModel<CommentDto> get(Long commentId, User authenticatedUser);
+  EntityModel<CommentDto> getByDetail(Long commentId, User authenticatedUser);
 
-  EntityModel<CommentDto> changeContent(Long commentId, String content, User authenticatedUser);
+  void delete(Long commentId, User authenticatedUser);
+
+  EntityModel<CommentDto> changeContent(Long commentId, String content,User authenticatedUser);
+
+  CollectionModel<EntityModel<CommentDto>> getComment(Long articleId, String username);
 }
