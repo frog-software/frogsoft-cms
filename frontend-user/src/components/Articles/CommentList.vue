@@ -1,23 +1,29 @@
+<script setup>
+</script>
 <template>
   <div>
     <!--新提交的评论-->
     <a-comment v-show="replyTo===parent">
-      <template v-slot:avatar>
+      <template #avatar>
         <a-avatar
-          :alt="user.nickname"
-          :src="user.avatar"
+            :alt="user.nickname"
+            :src="user.avatar"
         />
       </template>
-      <template v-slot:content>
+      <template #content>
         <a-form-item>
-          <a-textarea v-model="newCommentValue" :rows="4"/>
+          <a-textarea
+              v-model="newCommentValue"
+              :rows="4"
+          />
         </a-form-item>
         <a-form-item>
           <a-button
-            :disabled="newCommentValue===''"
-            :loading="btnCommentSubmitting"
-            html-type="submit" type="primary"
-            @click="commentSubmit(replyTo)"
+              :disabled="newCommentValue===''"
+              :loading="btnCommentSubmitting"
+              html-type="submit"
+              type="primary"
+              @click="commentSubmit(replyTo)"
           >
             评论
           </a-button>
@@ -27,47 +33,53 @@
 
     <!--现有评论-->
     <a-list
-      :data-source="filteredComments"
-      :header="`${filteredComments.length} ${filteredComments.length > 1 ? 'replies' : 'reply'}`"
-      :pagination="{pageSize: pageSize,hideOnSinglePage:true}"
-      item-layout="horizontal"
-      :loading="{spinning:commentsLoading,delay:500}"
-      v-if="filteredComments.length"
+        v-if="filteredComments.length"
+        :data-source="filteredComments"
+        :header="`${filteredComments.length} ${filteredComments.length > 1 ? 'replies' : 'reply'}`"
+        :loading="{spinning:commentsLoading,delay:500}"
+        :pagination="{pageSize: pageSize,hideOnSinglePage:true}"
+        item-layout="horizontal"
     >
-      <template v-slot:renderItem="item">
+      <template #renderItem="{item}">
         <a-list-item>
           <a-comment
-            :author="item.user.username"
-            :content="item.content"
-            :datetime="item.time">
-            <template v-slot:avatar>
+              :author="item.user.username"
+              :content="item.content"
+              :datetime="item.time"
+          >
+            <template #avatar>
               <router-link :to="{name:'UserDetails',params:{id:item.user.id}}">
-                <a-avatar :src="item.user.avatar"></a-avatar>
+                <a-avatar :src="item.user.avatar"/>
               </router-link>
             </template>
 
-            <template slot="actions">
-              <span
-                v-if="item.user.id===user.id"
-                @click="commentDelete(item.id)"
-                :disabled="btnCommentSubmitting"
+            <template #actions>
+              <a-button
+                  v-if="item.user.id===user.id"
+                  :disabled="btnCommentSubmitting"
+                  type="text"
+                  @click="commentDelete(item.id)"
               >
-               删除评论
-              </span>
+                删除评论
+              </a-button>
               <span
-                @click="$store.commit('changeReplyTo',item.id)"
+                  @click="store.commit('changeReplyTo',item.id)"
               >
                 回复评论
               </span>
               <span
-                v-if="replyTo===item.id"
-                @click="$store.commit('changeReplyTo',0)"
+                  v-if="replyTo===item.id"
+                  @click="store.commit('changeReplyTo',0)"
               >
                 取消回复
               </span>
             </template>
             <comment-list
-              :comments="comments" :parent="item.id" :pageSize="3" :id="id"/>
+                :id="id"
+                :comments="comments"
+                :page-size="3"
+                :parent="item.id"
+            />
           </a-comment>
         </a-list-item>
       </template>
@@ -76,34 +88,40 @@
 </template>
 
 <script>
-import axios from 'axios'
-import { mapGetters } from 'vuex'
+import axios from 'axios';
+import {mapGetters} from 'vuex';
+import {message} from 'ant-design-vue';
+import store from '../../store';
 
 export default {
   name: 'CommentList',
-  props: ['parent', 'pageSize', 'id'],
-  data () {
+  props: {
+    parent: Number,
+    pageSize: Number,
+    id: String
+  },
+  data() {
     return {
       btnCommentSubmitting: false,
       newCommentValue: '',
-      commentsLoading: false
-    }
+      commentsLoading: false,
+    };
   },
   computed: {
     ...mapGetters([
       'user',
       'replyTo',
-      'comments'
+      'comments',
     ]),
-    filteredComments () {
-      const result = []
-      this.comments.forEach(item => {
+    filteredComments() {
+      const result = [];
+      this.comments.forEach((item) => {
         if (item.parent === this.parent) {
-          result.push(item)
+          result.push(item);
         }
-      })
-      return result
-    }
+      });
+      return result;
+    },
   },
   methods: {
 
@@ -111,41 +129,41 @@ export default {
      * 提交评论
      * @param parent 回复的评论的id，若无则为0
      */
-    commentSubmit (parent) {
-      this.btnCommentSubmitting = true
+    commentSubmit(parent) {
+      this.btnCommentSubmitting = true;
       const data = {
         content: this.newCommentValue,
-        parent: parent
-      }
-      axios.post('/articles/' + this.id + '/comments', data).then(async () => {
-        await this.$store.commit('updateComments', this.id)
-        this.newCommentValue = ''
-        this.$message.success('评论发布成功')
+        parent: this.parent,
+      };
+      axios.post(`/articles/${this.id}/comments`, data).then(async () => {
+        await store.commit('updateComments', this.id);
+        this.newCommentValue = '';
+        message.success('评论发布成功');
       }).finally(() => {
         setTimeout(() => {
-          this.btnCommentSubmitting = false
-          this.$store.commit('changeReplyTo', 0)
-        }, 500)
-      })
+          this.btnCommentSubmitting = false;
+          store.commit('changeReplyTo', 0);
+        }, 500);
+      });
     },
     /**
      * 删除评论
      * @param id 删除的评论的id
      */
-    commentDelete (id) {
-      this.commentsLoading = true
-      axios.delete('/articles/' + this.id + '/comments', {
+    commentDelete(id) {
+      this.commentsLoading = true;
+      axios.delete(`/articles/${this.id}/comments`, {
         data: {
-          id: id
-        }
+          id,
+        },
       }).then(async () => {
-        this.$message.success('成功删除评论')
-        await this.$store.commit('updateComments', this.id)
-        this.commentsLoading = false
-      })
-    }
-  }
-}
+        message.success('成功删除评论');
+        await store.commit('updateComments', this.id);
+        this.commentsLoading = false;
+      });
+    },
+  },
+};
 </script>
 
 <style scoped>
