@@ -7,12 +7,17 @@ import com.frogsoft.frogsoftcms.dto.model.article.ArticleDto;
 import com.frogsoft.frogsoftcms.exception.article.ArticleNotFoundException;
 import com.frogsoft.frogsoftcms.exception.basic.forbidden.ForbiddenException;
 import com.frogsoft.frogsoftcms.model.article.Article;
+import com.frogsoft.frogsoftcms.model.article.Status;
 import com.frogsoft.frogsoftcms.model.user.User;
 import com.frogsoft.frogsoftcms.repository.article.ArticleRepository;
 import com.frogsoft.frogsoftcms.repository.user.UserRepository;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
@@ -23,6 +28,7 @@ public class ArticleServiceImpl implements ArticleService {
   private final ArticleModelAssembler articleModelAssembler;
   private final ArticleMapper articleMapper;
   private final UserRepository userRepository;
+  private final PagedResourcesAssembler<ArticleDto> pagedResourcesAssembler;
 
   @Override
   public EntityModel<ArticleDto> saveArticles(ArticleRequest articleRequest,
@@ -72,7 +78,7 @@ public class ArticleServiceImpl implements ArticleService {
     if (userId.equals(article.getAuthor().getId())) {
       articleRepository.delete(article);
     } else {
-      throw new ForbiddenException("无权限删除改文章");
+      throw new ForbiddenException("无权限删除该文章");
     }
   }
 
@@ -118,5 +124,20 @@ public class ArticleServiceImpl implements ArticleService {
         .orElseThrow(() -> new ArticleNotFoundException(userId)));
     Article newArticle = articleRepository.save(article);
     return articleModelAssembler.toModel(articleMapper.toArticleDto(newArticle));
+  }
+
+  @Override
+  public PagedModel<EntityModel<ArticleDto>> findAll(Pageable pageable) {
+    Page<ArticleDto> articles = articleRepository.findAllByStatus(Status.NORMAL, pageable)
+        .map(articleMapper::toArticleDto);
+    return pagedResourcesAssembler.toModel(articles, articleModelAssembler);
+  }
+
+  @Override
+  public PagedModel<EntityModel<ArticleDto>> findBySearch(String search, Pageable pageable) {
+    Page<ArticleDto> articles = articleRepository
+        .findBySearch(search, Status.NORMAL, pageable)
+        .map(articleMapper::toArticleDto);
+    return pagedResourcesAssembler.toModel(articles, articleModelAssembler);
   }
 }
