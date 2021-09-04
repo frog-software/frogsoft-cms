@@ -13,13 +13,14 @@
 import React, { FC, useState } from 'react';
 import { Article }             from 'types/article';
 import Title                   from 'antd/es/typography/Title';
+import Block                   from 'components/Block';
 
 const ArticleInfo: FC = () => {
   const [articleInfo, setAricleInfo] = useState<Article>();
 
   return (
     <>
-      <Title>Hello ArticleInfo</Title>
+      <Block title="文章详细信息" />
     </>
   );
 };

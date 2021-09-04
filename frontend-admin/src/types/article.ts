@@ -19,8 +19,9 @@ export interface Article {
   publishDate: string,
   updateDate: string,
   views: number,
+  likes: number,
+  favorites: number,
   title: string,
   description: string,
-  content: string,
   cover: string
 }

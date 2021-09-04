@@ -1,6 +1,8 @@
 import React, { FC, ReactNode }                      from 'react';
-import { Link }                                      from 'react-router-dom';
-import { Avatar, Layout, Menu } from 'antd';
+import { Link }                    from 'react-router-dom';
+import {
+  Avatar, Layout, Menu, Row,
+} from 'antd';
 import {
   TeamOutlined,
   BarsOutlined,
@@ -8,7 +10,7 @@ import {
   FacebookOutlined,
   TrademarkOutlined,
   ManOutlined, GoogleOutlined,
-} from '@ant-design/icons';
+}                                  from '@ant-design/icons';
 import './index.css';
 
 const {
@@ -52,8 +54,10 @@ const NavBar: FC = () => (
         {/*<TrademarkOutlined />*/}
         {/*<ManOutlined />*/}
         {/*<GoogleOutlined />*/}
-        {/*<Avatar src="public/logo.png" shape="square" />*/}
-        Frogsoft CMS
+        <Row justify="center">
+          <Avatar src="/public/logo.png" shape="square" size={120} />
+          Frogsoft CMS
+        </Row>
       </div>
     </Link>
     <Menu

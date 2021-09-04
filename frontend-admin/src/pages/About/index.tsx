@@ -10,13 +10,17 @@
 //
 //--------------------------------------------------------------------------
 
-import React, { FC } from 'react';
-import Title       from 'antd/es/typography/Title';
+import React, { FC, useState } from 'react';
+import Block                 from 'components/Block';
 
-const About: FC = () => (
-  <>
-    <Title>Hello AboutUS</Title>
-  </>
-);
+const About: FC = () => {
+  const [about, setAbout] = useState();
+
+  return (
+    <>
+      <Block title="关于我们" />
+    </>
+  );
+};
 
 export default About;
