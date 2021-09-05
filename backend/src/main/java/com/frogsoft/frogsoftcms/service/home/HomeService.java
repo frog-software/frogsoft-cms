@@ -8,4 +8,6 @@ import org.springframework.hateoas.EntityModel;
 
 public interface HomeService {
     CollectionModel<EntityModel<ArticleDto>> getRecommendations(User authenticatedUser);
+
+    EntityModel<ArticleDto> getDailyArticle();
 }

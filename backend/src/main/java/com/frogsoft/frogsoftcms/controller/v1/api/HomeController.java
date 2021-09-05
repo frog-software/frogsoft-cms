@@ -1,8 +1,10 @@
 package com.frogsoft.frogsoftcms.controller.v1.api;
 
+import com.frogsoft.frogsoftcms.dto.model.article.ArticleDto;
 import com.frogsoft.frogsoftcms.model.user.User;
 import com.frogsoft.frogsoftcms.service.home.HomeService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,4 +23,8 @@ public class HomeController {
         return ResponseEntity.status(200).body(homeService.getRecommendations(authenticatedUser));
     }
 
+    @GetMapping("/daily")
+    public ResponseEntity<?> getDailyArticle(){
+        return ResponseEntity.status(200).body(homeService.getDailyArticle());
+    }
 }
