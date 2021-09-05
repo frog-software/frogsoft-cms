@@ -53,7 +53,7 @@ public class SecurityConfig {
         .authenticationEntryPoint(restAuthenticationEntryPoint)
         .and()
         .authorizeRequests(c ->
-            c.antMatchers("/v1/auth/login").permitAll()
+            c.antMatchers("/v1/auth/login", "/v1/auth/forget").permitAll()
                 .anyRequest().authenticated()
         )
         .addFilterBefore(
