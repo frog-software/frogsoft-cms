@@ -7,4 +7,5 @@ public interface AuthService {
 
   EntityModel<UserDto> getCode(String username);
 
+  EntityModel<UserDto> resetPassword(String username, String code, String newPassword);
 }
