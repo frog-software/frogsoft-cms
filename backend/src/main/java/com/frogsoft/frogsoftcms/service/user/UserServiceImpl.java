@@ -9,7 +9,6 @@ import com.frogsoft.frogsoftcms.dto.mapper.user.UserMapper;
 import com.frogsoft.frogsoftcms.dto.model.user.UserDto;
 import com.frogsoft.frogsoftcms.exception.basic.conflict.ConflictException;
 import com.frogsoft.frogsoftcms.exception.basic.notfound.NotFoundException;
-import com.frogsoft.frogsoftcms.exception.basic.forbidden.ForbiddenException;
 import com.frogsoft.frogsoftcms.exception.basic.unauthorized.UnauthorizedException;
 import com.frogsoft.frogsoftcms.exception.user.UserNotFoundException;
 import com.frogsoft.frogsoftcms.model.user.User;
@@ -56,12 +55,12 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public EntityModel<UserDto> registerUser(UserRegisterRequest userRegisterRequest){
+  public EntityModel<UserDto> registerUser(UserRegisterRequest userRegisterRequest) {
 
     String username = userRegisterRequest.getUsername();
     User user = userRepository.findByUsername(username);
 
-    if (user != null){
+    if (user != null) {
       throw new ConflictException("用户名已存在");
     }
 
@@ -85,10 +84,12 @@ public class UserServiceImpl implements UserService {
     } else {
       throw new NotFoundException("验证码错误");
     }
+  }
+
   public EntityModel<UserDto> changePassword(String username,
       UserChangePasswordRequest changePasswordRequest,
-      User authenticatedUser){
-    if (!authenticatedUser.getUsername().equals(username)){
+      User authenticatedUser) {
+    if (!authenticatedUser.getUsername().equals(username)) {
       throw new UnauthorizedException("身份验证不一致，无法修改密码");
     }
     User oldUser = userRepository.findByUsername(username);
