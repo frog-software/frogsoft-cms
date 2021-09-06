@@ -1,20 +1,24 @@
 package com.frogsoft.frogsoftcms.controller.v1.api;
 
-import com.frogsoft.frogsoftcms.controller.v1.request.AuthRequest;
+import com.frogsoft.frogsoftcms.controller.v1.request.auth.AuthRequest;
+import com.frogsoft.frogsoftcms.controller.v1.request.auth.ResetRequest;
 import com.frogsoft.frogsoftcms.exception.basic.unauthorized.UnauthorizedException;
 import com.frogsoft.frogsoftcms.security.jwt.JwtTokenProvider;
+import com.frogsoft.frogsoftcms.service.auth.AuthService;
+import com.frogsoft.frogsoftcms.service.mail.MailService;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
@@ -24,6 +28,8 @@ public class AuthController {
 
   private final AuthenticationManager authenticationManager;
   private final JwtTokenProvider jwtTokenProvider;
+  private final AuthService authService;
+  private final MailService mailService;
 
   @PostMapping("/login")
   public ResponseEntity<?> login(@RequestBody AuthRequest authRequest) {
@@ -43,12 +49,20 @@ public class AuthController {
       return ResponseEntity.status(201).body(model);
 
     } catch (AuthenticationException e) {
-      throw new UnauthorizedException("用户名/密码错误");
-
-    } catch (Exception e) {
-      e.printStackTrace();
-      throw new InternalAuthenticationServiceException("服务器错误");
-
+      throw new UnauthorizedException("用户名或密码错误");
     }
+  }
+
+  @PostMapping("/forget")
+  public ResponseEntity<?> getCode(@RequestParam String username) {
+    return ResponseEntity.ok().body(mailService.sendCode(username));
+  }
+
+  @PutMapping("/forget")
+  public ResponseEntity<?> verifyCode(@RequestBody ResetRequest resetRequest) {
+    String username = resetRequest.getUsername();
+    String code = resetRequest.getVaryficationcode();
+    String newPassword = resetRequest.getNewpassword();
+    return ResponseEntity.status(201).body(authService.resetPassword(username, code, newPassword));
   }
 }
