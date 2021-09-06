@@ -14,14 +14,13 @@ import React, { FC, useEffect, useState }       from 'react';
 import { Article }                              from 'types/article';
 import Block                                    from 'components/Block';
 import {
-  Button, message, Space, Table,
-}                                               from 'antd';
-import http                                     from 'utils/http';
-import { JavaPagedModel, SimplifiedPagedModel } from 'types/common';
-import { pagedModelSimplifier }                 from 'utils/common';
+  Badge,
+  Button, Col, Divider, Input, message, Popconfirm, Row, Space, Table,
+} from 'antd';
 import { useQuery }                             from 'react-query';
 import { useHistory }                           from 'react-router';
 import { getArticleList }                       from 'services/article';
+import Search                                   from 'antd/es/input/Search';
 
 // const data = [
 //   {
@@ -171,6 +170,11 @@ const ArticleList: FC = () => {
   const [totalItems, setTotalItems]   = useState<number>();
   const history                       = useHistory();
 
+  // 删除文章
+  const handleDelete = () => {
+    console.log('点击了删除文章');
+  };
+
   const tableColumns = [
     {
       key: 'id',
@@ -201,17 +205,31 @@ const ArticleList: FC = () => {
       },
     },
     {
+      key: 'status',
+      dataIndex: 'status',
+      title: '状态',
+    },
+    {
       key: 'action',
       title: '执行操作',
       render: (article) => (
         <Space>
-          <Button onClick={() => {
-            history.push(`/articles/${article.id}`);
-          }}
+          <Button
+            onClick={() => {
+              history.push(`/articles/${article.id}`);
+            }}
+            type="text"
           >
-            查看
+            查看详情
           </Button>
-          <Button>删除</Button>
+          <Popconfirm
+            title="确定删除该文章吗？删除之后不可恢复！"
+            okText="确定"
+            cancelText="取消"
+            onConfirm={handleDelete}
+          >
+            <Button danger type="text">删除文章</Button>
+          </Popconfirm>
         </Space>
       ),
     },
@@ -241,29 +259,53 @@ const ArticleList: FC = () => {
   useEffect(() => {
     if (!data) return;
 
-    setAricleList(data.list);
+    const tableList = data.list.map((i) => ({
+      ...i,
+      status: i.status === 'NORMAL' ? (
+        <Badge status="processing" color="green" text="正常" />
+      ) : (
+        <Badge status="default" color="gray" text="屏蔽" />
+      ),
+    }));
+
+    setAricleList(tableList as any);
     setTotalItems(data.page.total);
   }, [data]);
 
   return (
     <>
-      <Block title="文章管理">
-        <Table
-          rowKey="id"
-          loading={isLoading}
-          columns={tableColumns}
-          dataSource={articleList}
-          pagination={{
-            pageSize,
-            total: totalItems,
-            showSizeChanger: true,
-            current: currentPage,
-            onChange: (page, size) => {
-              setCurrentPage(size === pageSize ? page : 1);
-              setPageSize(size);
-            },
-          }}
-        />
+      <Block
+        title="文章列表"
+        description={(
+          <Space>
+            <Input />
+            <Search placeholder="input search text" onSearch={() => (console.log('nbnb'))} enterButton />
+          </Space>
+        )}
+      >
+        <Row>
+          <Col span={4} offset={20}>
+            <Search placeholder="input search text" onSearch={() => (console.log('nbnb'))} enterButton />
+          </Col>
+          <Col span={24}>
+            <Table
+              rowKey="id"
+              loading={isLoading}
+              columns={tableColumns}
+              dataSource={articleList}
+              pagination={{
+                pageSize,
+                total: totalItems,
+                showSizeChanger: true,
+                current: currentPage,
+                onChange: (page, size) => {
+                  setCurrentPage(size === pageSize ? page : 1);
+                  setPageSize(size);
+                },
+              }}
+            />
+          </Col>
+        </Row>
       </Block>
     </>
   );

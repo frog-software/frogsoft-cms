@@ -79,7 +79,7 @@ const ArticleInfo: FC = () => {
               cancelText="取消"
               onConfirm={handleDelete}
             >
-              <Button>删除文章</Button>
+              <Button danger>删除文章</Button>
             </Popconfirm>
             <Button htmlType="submit" onClick={editDetail ? () => articleDetail.submit() : () => setEditDetail(true)}>
               {editDetail ? '保存' : '编辑'}

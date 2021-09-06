@@ -23,5 +23,6 @@ export interface Article {
   favorites: number,
   title: string,
   description: string,
-  cover: string
+  cover: string,
+  content: string,
 }

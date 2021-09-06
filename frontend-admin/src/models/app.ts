@@ -1,20 +1,20 @@
-import { createModel } from '@rematch/core';
-import { Configure } from 'types/app';
+import { createModel }              from '@rematch/core';
+import { Configuration } from 'types/app';
 
 interface State {
-  configure: Configure,
+  configuration: Configuration,
 }
 
 export const app = createModel({
   state: {
-    configure: {
+    configuration: {
       test: 0,
     },
   } as State,
   reducers: {
-    setConfigure: (state, payload: Configure): State => ({
+    setConfiguration: (state, payload: Configuration): State => ({
       ...state,
-      configure: payload,
+      configuration: payload,
     }),
   },
 });
