@@ -98,4 +98,25 @@ public class UserController {
     return ResponseEntity.ok()
         .body(userService.changePassword(username, userChangePasswordRequest, authenticatedUser));
   }
+
+
+  @PutMapping("/{username}")
+  public ResponseEntity<EntityModel<UserDto>> alterUserInformation(
+      @PathVariable String username,
+      @RequestBody UserRequest userRequest,
+      @AuthenticationPrincipal User authenticatedUser
+      ){
+    return ResponseEntity.ok().body(userService.alterUserInformation(username, userRequest, authenticatedUser));
+  }
+
+
+  @DeleteMapping("/{username}")
+  public ResponseEntity<?> deleteUser(
+      @PathVariable String username,
+      @RequestBody UserRequest userRequest,
+      @AuthenticationPrincipal User authenticatedUser
+  ){
+    userService.deleteUser(username, userRequest, authenticatedUser);
+    return ResponseEntity.ok(201);
+  }
 }
