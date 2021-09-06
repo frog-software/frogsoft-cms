@@ -21,9 +21,11 @@ services:
     container_name: frogsoft-cms-backend
     restart: unless-stopped
     command:
-      - ["./wait-for-it.sh", "mysql:3306", "--", "java", "org.springframework.boot.loader.JarLauncher"]
-    volumes:
-      - "${HOME}/.m2:/root/.m2"
+      - "./wait-for-it.sh"
+      - "mysql:3306"
+      - "--"
+      - "java"
+      - "org.springframework.boot.loader.JarLauncher"
     environment:
       MYSQL_URL: mysql:3306
       MYSQL_DB: ${MYSQL_DATABASE}
