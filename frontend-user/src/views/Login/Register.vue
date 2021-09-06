@@ -8,7 +8,7 @@
       <a-col>
         <img
             :width="300"
-            src="../assets/logo.png"
+            src="../../assets/logo.png"
         >
       </a-col>
     </a-row>
