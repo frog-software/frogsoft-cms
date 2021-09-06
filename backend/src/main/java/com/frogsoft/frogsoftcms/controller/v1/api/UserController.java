@@ -111,6 +111,7 @@ public class UserController {
     return ResponseEntity.ok().body(userService.alterUserInformation(username, userRequest, authenticatedUser));
   }
 
+
   @DeleteMapping("/{username}")
   public ResponseEntity<?> deleteUser(
       @PathVariable String username,
