@@ -1,16 +1,9 @@
 #!/bin/bash
+docker-compose build \
+    --file docker-compose-prod.yml \
+    --env-file .env.prod \
+    --compress \
+    --parallel || exit 1
 
-# backend
-cd backend && docker build --tag "${DOCKERHUB_USERNAME}/frogsoft-cms-backend" . || exit 1
-docker push "${DOCKERHUB_USERNAME}/frogsoft-cms-backend" || exit 1
-cd ..
-
-# frontend-user
-cd frontend-user && docker build --tag "${DOCKERHUB_USERNAME}/frogsoft-cms-backend" . || exit 1
-docker push "${DOCKERHUB_USERNAME}/frogsoft-cms-backend" || exit 1
-cd ..
-
-# backend
-cd backend && docker build --tag "${DOCKERHUB_USERNAME}/frogsoft-cms-backend" . || exit 1
-docker push "${DOCKERHUB_USERNAME}/frogsoft-cms-backend" || exit 1
-cd ..
+docker-compose push \
+    --file docker-compose-prod.yml || exit 1
