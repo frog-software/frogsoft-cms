@@ -8,10 +8,14 @@ services:
       - "./mysql/conf.d:/etc/mysql/conf.d"
     restart: unless-stopped
     environment:
-      - "MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}"
-      - "MYSQL_DATABASE=${MYSQL_DATABASE}"
-      - "MYSQL_USER=${MYSQL_USER}"
-      - "MYSQL_PASSWORD=${MYSQL_PASSWORD}"
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    networks: 
+      frogsoft-cms-network:
+        aliases:
+          - mysql
 
 
   frogsoft-cms-backend:
@@ -27,7 +31,7 @@ services:
       - "java"
       - "org.springframework.boot.loader.JarLauncher"
     environment:
-      MYSQL_URL: mysql:3306
+      MYSQL_URL: mysql
       MYSQL_DB: ${MYSQL_DATABASE}
       MYSQL_USERNAME: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
@@ -39,6 +43,8 @@ services:
       MAIL_PASSWORD: ${MAIL_PASSWORD}
     ports:
       - "${BACKEND_PORT}:${BACKEND_PORT}"
+    networks: 
+      - frogsoft-cms-network
 
 
   frogsoft-cms-user:
@@ -46,14 +52,19 @@ services:
     container_name: frogsoft-cms-user
     restart: unless-stopped
     ports:
-      - "${FRONTEND_USER_PORT}:${FRONTEND_USER_PORT}"
+      - "${FRONTEND_USER_PORT}:80"
 
 
   frogsoft-cms-admin:
-    build: ./frontend-admin
+    build: 
+      context: ./frontend-admin
+      args: 
+        VITE_BACKEND_URL: ${BACKEND_URL}
     container_name: frogsoft-cms-admin
     restart: unless-stopped
     ports:
-      - "${FRONTEND_ADMIN_PORT}:${FRONTEND_ADMIN_PORT}"
-    environment: 
-      - "VITE_BACKEND_URL:${BAKEND_URL}"
+      - "${FRONTEND_ADMIN_PORT}:80"
+
+
+networks: 
+  frogsoft-cms-network:
