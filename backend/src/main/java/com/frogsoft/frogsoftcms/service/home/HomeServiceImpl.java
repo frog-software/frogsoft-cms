@@ -1,5 +1,6 @@
 package com.frogsoft.frogsoftcms.service.home;
 
+import com.frogsoft.frogsoftcms.controller.v1.request.home.AnnouncementsSetRequest;
 import com.frogsoft.frogsoftcms.dto.assembler.article.ArticleModelAssembler;
 import com.frogsoft.frogsoftcms.dto.mapper.article.ArticleMapper;
 import com.frogsoft.frogsoftcms.dto.model.article.ArticleDto;
@@ -17,7 +18,6 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -64,6 +64,12 @@ public class HomeServiceImpl implements HomeService {
   }
 
   @Override
+  public EntityModel<ArticleDto> changeDailyArticle(Integer articleId, User authenticatedUser) {
+    //TODO：修改每日推荐
+    return null;
+  }
+
+  @Override
   public CollectionModel<EntityModel<ArticleDto>> getRankList(){
     List<Article> allArticles = articleRepository.findAll();
 
@@ -71,7 +77,7 @@ public class HomeServiceImpl implements HomeService {
       throw new NotFoundException("目前暂无文章");
     }
 
-    Map<Article,Long> articleMap = new HashMap<Article, Long>();
+    Map<Article,Long> articleMap = new HashMap<>();
 
     for (Article article : allArticles
          ) {
@@ -100,5 +106,18 @@ public class HomeServiceImpl implements HomeService {
 
     return articleModelAssembler.toCollectionModel(rankedArticleList);
 
+  }
+
+  @Override
+  public CollectionModel<EntityModel<ArticleDto>> getAnnouncements(){
+    List<ArticleDto> retArticles = new ArrayList<>();
+    return articleModelAssembler.toCollectionModel(retArticles);
+  }
+
+  @Override
+  public CollectionModel<EntityModel<ArticleDto>> changeAnnouncements(
+      AnnouncementsSetRequest announcementsSetRequest, User authenticatedUser) {
+    //TODO：修改公告列表
+    return null;
   }
 }
