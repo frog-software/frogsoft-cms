@@ -17,6 +17,7 @@ public interface UserService {
 
   EntityModel<UserDto> registerUser(UserRegisterRequest userRegisterRequest);
 
+  EntityModel<UserDto> resetEmail(String username, String newEmail, String code);
   EntityModel<UserDto> changePassword(String username,
       UserChangePasswordRequest changePasswordRequest,
       User authenticatedUser);

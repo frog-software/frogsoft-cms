@@ -1,5 +1,6 @@
 package com.frogsoft.frogsoftcms.controller.v1.api;
 
+import com.frogsoft.frogsoftcms.controller.v1.request.User.UserEmailResetRequest;
 import com.frogsoft.frogsoftcms.controller.v1.request.User.UserChangePasswordRequest;
 import com.frogsoft.frogsoftcms.controller.v1.request.User.UserRegisterRequest;
 import com.frogsoft.frogsoftcms.dto.model.user.UserDto;
@@ -13,7 +14,6 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -77,10 +77,16 @@ public class UserController {
   @PostMapping("")
   public ResponseEntity<EntityModel<UserDto>> registerUser(
       @RequestBody UserRegisterRequest userRegisterRequest
-  ){
+  ) {
     return ResponseEntity.ok().body(userService.registerUser(userRegisterRequest));
   }
 
+  @PutMapping("/{username}/email")
+  public ResponseEntity<?> resetEmail(@PathVariable(value = "username") String username,
+      @RequestBody UserEmailResetRequest resetRequest) {
+    String newEmail = resetRequest.getNewemail();
+    String code = resetRequest.getVaryficationcode();
+    return ResponseEntity.ok().body(userService.resetEmail(username, newEmail, code));
   @PutMapping("/{username}/password")
   public ResponseEntity<EntityModel<UserDto>> changePassword(
       @PathVariable(name = "username") String username,

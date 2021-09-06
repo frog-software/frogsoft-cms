@@ -5,6 +5,7 @@ import com.frogsoft.frogsoftcms.controller.v1.request.auth.ResetRequest;
 import com.frogsoft.frogsoftcms.exception.basic.unauthorized.UnauthorizedException;
 import com.frogsoft.frogsoftcms.security.jwt.JwtTokenProvider;
 import com.frogsoft.frogsoftcms.service.auth.AuthService;
+import com.frogsoft.frogsoftcms.service.mail.MailService;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,7 @@ public class AuthController {
   private final AuthenticationManager authenticationManager;
   private final JwtTokenProvider jwtTokenProvider;
   private final AuthService authService;
+  private final MailService mailService;
 
   @PostMapping("/login")
   public ResponseEntity<?> login(@RequestBody AuthRequest authRequest) {
@@ -53,7 +55,7 @@ public class AuthController {
 
   @PostMapping("/forget")
   public ResponseEntity<?> getCode(@RequestParam String username) {
-    return ResponseEntity.ok().body(authService.getCode(username));
+    return ResponseEntity.ok().body(mailService.sendCode(username));
   }
 
   @PutMapping("/forget")
