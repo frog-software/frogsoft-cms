@@ -1,4 +1,4 @@
-package com.frogsoft.frogsoftcms.model.other;
+package com.frogsoft.frogsoftcms.model.Config;
 
 
 import javax.persistence.Entity;
@@ -9,7 +9,7 @@ import lombok.experimental.Accessors;
 @Data
 @Entity
 @Accessors(chain = true)
-public class Other {
+public class Config {
 
   @Id
   private String key;
