@@ -16,15 +16,16 @@ import './customAntd.less';
 const Home = React.lazy(() => import('./pages/Home'));
 const UserPage = React.lazy(() => import('./pages/User'));
 const ArticlePage = React.lazy(() => import('./pages/Article'));
+const ConfiguationPage = React.lazy(() => import('./pages/Configuration'));
 const About = React.lazy(() => import('./pages/About'));
 
 function App() {
   const history = useHistory();
-  const { app: { configure } } = useSelector((state: RootState) => state);
+  const { app: { configuration } } = useSelector((state: RootState) => state);
   const dispatch = useDispatch<Dispatch>().app;
 
   useEffect(() => {
-    dispatch.setConfigure({});
+    dispatch.setConfiguration({});
   }, []);
 
   // 特殊路径跳转
@@ -42,10 +43,11 @@ function App() {
           <Col className="g-main">
             <UserNavBar />
             {
-              configure ? (
+              configuration ? (
                 <Suspense fallback={<Preview />}>
                   <Route path="/home" component={Home} />
                   <Route path="/users" component={UserPage} />
+                  <Route path="/configuration" component={ConfiguationPage} />
                   <Route path="/articles" component={ArticlePage} />
                   <Route path="/about" component={About} />
                 </Suspense>

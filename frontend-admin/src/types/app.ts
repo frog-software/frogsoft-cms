@@ -1,3 +1,3 @@
-export interface Configure {
+export interface Configuration {
   test?: any
 }

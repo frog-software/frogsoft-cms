@@ -11,31 +11,31 @@
 //--------------------------------------------------------------------------
 
 import React, {
-  FC, useCallback, useEffect, useState,
+  FC, useEffect, useState,
 }                       from 'react';
 import { User }         from 'types/user';
 import { useParams }    from 'react-router-dom';
 import Block            from 'components/Block';
 import {
   Avatar, Button, Col, Descriptions, Form,
-  FormInstance, Input, message, Popconfirm, Row, Select, Space, Statistic, Table,
-} from 'antd';
+  Input, message, Popconfirm, Row, Select, Space, Statistic,
+}                       from 'antd';
 import http             from 'utils/http';
-import DescriptionsItem                                                        from 'antd/es/descriptions/Item';
+import DescriptionsItem from 'antd/es/descriptions/Item';
 import {
-  BookOutlined, CloudOutlined, LikeOutlined, StarOutlined, UserOutlined,
-} from '@ant-design/icons';
-import { useForm }                                                             from 'antd/es/form/Form';
+  BookOutlined, CloudOutlined, LikeOutlined, StarOutlined,
+}                       from '@ant-design/icons';
+import { useForm }      from 'antd/es/form/Form';
+import { useHistory }   from 'react-router';
 
 const UserInfo: FC = () => {
   const params: { username: string } = useParams();
   const [isLoading, setIsLoading]    = useState<boolean>(false);
   const [editable, setEditable]      = useState<boolean>(false);
   const [userInfo, setUserInfo]      = useState<User>();
-  const [form] = useForm();
-  const { Option } = Select;
-
-  const EditableContext = React.createContext<FormInstance<any> | null>(null);
+  const [form]                       = useForm();
+  const { Option }                     = Select;
+  const history                      = useHistory();
 
   useEffect(() => {
     (async () => {
@@ -53,13 +53,13 @@ const UserInfo: FC = () => {
 
   // 删除用户
   const handleDelete = () => {
-    console.log('点击了删除用户');
+    history.goBack();
   };
 
   // 编辑个人资料
-  const handleSubmit = (fata) => {
+  const handleSubmit = (data) => {
     // setIsLoading(true);
-    console.log('nbnb', fata);
+    console.log('nbnb', data);
     //  给后端传回数据，用一个Promise写法
 
     //  传成功了就：
@@ -89,12 +89,12 @@ const UserInfo: FC = () => {
           <Space>
             <Button onClick={handleResetPassword}>重置密码</Button>
             <Popconfirm
-              title="确定删除该用户吗？删除之后不可恢复"
+              title="确定删除该用户吗？删除之后不可恢复！"
               okText="确定"
               cancelText="取消"
               onConfirm={handleDelete}
             >
-              <Button>删除用户</Button>
+              <Button danger>删除用户</Button>
             </Popconfirm>
             <Button htmlType="submit" onClick={editable ? () => form.submit() : () => setEditable(true)}>
               {editable ? '保存' : '编辑'}
@@ -145,7 +145,7 @@ const UserInfo: FC = () => {
                     name="username"
                     label="用户名"
                     rules={[{ required: true }]}
-                    initialValue={userInfo.username}
+                    initialValue={userInfo?.username}
                   >
                     <Input allowClear />
                   </Form.Item>
@@ -153,16 +153,16 @@ const UserInfo: FC = () => {
                     name="email"
                     label="用户邮箱"
                     rules={[{ type: 'email', required: true }]}
-                    initialValue={userInfo.email}
+                    initialValue={userInfo?.email}
                   >
                     <Input allowClear />
                   </Form.Item>
                   <Form.Item
                     name="roles"
                     label="用户权限"
-                    initialValue={userInfo.roles}
+                    initialValue={userInfo?.roles}
                   >
-                    <Select defaultValue="普通用户">
+                    <Select>
                       <Option value="normal">普通用户</Option>
                       <Option value="admin">管理员</Option>
                     </Select>

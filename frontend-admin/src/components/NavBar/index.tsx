@@ -6,11 +6,8 @@ import {
 import {
   TeamOutlined,
   BarsOutlined,
-  UserOutlined,
-  FacebookOutlined,
-  TrademarkOutlined,
-  ManOutlined, GoogleOutlined,
-}                                  from '@ant-design/icons';
+  UserOutlined, SettingOutlined,
+} from '@ant-design/icons';
 import './index.css';
 
 const {
@@ -40,6 +37,12 @@ const entryTree: EntryTree[] = [
   },
   {
     key: '2',
+    title: '个性配置',
+    icon: <SettingOutlined />,
+    link: '/configuration',
+  },
+  {
+    key: '3',
     title: '关于我们',
     icon: <TeamOutlined />,
     link: '/about',
@@ -50,12 +53,8 @@ const NavBar: FC = () => (
   <div>
     <Link to="/home">
       <div className="nav-bar-title">
-        {/*<FacebookOutlined />*/}
-        {/*<TrademarkOutlined />*/}
-        {/*<ManOutlined />*/}
-        {/*<GoogleOutlined />*/}
         <Row justify="center">
-          <Avatar src="/public/logo.png" shape="square" size={120} />
+          <Avatar src="/logo.png" shape="square" size={120} />
           Frogsoft CMS
         </Row>
       </div>
@@ -63,7 +62,7 @@ const NavBar: FC = () => (
     <Menu
       mode="inline"
       style={{
-        zIndex: 99, width: '100%',
+        zIndex: 99, width: '100%', fontSize: '90%', alignItems: 'center',
       }}
     >
       {entryTree.map((entry) => (
