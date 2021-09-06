@@ -9,6 +9,7 @@ import com.frogsoft.frogsoftcms.security.jwt.JwtTokenAuthenticationFilter;
 import com.frogsoft.frogsoftcms.security.jwt.JwtTokenProvider;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -52,9 +53,11 @@ public class SecurityConfig {
         .exceptionHandling()
         .authenticationEntryPoint(restAuthenticationEntryPoint)
         .and()
-        .authorizeRequests(c ->
-            c.antMatchers("/v1/auth/login", "/v1/auth/forget", "/v1/users").permitAll()
-                .anyRequest().authenticated()
+        .authorizeRequests(c -> c
+            .antMatchers("/v1/auth/login").permitAll()
+            .antMatchers(HttpMethod.POST, "/v1/auth/forget").permitAll()
+            .antMatchers(HttpMethod.POST, "/v1/users").permitAll()
+            .anyRequest().authenticated()
         )
         .addFilterBefore(
             new JwtTokenAuthenticationFilter(tokenProvider),
