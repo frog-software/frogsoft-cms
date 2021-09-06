@@ -2,15 +2,19 @@ package com.frogsoft.frogsoftcms.service.user;
 
 import com.frogsoft.frogsoftcms.controller.v1.request.User.UserChangePasswordRequest;
 import com.frogsoft.frogsoftcms.controller.v1.request.User.UserRegisterRequest;
+import com.frogsoft.frogsoftcms.controller.v1.request.User.UserRequest;
 import com.frogsoft.frogsoftcms.dto.assembler.user.UserModelAssembler;
 import com.frogsoft.frogsoftcms.dto.mapper.user.UserMapper;
 import com.frogsoft.frogsoftcms.dto.model.user.UserDto;
 import com.frogsoft.frogsoftcms.exception.basic.conflict.ConflictException;
-import com.frogsoft.frogsoftcms.exception.basic.forbidden.ForbiddenException;
 import com.frogsoft.frogsoftcms.exception.basic.unauthorized.UnauthorizedException;
 import com.frogsoft.frogsoftcms.exception.user.UserNotFoundException;
+import com.frogsoft.frogsoftcms.model.user.Roles;
 import com.frogsoft.frogsoftcms.model.user.User;
 import com.frogsoft.frogsoftcms.repository.user.UserRepository;
+import java.util.ArrayList;
+import java.util.List;
+import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -61,9 +65,11 @@ public class UserServiceImpl implements UserService {
     if (user != null){
       throw new ConflictException("用户名已存在");
     }
-
+    List<String> roles = new ArrayList<>();
+    roles.add(Roles.ROLE_USER.getRole());
     User user1 = userRepository.save(new User()
     .setEmail(userRegisterRequest.getEmail())
+    .setRoles(roles)
     .setUsername(userRegisterRequest.getUsername())
     .setPassword(passwordEncoder.encode(userRegisterRequest.getPassword())));
 
@@ -85,5 +91,39 @@ public class UserServiceImpl implements UserService {
     User newUser = userRepository.save(oldUser);
 
     return userModelAssembler.toModel(userMapper.toUserDto(newUser));
+  }
+
+  @Override
+  public EntityModel<UserDto> alterUserInformation(String oldUserName,
+      UserRequest userRequest, User authenticatedUser){
+    if (!authenticatedUser.getUsername().equals(oldUserName)){
+      throw new UnauthorizedException("身份验证不一致，无法修改信息");
+    }
+    User oldUser = userRepository.findByUsername(oldUserName);
+    User newUser = userRepository.findByUsername(userRequest.getUsername());
+    if (newUser != null){
+      throw new ConflictException("用户名已存在");
+    }
+    oldUser.setUsername(userRequest.getUsername())
+        .setEmail(userRequest.getEmail());
+    User newUser1 = userRepository.save(oldUser);
+    return userModelAssembler.toModel(userMapper.toUserDto(newUser1));
+  }
+
+  @Override
+  @Transactional
+  public Void deleteUser(String username,
+      UserRequest userRequest, User authenticatedUser){
+    if (!userRequest.getRoles().contains(Roles.ROLE_ADMIN.getRole())) {
+      if (!authenticatedUser.getUsername().equals(username)) {
+        throw new UnauthorizedException("身份验证不一致，无法删除用户");
+      }
+    }
+    User user = userRepository.findByUsername(username);
+    if (user == null){
+      throw new UserNotFoundException(username);
+    }
+    userRepository.delete(user);
+    return null;
   }
 }
