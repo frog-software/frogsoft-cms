@@ -28,14 +28,18 @@ public class ArticleController {
   private final CommentService commentService;
 
   @GetMapping("")
-  public ResponseEntity<?> search(@RequestParam(defaultValue = "") String search,
+  public ResponseEntity<?> search(
+      @RequestParam(defaultValue = "") String search,
+      @RequestParam(defaultValue = "publishDate") String sortBy,
+      @RequestParam(defaultValue = "DESC") String order,
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size) {
     if (search.equals("")) {
-      return ResponseEntity.ok().body(articleService.findAll(PageRequest.of(page, size)));
+      return ResponseEntity.ok()
+          .body(articleService.findAll(sortBy, order, PageRequest.of(page, size)));
     } else {
       return ResponseEntity.ok()
-          .body(articleService.findBySearch(search, PageRequest.of(page, size)));
+          .body(articleService.findBySearch(search, sortBy, order, PageRequest.of(page, size)));
     }
   }
 
