@@ -1,13 +1,21 @@
 <template>
-  <a-spin :spinning="spinning" class="body">
+  <a-spin
+      :spinning="spinning"
+      class="body"
+  >
     <a-card>
-      <template v-slot:title>
+      <template #title>
         <h2>用户信息</h2>
       </template>
 
-      <template v-slot:extra>
-        <a-button v-show=" parseInt($route.params.id) === $store.getters.user.id" type="primary">
-          <router-link :to="{name:'UserSettings'}">修改个人信息</router-link>
+      <template #extra>
+        <a-button
+            v-show=" parseInt($route.params.id) === $store.getters.user.id"
+            type="primary"
+        >
+          <router-link :to="{name:'UserSettings'}">
+            修改个人信息
+          </router-link>
         </a-button>
       </template>
 
@@ -19,7 +27,11 @@
           {{ user.nickname }}
         </a-descriptions-item>
         <a-descriptions-item label="头像">
-          <a-avatar :size="64" :src="user.avatar" shape="circle"/>
+          <a-avatar
+              :size="64"
+              :src="user.avatar"
+              shape="circle"
+          />
         </a-descriptions-item>
       </a-descriptions>
 
@@ -39,11 +51,23 @@
       </a-descriptions>
 
       <a-tabs>
-        <a-tab-pane key="1" tab="ta创作的文章">
-          <ArticleList :listData="publish_articles" :page-size="6"/>
+        <a-tab-pane
+            key="1"
+            tab="ta创作的文章"
+        >
+          <ArticleList
+              :list-data="publish_articles"
+              :page-size="6"
+          />
         </a-tab-pane>
-        <a-tab-pane key="2" tab="ta收藏的文章">
-          <ArticleList :listData="like_articles" :page-size="6"/>
+        <a-tab-pane
+            key="2"
+            tab="ta收藏的文章"
+        >
+          <ArticleList
+              :list-data="like_articles"
+              :page-size="6"
+          />
         </a-tab-pane>
       </a-tabs>
     </a-card>
@@ -51,18 +75,18 @@
 </template>
 
 <script>
-import ArticleList from '@/components/Articles/ArticleList'
-import axios from 'axios'
+import axios from 'axios';
+import ArticleList from '../../components/Articles/ArticleList.vue';
 
 export default {
   name: 'UserDetails',
-  props: {
-    id: String
-  },
   components: {
-    ArticleList
+    ArticleList,
   },
-  data () {
+  props: {
+    id: String,
+  },
+  data() {
     return {
       spinning: true,
       user: {
@@ -77,21 +101,21 @@ export default {
         avatar: 'https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png',
         county: '',
         town: '',
-        is_admin: false
+        is_admin: false,
       },
       publish_articles: [],
-      like_articles: []
-    }
+      like_articles: [],
+    };
   },
-  created () {
-    axios.get('/users/' + this.id).then(res => {
-      this.user = res.data.user
-      this.publish_articles = res.data.publish_articles
-      this.like_articles = res.data.like_articles
-      this.spinning = false
-    })
-  }
-}
+  created() {
+    axios.get(`/users/${this.id}`).then((res) => {
+      this.user = res.data.user;
+      this.publish_articles = res.data.publish_articles;
+      this.like_articles = res.data.like_articles;
+      this.spinning = false;
+    });
+  },
+};
 </script>
 
 <style scoped>
