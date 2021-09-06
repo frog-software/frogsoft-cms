@@ -1,6 +1,7 @@
 package com.frogsoft.frogsoftcms.controller.v1.api;
 
 import com.frogsoft.frogsoftcms.controller.v1.request.home.AnnouncementsSetRequest;
+import com.frogsoft.frogsoftcms.exception.basic.forbidden.ForbiddenException;
 import com.frogsoft.frogsoftcms.model.user.User;
 import com.frogsoft.frogsoftcms.service.home.HomeService;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,9 @@ public class HomeController {
   public ResponseEntity<?> putDailyArticle(
       @RequestParam Integer articleId,
       @AuthenticationPrincipal User authenticatedUser) {
+    if (!authenticatedUser.getRoles().contains("ROLE_ADMIN")) {
+      throw new ForbiddenException("需要管理员权限");
+    }
     return ResponseEntity.status(201).body(homeService.changeDailyArticle(articleId,authenticatedUser));
   }
   
@@ -51,6 +55,9 @@ public class HomeController {
   public ResponseEntity<?> putAnnouncements(
       @RequestBody AnnouncementsSetRequest announcementsSetRequest ,
       @AuthenticationPrincipal User authenticatedUser) {
+    if (!authenticatedUser.getRoles().contains("ROLE_ADMIN")) {
+      throw new ForbiddenException("需要管理员权限");
+    }
     return ResponseEntity.status(201).body(homeService.changeAnnouncements(
         announcementsSetRequest, authenticatedUser));
   }

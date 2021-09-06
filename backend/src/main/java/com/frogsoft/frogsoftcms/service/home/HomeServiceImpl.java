@@ -4,10 +4,13 @@ import com.frogsoft.frogsoftcms.controller.v1.request.home.AnnouncementsSetReque
 import com.frogsoft.frogsoftcms.dto.assembler.article.ArticleModelAssembler;
 import com.frogsoft.frogsoftcms.dto.mapper.article.ArticleMapper;
 import com.frogsoft.frogsoftcms.dto.model.article.ArticleDto;
+import com.frogsoft.frogsoftcms.exception.article.ArticleNotFoundException;
 import com.frogsoft.frogsoftcms.exception.basic.notfound.NotFoundException;
 import com.frogsoft.frogsoftcms.model.article.Article;
+import com.frogsoft.frogsoftcms.model.config.Config;
 import com.frogsoft.frogsoftcms.model.user.User;
 import com.frogsoft.frogsoftcms.repository.article.ArticleRepository;
+import com.frogsoft.frogsoftcms.repository.config.ConfigRepository;
 import com.frogsoft.frogsoftcms.repository.user.UserRepository;
 import java.util.List;
 import java.util.Random;
@@ -27,14 +30,23 @@ public class HomeServiceImpl implements HomeService {
   private final ArticleModelAssembler articleModelAssembler;
   private final ArticleMapper articleMapper;
   private final UserRepository userRepository;
+  private final ConfigRepository configRepository;
 
-
+  /**
+   * getAllArticleDtos 获得所有文章的Dto列表
+   * @return List<ArticleDto>类型
+   */
   private List<ArticleDto> getAllArticleDtos(){
     return articleRepository.findAll().stream().map(
         articleMapper::toArticleDto
     ).collect(Collectors.toList());
   }
 
+  /**
+   * getRecommendations 返回推荐文章列表的CollectionModel
+   * @param authenticatedUser 登陆的用户，该参数暂不使用，用于后续个性化推荐
+   * @return CollectionModel<EntityModel<ArticleDto>>
+   */
   @Override
   public CollectionModel<EntityModel<ArticleDto>> getRecommendations(User authenticatedUser){
     List<ArticleDto> articles = getAllArticleDtos();
@@ -46,29 +58,55 @@ public class HomeServiceImpl implements HomeService {
       retArticles.add(pickup);
       articles.remove(pickup);
     }
-    // TODO：筛选和获取推荐的文章Dto对象
     return articleModelAssembler.toCollectionModel(retArticles);
   }
 
+  /**
+   * getDailyArticle 返回一个管理员设置的每日推荐文章的EntityModel
+   * @return EntityModel<ArticleDto>
+   */
   @Override
   public EntityModel<ArticleDto> getDailyArticle() {
-    Random randArt = new Random();
-    
-    List<ArticleDto> articles = getAllArticleDtos();
 
-    if (articles.size() <= 0) {
-      throw new NotFoundException("目前暂无文章");
+    // 获取每日推荐文章的id
+    String dailyPickup = configRepository.findByConfigKey("DailyPickup").getConfigValue();
+    Long articlePickupId = Long.parseLong(dailyPickup);
+    Optional<Article> articlePickup = articleRepository.findById(articlePickupId);
+
+    if (articlePickup.isEmpty()) {
+      throw new ArticleNotFoundException(articlePickupId);
     }
-    // 获取一个随机文章作为每日推荐
-    return articleModelAssembler.toModel(articles.get(randArt.nextInt(articles.size())));
+
+    return articleModelAssembler.toModel(articleMapper.toArticleDto(articlePickup.get()));
   }
 
+  /**
+   * changeDailyArticle 设置每日推荐文章（仅限管理员）
+   * @param articleId 要设置的文章id
+   * @param authenticatedUser 设置人
+   * @return EntityModel<ArticleDto> 设置好的推荐文章的数据模型
+   */
   @Override
   public EntityModel<ArticleDto> changeDailyArticle(Integer articleId, User authenticatedUser) {
-    //TODO：修改每日推荐
-    return null;
+    Long articlePickupId = articleId.longValue();
+    Config dailyPickupConfig = configRepository.findByConfigKey("DailyPickup");
+
+    Optional<Article> articlePickupNew = articleRepository.findById(articlePickupId);
+    if(articlePickupNew.isEmpty()){
+      throw new ArticleNotFoundException(articlePickupId);
+    }
+
+    dailyPickupConfig = configRepository.save(
+        dailyPickupConfig.setConfigValue(articleId.toString())
+    );
+
+    return articleModelAssembler.toModel(articleMapper.toArticleDto(articlePickupNew.get()));
   }
 
+  /**
+   * getRankList 返回全站文章排行榜（数据模型列表）
+   * @return CollectionModel<EntityModel<ArticleDto>>
+   */
   @Override
   public CollectionModel<EntityModel<ArticleDto>> getRankList(){
     List<Article> allArticles = articleRepository.findAll();
@@ -108,16 +146,74 @@ public class HomeServiceImpl implements HomeService {
 
   }
 
+  /**
+   * getAnnouncements 获取管理员设置公告文章的数据模型列表
+   * @return CollectionModel<EntityModel<ArticleDto>>
+   */
   @Override
   public CollectionModel<EntityModel<ArticleDto>> getAnnouncements(){
+    String announcements = configRepository.findByConfigKey("AnnouncementsId").getConfigValue();
+
+    if(announcements.equals("")){
+      throw new NotFoundException("暂无公告");
+    }
+
+    List<Long> announcementIds = Arrays.stream(announcements.split(",")).map(
+        Long::parseLong
+    ).collect(Collectors.toList());
+
+    List<Optional<Article>> announceArticles = new ArrayList<>();
+
+    for (Long announcementId:announcementIds
+    ) {
+      Optional<Article> _announceArticle = articleRepository.findById(announcementId);
+      if(_announceArticle.isEmpty()) {
+        throw new ArticleNotFoundException(announcementId);
+      }
+      announceArticles.add(_announceArticle);
+    }
+
     List<ArticleDto> retArticles = new ArrayList<>();
+    for (Optional<Article> announceArticle : announceArticles) {
+      announceArticle.ifPresent(article -> retArticles.add(articleMapper.toArticleDto(article)));
+    }
+
     return articleModelAssembler.toCollectionModel(retArticles);
   }
 
+  /**
+   * changeAnnouncements 设置公告文章的id列表（仅限管理员）
+   * @param announcementsSetRequest 要设置公告文章的id（请求类）
+   * @param authenticatedUser 设置人
+   * @return CollectionModel<EntityModel<ArticleDto>> 设置好的对应的公告文章数据模型列表
+   */
   @Override
   public CollectionModel<EntityModel<ArticleDto>> changeAnnouncements(
       AnnouncementsSetRequest announcementsSetRequest, User authenticatedUser) {
-    //TODO：修改公告列表
-    return null;
+    StringBuilder announcements = new StringBuilder();
+    Config announcementsConfig = configRepository.findByConfigKey("AnnouncementsId");
+
+    List<Optional<Article>> announceArticles = new ArrayList<>();
+
+    for (Long announcementId:announcementsSetRequest.getArticleIds()
+    ) {
+      Optional<Article> _announceArticle = articleRepository.findById(announcementId);
+      if(_announceArticle.isEmpty()) {
+        throw new ArticleNotFoundException(announcementId);
+      }
+      announceArticles.add(_announceArticle);
+      announcements.append(announcementId).append(",");
+    }
+
+    announcementsConfig = configRepository.save(
+        announcementsConfig.setConfigValue(announcements.toString())
+    );
+
+    List<ArticleDto> retArticles = new ArrayList<>();
+    for (Optional<Article> announceArticle : announceArticles) {
+      announceArticle.ifPresent(article -> retArticles.add(articleMapper.toArticleDto(article)));
+    }
+
+    return articleModelAssembler.toCollectionModel(retArticles);
   }
 }

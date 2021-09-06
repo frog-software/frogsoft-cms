@@ -76,7 +76,11 @@
 | ------ | ------------ | -------------- | :------: | :---: | ---- |
 | key    | String       | varchar(255)   | not null |      |      |
 | value  | String       | varchar(255)   | not null |      |      |
-
+### 存储数据：
+|Key|Value|
+|----|----|
+|DailyPickup|每日推荐文章的id|
+|AnnouncementsId|公告文章的id（用`,`隔开）|
 ## 参考资料
 
 - [^1]: Many to many的用法可以参见文章：[Many-To-Many Relationship in JPA | Baeldung](https://www.baeldung.com/jpa-many-to-many)
