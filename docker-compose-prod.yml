@@ -75,7 +75,7 @@ services:
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRATION_DELAY: ${JWT_EXPIRATION_DELAY}
     expose:
-      - "${PORT}"
+      - "${BACKEND_PORT}"
 
 
   frogsoft-cms-user:
@@ -94,8 +94,6 @@ services:
       - "traefik.http.middlewares.frogsoft-cms-user-compress.compress=true"
     expose:
       - "${FRONTEND_USER_PORT}"
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
 
   frogsoft-cms-admin:
     build: ./frontend-admin
@@ -112,9 +110,7 @@ services:
       - "traefik.http.routers.frogsoft-cms-admin.middlewares=frogsoft-cms-admin-compress"
       - "traefik.http.middlewares.frogsoft-cms-admin-compress.compress=true"
     expose:
-      - "${FRONTEND_USER_PORT}"
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - "${FRONTEND_ADMIN_PORT}"
 
 networks:
   traefik-global-proxy:
