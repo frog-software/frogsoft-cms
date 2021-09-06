@@ -15,10 +15,7 @@ import com.frogsoft.frogsoftcms.repository.article.ArticleRepository;
 import com.frogsoft.frogsoftcms.repository.comment.CommentRepository;
 import com.frogsoft.frogsoftcms.repository.user.UserRepository;
 import java.time.LocalDateTime;
-import java.util.LinkedList;
 import java.util.List;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.CollectionModel;
@@ -68,16 +65,15 @@ public class CommentServiceImpl implements CommentService {
 
   @Override
   public EntityModel<CommentDto> changeContent(Long commentId,
-      String content,User authenticatedUser){
+      String content, User authenticatedUser) {
     Comment comment = commentRepository.findById(commentId)
-        .orElseThrow(()->new CommentNotFoundException(commentId));
+        .orElseThrow(() -> new CommentNotFoundException(commentId));
     if (authenticatedUser.getId().equals(comment.getAuthor().getId())) {
       comment = commentRepository.save(
           comment.setContent(content)
       );
       return commentModelAssembler.toModel(commentMapper.toCommentDto(comment));
-    }
-    else{
+    } else {
       throw new ForbiddenException("无权限修改评论");
     }
   }
@@ -96,26 +92,23 @@ public class CommentServiceImpl implements CommentService {
   }
 
   @Override
-  public CollectionModel<EntityModel<CommentDto>> getComment(Long articleId, String username){
+  public CollectionModel<EntityModel<CommentDto>> getComment(Long articleId, String username) {
     List<Comment> commentList;
-    if (!articleId.equals(0L) && !username.equals("")){
+    if (!articleId.equals(0L) && !username.equals("")) {
       Article article = articleRepository.findById(articleId)
           .orElseThrow(() -> new ArticleNotFoundException(articleId));
       commentList = commentRepository.findByArticleAndAuthor(
           article, userRepository.findByUsername(username)
-          );
-    }
-    else if (articleId.equals(0L) && !username.equals("")){
+      );
+    } else if (articleId.equals(0L) && !username.equals("")) {
       commentList = commentRepository.findByAuthor(
           userRepository.findByUsername(username)
       );
-    }
-    else if (!articleId.equals(0L) && username.equals("")){
+    } else if (!articleId.equals(0L) && username.equals("")) {
       Article article = articleRepository.findById(articleId)
           .orElseThrow(() -> new ArticleNotFoundException(articleId));
       commentList = commentRepository.findByArticle(article);
-    }
-    else {
+    } else {
       throw new ForbiddenException("未输入查询值");
     }
     return commentModelAssembler.toCollectionModel(commentMapper.toCommentDto(commentList));

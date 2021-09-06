@@ -1,6 +1,7 @@
 package com.frogsoft.frogsoftcms.controller.v1.api;
 
 import com.frogsoft.frogsoftcms.controller.v1.request.auth.AuthRequest;
+import com.frogsoft.frogsoftcms.controller.v1.request.auth.ResetRequest;
 import com.frogsoft.frogsoftcms.exception.basic.unauthorized.UnauthorizedException;
 import com.frogsoft.frogsoftcms.security.jwt.JwtTokenProvider;
 import com.frogsoft.frogsoftcms.service.auth.AuthService;
@@ -13,6 +14,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -26,6 +28,7 @@ public class AuthController {
   private final AuthenticationManager authenticationManager;
   private final JwtTokenProvider jwtTokenProvider;
   private final AuthService authService;
+
   @PostMapping("/login")
   public ResponseEntity<?> login(@RequestBody AuthRequest authRequest) {
 
@@ -51,5 +54,13 @@ public class AuthController {
   @PostMapping("/forget")
   public ResponseEntity<?> getCode(@RequestParam String username) {
     return ResponseEntity.ok().body(authService.getCode(username));
+  }
+
+  @PutMapping("/forget")
+  public ResponseEntity<?> verifyCode(@RequestBody ResetRequest resetRequest) {
+    String username = resetRequest.getUsername();
+    String code = resetRequest.getVaryficationcode();
+    String newPassword = resetRequest.getNewpassword();
+    return ResponseEntity.status(201).body(authService.resetPassword(username, code, newPassword));
   }
 }

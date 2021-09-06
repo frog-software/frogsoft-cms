@@ -9,7 +9,6 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
@@ -34,7 +33,6 @@ public class MailServiceImpl implements MailService {
     context.setVariable("verifyCode", verifyCode);
     //将模块引擎内容解析成html字符串
     String emailContent = templateEngine.process("emailTemplate", context);
-    System.out.println(emailContent);
     try {
       MimeMessage message = mailSender.createMimeMessage();
       MimeMessageHelper helper = new MimeMessageHelper(message, true);
@@ -44,7 +42,7 @@ public class MailServiceImpl implements MailService {
       helper.setText(emailContent, true);
       mailSender.send(message);
     } catch (Exception e) {
-      throw new NotFoundException("发送简单邮件时发生异常！");
+      throw new NotFoundException("发送简单邮件时发生异常！" + e);
     }
   }
 

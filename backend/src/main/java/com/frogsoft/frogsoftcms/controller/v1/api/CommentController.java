@@ -37,14 +37,15 @@ public class CommentController {
 
   @DeleteMapping("/{id}")
   public ResponseEntity<?> deleteComment(@PathVariable(name = "id") Long id,
-      @AuthenticationPrincipal User authenticatedUser){
+      @AuthenticationPrincipal User authenticatedUser) {
     commentService.delete(id, authenticatedUser);
     return ResponseEntity.ok(201);
   }
+
   @GetMapping("")
   public ResponseEntity<?> getComment(@RequestParam("article") Long id,
-      @RequestParam("username") String username){
+      @RequestParam("username") String username) {
     return ResponseEntity.status(201)
-        .body(commentService.getComment(id,username));
+        .body(commentService.getComment(id, username));
   }
 }
