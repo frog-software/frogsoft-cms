@@ -49,13 +49,17 @@ services:
   frogsoft-cms-backend:
     depends_on: 
       - mysql
-    build: ./backend
+    image: ${DOCKERHUB_USERNAME}/frogsoft-cms-backend:latest
     container_name: frogsoft-cms-backend
     restart: unless-stopped
     networks:
       - traefik-global-proxy
     command:
-      - ["./wait-for-it.sh", "mysql:3306", "--", "java", "org.springframework.boot.loader.JarLauncher"]
+      - "./wait-for-it.sh"
+      - "mysql:3306"
+      - "--"
+      - "java"
+      - "org.springframework.boot.loader.JarLauncher"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.frogsoft-cms-backend.rule=Host(`${BACKEND_TRAEFIK_HOST}`)"
@@ -64,8 +68,6 @@ services:
       - "traefik.http.services.frogsoft-cms-backend.loadbalancer.server.port=${BACKEND_PORT}"
       - "traefik.http.routers.frogsoft-cms-backend.middlewares=frogsoft-cms-backend-compress"
       - "traefik.http.middlewares.frogsoft-cms-backend-compress.compress=true"
-    volumes:
-      - "${HOME}/.m2:/root/.m2"
     environment:
       MYSQL_URL: mysql:3306
       MYSQL_DB: ${MYSQL_DATABASE}
@@ -74,12 +76,15 @@ services:
       PORT: ${BACKEND_PORT}
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRATION_DELAY: ${JWT_EXPIRATION_DELAY}
+      MAIL_HOST: ${MAIL_HOST}
+      MAIL_USERNAME: ${MAIL_USERNAME}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
     expose:
       - "${BACKEND_PORT}"
 
 
   frogsoft-cms-user:
-    build: ./frontend-user
+    image: ${DOCKERHUB_USERNAME}/frogsoft-cms-user:latest
     container_name: frogsoft-cms-user
     restart: unless-stopped
     networks:
@@ -96,7 +101,7 @@ services:
       - "${FRONTEND_USER_PORT}"
 
   frogsoft-cms-admin:
-    build: ./frontend-admin
+    image: ${DOCKERHUB_USERNAME}/frogsoft-cms-admin:latest
     container_name: frogsoft-cms-admin
     restart: unless-stopped
     networks:
