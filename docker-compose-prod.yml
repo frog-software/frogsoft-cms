@@ -17,7 +17,7 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - .:/etc/traefik
+      # - .:/etc/traefik
       # - ./dynamic:/etc/traefik/dynamic
       # - ./certs:/etc/traefik/certs
       - /var/run/docker.sock:/var/run/docker.sock:ro
