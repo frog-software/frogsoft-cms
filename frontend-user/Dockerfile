@@ -2,9 +2,10 @@ FROM node:14-alpine AS build
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 COPY package*.json yarn.lock ./
-RUN yarn install --frozen-lockfile --production=false
-COPY . .
+ARG VITE_BACKEND_URL
 ENV NODE_ENV=production
+RUN yarn install --frozen-lockfile --production=false --registry https://registry.npm.taobao.org/
+COPY . .
 RUN yarn build
 
 FROM nginx:stable-alpine

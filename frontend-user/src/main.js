@@ -6,6 +6,7 @@ import 'ant-design-vue/dist/antd.css'
 import axios from "axios";
 import router from "./router";
 
+export const { VITE_BACKEND_URL } = import.meta.env;
 
 const app = createApp(App)
 
@@ -18,7 +19,7 @@ app.config.productionTip = false;
 
 app.config.globalProperties.$store = store
 
-axios.defaults.baseURL = 'https://api.pxm.edialect.top/'
+axios.defaults.baseURL = VITE_BACKEND_URL
 app.config.globalProperties.Axios = axios
 export default axios
 /**
