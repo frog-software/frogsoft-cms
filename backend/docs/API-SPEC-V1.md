@@ -7,7 +7,8 @@
   - AU03 `PUT /auth/forget`  重置密码：输入用户名+新密码+验证码，重置密码为新密码
 - AT 文章
   - AT01 Articles
-    - AT0101  `GET /articles` 获取文章（批量）：过滤器，例如search
+    - AT0101  `GET /articles` 获取文章（批量）：过滤器，例如 `search`
+    - AT0101-02 `sortBy`   `order` 字段 具体见 apifox
     - AT0102  `POST /articles` 创建文章
   - AT02 Article
     - AT0201 `GET /articles/{id}` 获取文章（单一）
@@ -28,6 +29,7 @@
     - US0102 `POST /users` 创建用户
   - US02 user
     - US0201 `GET /users/{username}` 获取用户信息
+    - US0201-02 用户信息增加 `statistics`  字段
     - US0202 `PUT /users/{username}` 修改用户信息：非敏感信息
     - US0203 `DELETE /users/{username}` 删除用户信息
   - US03 修改用户敏感信息
@@ -53,4 +55,7 @@
   - GL03 全局配置
     - GL0301 `GET /global/config` 获取配置
     - GL0302 `PUT /global/config` 修改配置
+  - GL04 文件操作
+    - GL0401 `POST /global/files` 上传文件到本地服务器
+    - GL0402 `DELETE /global/files`  从本地服务器中删除对应文件
 
