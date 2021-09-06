@@ -73,7 +73,7 @@ services:
       - "traefik.http.routers.frogsoft-cms-backend.middlewares=frogsoft-cms-backend-compress"
       - "traefik.http.middlewares.frogsoft-cms-backend-compress.compress=true"
     environment:
-      MYSQL_URL: mysql:3306
+      MYSQL_URL: mysql
       MYSQL_DB: ${MYSQL_DATABASE}
       MYSQL_USERNAME: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
