@@ -3,6 +3,7 @@ package com.frogsoft.frogsoftcms.controller.v1.api;
 import com.frogsoft.frogsoftcms.controller.v1.request.User.UserChangePasswordRequest;
 import com.frogsoft.frogsoftcms.controller.v1.request.User.UserEmailResetRequest;
 import com.frogsoft.frogsoftcms.controller.v1.request.User.UserRegisterRequest;
+import com.frogsoft.frogsoftcms.controller.v1.request.User.UserRequest;
 import com.frogsoft.frogsoftcms.dto.model.user.UserDto;
 import com.frogsoft.frogsoftcms.exception.basic.forbidden.ForbiddenException;
 import com.frogsoft.frogsoftcms.model.user.User;
@@ -14,6 +15,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -97,5 +99,26 @@ public class UserController {
   ) {
     return ResponseEntity.ok()
         .body(userService.changePassword(username, userChangePasswordRequest, authenticatedUser));
+  }
+
+
+  @PutMapping("/{username}")
+  public ResponseEntity<EntityModel<UserDto>> alterUserInformation(
+      @PathVariable String username,
+      @RequestBody UserRequest userRequest,
+      @AuthenticationPrincipal User authenticatedUser
+      ){
+    return ResponseEntity.ok().body(userService.alterUserInformation(username, userRequest, authenticatedUser));
+  }
+
+
+  @DeleteMapping("/{username}")
+  public ResponseEntity<?> deleteUser(
+      @PathVariable String username,
+      @RequestBody UserRequest userRequest,
+      @AuthenticationPrincipal User authenticatedUser
+  ){
+    userService.deleteUser(username, userRequest, authenticatedUser);
+    return ResponseEntity.ok(201);
   }
 }

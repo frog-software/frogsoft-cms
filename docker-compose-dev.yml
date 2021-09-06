@@ -1,16 +1,59 @@
 version: "3"
 services:
-  xxxxxxxxxxxxx:
-    build: .
-    container_name: xxxxxxxxxxxxx
+  mysql:
+    image: mysql:8.0.26
+    container_name: frogsoft-cms-mysql
     volumes:
-      - "${HOME}/.m2:/root/.m2"
+      - "./mysql/db_data:/var/lib/mysql"
+      - "./mysql/conf.d:/etc/mysql/conf.d"
+    restart: unless-stopped
     environment:
-      - "MYSQL_URL=${MYSQL_URL}"
-      - "MYSQL_DB=${MYSQL_DB}"
-      - "MYSQL_USERNAME=${MYSQL_USERNAME}"
+      - "MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}"
+      - "MYSQL_DATABASE=${MYSQL_DATABASE}"
+      - "MYSQL_USER=${MYSQL_USER}"
       - "MYSQL_PASSWORD=${MYSQL_PASSWORD}"
-      - "PORT=${PORT}"
-      - "JWT_SECRET=${JWT_SECRET}"
-      - "JWT_EXPIRATION_DELAY=${JWT_EXPIRATION_DELAY}"
-    network_mode: "host"
+
+
+  frogsoft-cms-backend:
+    depends_on: 
+      - mysql
+    build: ./backend
+    container_name: frogsoft-cms-backend
+    restart: unless-stopped
+    command:
+      - "./wait-for-it.sh"
+      - "mysql:3306"
+      - "--"
+      - "java"
+      - "org.springframework.boot.loader.JarLauncher"
+    environment:
+      MYSQL_URL: mysql:3306
+      MYSQL_DB: ${MYSQL_DATABASE}
+      MYSQL_USERNAME: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      PORT: ${BACKEND_PORT}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION_DELAY: ${JWT_EXPIRATION_DELAY}
+      MAIL_HOST: ${MAIL_HOST}
+      MAIL_USERNAME: ${MAIL_USERNAME}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
+    ports:
+      - "${BACKEND_PORT}:${BACKEND_PORT}"
+
+
+  frogsoft-cms-user:
+    build: ./frontend-user
+    container_name: frogsoft-cms-user
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_USER_PORT}:${FRONTEND_USER_PORT}"
+
+
+  frogsoft-cms-admin:
+    build: ./frontend-admin
+    container_name: frogsoft-cms-admin
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_ADMIN_PORT}:${FRONTEND_ADMIN_PORT}"
+    environment: 
+      - "VITE_BACKEND_URL:${BAKEND_URL}"

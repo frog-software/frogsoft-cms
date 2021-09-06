@@ -6,17 +6,17 @@
       :loading="{spinning: loading, delay: 500}"
       item-layout="vertical"
     >
-      <template v-slot:renderItem="item">
+      <template #renderItem="{item}">
         <a-list-item>
-          <template v-slot:extra>
+          <template #extra>
             <img
-              :src="item.article.cover"
-              alt="文章封面"
-              width="300"
-            />
+                :src="item.article.cover"
+                alt="文章封面"
+                width="300"
+            >
           </template>
           <a-list-item-meta :description="item.article.description">
-            <template v-slot:title>
+            <template #title>
               <h2>
                 <router-link :to="{name:'ArticleDetails',params:{id:item.article.id.toString()}}">
                   {{ item.article.title }}
@@ -27,69 +27,68 @@
         </a-list-item>
       </template>
     </a-list>
-
   </div>
 </template>
 <script>
-import axios from 'axios'
+import axios from 'axios';
 
 export default {
   name: 'ArticleList',
-  data () {
+  props: {
+    listData: Array,
+    pageSize: Number,
+  },
+  data() {
     return {
       listSource: null,
       listDataLock: null,
       loading: false,
-      currentPage: 1
-    }
+      currentPage: 1,
+    };
   },
   computed: {
-    pagination () {
+    pagination() {
       return {
-        onChange: page => {
-          this.currentPage = page
-          this.getCurrentPageData(page)
+        onChange: (page) => {
+          this.currentPage = page;
+          this.getCurrentPageData(page);
         },
         pageSize: this.pageSize,
         total: this.listDataLock ? this.listDataLock.length : 0,
-        current: this.currentPage
-      }
-    }
-  },
-  props: {
-    listData: Array,
-    pageSize: Number
-  },
-  created () {
-    this.listDataLock = Object.assign([], this.listData)
+        current: this.currentPage,
+      };
+    },
   },
   watch: {
-    listData () {
-      this.listDataLock = Object.assign([], this.listData)
-      this.currentPage = 1
+    listData() {
+      this.listDataLock = Object.assign([], this.listData);
+      this.currentPage = 1;
     },
-    listDataLock () {
-      if (!this.listDataLock) return
-      if (this.listDataLock.length === 0) return
-      this.getCurrentPageData(1)
-    }
+    listDataLock() {
+      if (!this.listDataLock) return;
+      if (this.listDataLock.length === 0) return;
+      this.getCurrentPageData(1);
+    },
+  },
+  created() {
+    this.listDataLock = Object.assign([], this.listData);
   },
   methods: {
-    getCurrentPageData (page) {
-      this.loading = true
+    getCurrentPageData(page) {
+      this.loading = true;
       axios.put('/articles', {
-        articles: this.listData.slice((page - 1) * this.pageSize, page * this.pageSize)
-      }).then(res => {
-        this.listSource = res.data.articles
+        articles: this.listData.slice((page - 1) * this.pageSize, page * this.pageSize),
+      }).then((res) => {
+        this.listSource = res.data.articles;
       }).finally(
-        () => {
-          this.loading = false
-        }
-      )
-    }
+          () => {
+            this.loading = false;
+          },
+      );
+    },
 
-  }
+  },
 
-}
+};
 </script>
 <style></style>

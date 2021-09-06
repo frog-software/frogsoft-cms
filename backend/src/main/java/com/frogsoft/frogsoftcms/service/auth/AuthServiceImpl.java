@@ -23,6 +23,7 @@ public class AuthServiceImpl implements AuthService {
   private final UserModelAssembler userModelAssembler;
   private final UserMapper userMapper;
   private final PasswordEncoder passwordEncoder;
+
   public EntityModel<UserDto> resetPassword(String username, String code, String newPassword) {
     User user = userRepository.findByUsername(username);
     if (user == null) {

@@ -92,7 +92,6 @@
       <artifactId>spring-security-test</artifactId>
       <scope>test</scope>
     </dependency>
-    <!--邮件: email-->
     <dependency>
       <artifactId>spring-boot-starter-mail</artifactId>
       <groupId>org.springframework.boot</groupId>

@@ -1,5 +1,6 @@
 import axios                from 'axios';
 import { VITE_BACKEND_URL } from 'consts/url';
+import { message }          from 'antd';
 
 const service = axios.create({
   baseURL: VITE_BACKEND_URL,
@@ -7,17 +8,22 @@ const service = axios.create({
   headers: {},
 });
 
-service.interceptors.request.use((conf) => ({
-  ...conf,
-  headers: {
-    ...conf.headers,
-    Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
-  },
-}), (err) => Promise.reject(err));
+service.interceptors.request.use((conf) => {
+  conf.headers.Authorization = `Bearer ${localStorage.getItem('token') || ''}`;
+  return conf;
+}, (err) => Promise.reject(err));
 
 service.interceptors.response.use((res) => res,
   (err) => {
-    console.log(err);
+    switch (err?.response?.status) {
+      case 401:
+        message.error('你没有权限');
+        // to login page
+        break;
+      default:
+        message.error('未知错误');
+        break;
+    }
     return Promise.reject(err);
   });
 

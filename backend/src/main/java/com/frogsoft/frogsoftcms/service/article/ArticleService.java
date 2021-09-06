@@ -25,7 +25,8 @@ public interface ArticleService {
 
   EntityModel<ArticleDto> deleteFavor(Long id, Long userId);
 
-  PagedModel<EntityModel<ArticleDto>> findAll(Pageable pageable);
+  PagedModel<EntityModel<ArticleDto>> findAll(String sortBy, String order, Pageable pageable);
 
-  PagedModel<EntityModel<ArticleDto>> findBySearch(String search, Pageable pageable);
+  PagedModel<EntityModel<ArticleDto>> findBySearch(String search, String sortBy, String order,
+      Pageable pageable);
 }

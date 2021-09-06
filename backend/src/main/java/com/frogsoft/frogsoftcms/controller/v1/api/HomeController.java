@@ -26,11 +26,6 @@ public class HomeController {
     return ResponseEntity.status(200).body(homeService.getRecommendations(authenticatedUser));
   }
 
-  @GetMapping("/daily")
-  public ResponseEntity<?> getDailyArticle() {
-    return ResponseEntity.status(200).body(homeService.getDailyArticle());
-  }
-
   @PutMapping("/daily")
   public ResponseEntity<?> putDailyArticle(
       @RequestParam Integer articleId,
@@ -40,15 +35,10 @@ public class HomeController {
     }
     return ResponseEntity.status(201).body(homeService.changeDailyArticle(articleId,authenticatedUser));
   }
-  
-  @GetMapping("/hot-articles")
-  public ResponseEntity<?> getRankList(){
-    return ResponseEntity.status(200).body(homeService.getRankList());
-  }
 
-  @GetMapping("/announcements")
-  public ResponseEntity<?> getAnnouncements(){
-    return ResponseEntity.status(200).body(homeService.getAnnouncements());
+  @GetMapping("/hot-articles")
+  public ResponseEntity<?> getRankList() {
+    return ResponseEntity.status(200).body(homeService.getRankList());
   }
 
   @PutMapping("/announcements")
@@ -61,5 +51,5 @@ public class HomeController {
     return ResponseEntity.status(201).body(homeService.changeAnnouncements(
         announcementsSetRequest, authenticatedUser));
   }
-  
+
 }
