@@ -1,33 +1,42 @@
+<script setup>
+
+import ArticleList from '../../components/Articles/ArticleList.vue'; </script>
+
 <template>
-  <a-spin :spinning="spinning" :delay="500" class="body">
-  <ArticleList :page-size="8" :list-data="listData">
-  </ArticleList>
-  </a-spin>
+  <div class="body">
+    <a-spin
+        :delay="500"
+        :spinning="spinning"
+    >
+      <ArticleList
+          :list-data="listData"
+          :page-size="8"
+      />
+    </a-spin>
+  </div>
 </template>
 
 <script>
-import ArticleList from '@/components/Articles/ArticleList'
-import axios from 'axios'
+// eslint-disable-next-line import/order
+import axios from 'axios';
+
 export default {
   name: 'Articles',
-  components: {
-    ArticleList
-  },
-  data () {
+  data() {
     return {
       listData: [],
-      spinning: false
-    }
+      spinning: false,
+    };
   },
-  created () {
-    this.spinning = true
-    axios.get('/articles').then(res => {
-      this.listData = res.data.articles
+  created() {
+    this.spinning = true;
+    axios.get('/articles').then((res) => {
+      this.listData = res.data.articles;
     }).finally(() => {
-      this.spinning = false
-    })
-  }
-}
+      this.spinning = false;
+    });
+  },
+};
 </script>
 
 <style scoped>

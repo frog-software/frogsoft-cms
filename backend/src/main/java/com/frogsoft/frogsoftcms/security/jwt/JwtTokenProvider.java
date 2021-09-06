@@ -2,6 +2,8 @@ package com.frogsoft.frogsoftcms.security.jwt;
 
 import static java.util.stream.Collectors.joining;
 
+import com.frogsoft.frogsoftcms.model.user.User;
+import com.frogsoft.frogsoftcms.repository.user.UserRepository;
 import com.frogsoft.frogsoftcms.security.SecurityConstants;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -11,6 +13,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.Date;
+import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.crypto.SecretKey;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +21,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 
 
@@ -28,6 +30,7 @@ public class JwtTokenProvider {
 
   private static final String AUTHORITIES_KEY = "roles";
   private final SecurityConstants securityConstants;
+  private final UserRepository userRepository;
   private SecretKey secretKey;
 
   @PostConstruct
@@ -38,8 +41,12 @@ public class JwtTokenProvider {
 
   public String createToken(Authentication authentication) {
     String username = authentication.getName();
+
+    User user = userRepository.findByUsername(username);
+
     Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-    Claims claims = Jwts.claims().setSubject(username);
+
+    Claims claims = Jwts.claims().setSubject(username).setId(user.getId().toString());
 
     if (!authorities.isEmpty()) {
       claims.put(AUTHORITIES_KEY,
@@ -74,9 +81,20 @@ public class JwtTokenProvider {
             ? AuthorityUtils.NO_AUTHORITIES
             : AuthorityUtils.commaSeparatedStringToAuthorityList(authoritiesClaim.toString());
 
-    User principal = new User(claims.getSubject(), "", authorities);
+    try {
+      User principal = new User()
+          .setId(Long.parseLong(claims.getId()))
+          .setUsername(claims.getSubject())
+          .setRoles(authorities
+              .stream()
+              .map(GrantedAuthority::getAuthority)
+              .collect(Collectors.toList()));
 
-    return new UsernamePasswordAuthenticationToken(principal, token, authorities);
+      return new UsernamePasswordAuthenticationToken(principal, token, authorities);
+
+    } catch (NumberFormatException e) {
+      return null;
+    }
   }
 
   public boolean validateToken(String token) {

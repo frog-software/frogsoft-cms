@@ -1,8 +1,9 @@
 <template>
   <a-result
-    status="404"
-    title="404"
-    sub-title="对不起，你所访问的页面不存在！">
+      status="404"
+      title="404"
+      sub-title="对不起，你所访问的页面不存在！"
+  >
     <template #extra>
       <router-link :to="{name:'Home'}">
         <a-button type="primary">
@@ -15,8 +16,8 @@
 
 <script>
 export default {
-  name: 'NotFound'
-}
+  name: 'NotFound',
+};
 </script>
 
 <style scoped>
