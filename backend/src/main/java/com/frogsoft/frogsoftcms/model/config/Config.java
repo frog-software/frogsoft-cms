@@ -1,4 +1,4 @@
-package com.frogsoft.frogsoftcms.model.Config;
+package com.frogsoft.frogsoftcms.model.config;
 
 
 import javax.persistence.Entity;
@@ -12,6 +12,6 @@ import lombok.experimental.Accessors;
 public class Config {
 
   @Id
-  private String key;
-  private String value;
+  private String configKey;
+  private String configValue;
 }
