@@ -127,17 +127,33 @@ public class ArticleServiceImpl implements ArticleService {
   }
 
   @Override
-  public PagedModel<EntityModel<ArticleDto>> findAll(Pageable pageable) {
-    Page<ArticleDto> articles = articleRepository.findAllByStatus(Status.NORMAL, pageable)
-        .map(articleMapper::toArticleDto);
-    return pagedResourcesAssembler.toModel(articles, articleModelAssembler);
+  public PagedModel<EntityModel<ArticleDto>> findAll(String sortBy, String order,
+      Pageable pageable) {
+    if (order.equals("ASC")) {
+      Page<ArticleDto> articles = articleRepository.findAllASC(Status.NORMAL, sortBy, pageable)
+          .map(articleMapper::toArticleDto);
+      return pagedResourcesAssembler.toModel(articles, articleModelAssembler);
+    } else {
+      Page<ArticleDto> articles = articleRepository.findAllDESC(Status.NORMAL, sortBy, pageable)
+          .map(articleMapper::toArticleDto);
+      return pagedResourcesAssembler.toModel(articles, articleModelAssembler);
+    }
+
   }
 
   @Override
-  public PagedModel<EntityModel<ArticleDto>> findBySearch(String search, Pageable pageable) {
-    Page<ArticleDto> articles = articleRepository
-        .findBySearch(search, Status.NORMAL, pageable)
-        .map(articleMapper::toArticleDto);
-    return pagedResourcesAssembler.toModel(articles, articleModelAssembler);
+  public PagedModel<EntityModel<ArticleDto>> findBySearch(String search, String sortBy,
+      String order, Pageable pageable) {
+    if (order.equals("ASC")) {
+      Page<ArticleDto> articles = articleRepository
+          .findBySearchASC(search, Status.NORMAL, sortBy, pageable)
+          .map(articleMapper::toArticleDto);
+      return pagedResourcesAssembler.toModel(articles, articleModelAssembler);
+    } else {
+      Page<ArticleDto> articles = articleRepository
+          .findBySearchDESC(search, Status.NORMAL, sortBy, pageable)
+          .map(articleMapper::toArticleDto);
+      return pagedResourcesAssembler.toModel(articles, articleModelAssembler);
+    }
   }
 }
