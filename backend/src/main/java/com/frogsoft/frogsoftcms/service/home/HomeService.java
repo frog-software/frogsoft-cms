@@ -10,4 +10,6 @@ public interface HomeService {
     CollectionModel<EntityModel<ArticleDto>> getRecommendations(User authenticatedUser);
 
     EntityModel<ArticleDto> getDailyArticle();
+
+    CollectionModel<EntityModel<ArticleDto>> getRankList();
 }
