@@ -1,11 +1,12 @@
 package com.frogsoft.frogsoftcms.controller.v1.request.User;
 
+import java.util.List;
 import lombok.Data;
 
 @Data
-public class UserChangePasswordRequest {
-
+public class UserRequest {
+  private String email;
   private String username;
-  private String oldPassword;
-  private String newPassword;
+  private List<String> roles;
+
 }
