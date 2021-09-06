@@ -1,4 +1,4 @@
-package com.frogsoft.frogsoftcms.model.Config;
+package com.frogsoft.frogsoftcms.model.config;
 
 
 import javax.persistence.Entity;
