@@ -46,9 +46,13 @@
     - CM0203 `DELETE /comments/{id}` 删除评论：一并删除子评论
 - HM 首页
   - HM01 `GET /home/recommandations` 推荐阅读
-  - HM02 `GET /home/daily` 每日推荐
+  - HM02 每日推荐
+    - HM0201 `GET /home/daily` 获取每日推荐
+    - HM0202 `PUT /home/daily` 更改每日推荐
   - HM03 `GET /home/hot-articles` 热门文章
-  - HM04 `GET /home/announcements`  本站公告
+  - HM04 本站公告
+    - HM0401 `GET /home/announcements`  获取本站公告
+    - HM0402 `PUT /home/announcements`  获取本站公告
 - GL 全局
   - GL01 访问鉴权
   - GL02 `POST /global/email` 发送邮件
