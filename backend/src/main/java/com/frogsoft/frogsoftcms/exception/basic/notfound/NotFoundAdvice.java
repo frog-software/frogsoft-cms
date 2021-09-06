@@ -13,11 +13,11 @@ public class NotFoundAdvice {
   @ResponseBody
   @ExceptionHandler(NotFoundException.class)
   @ResponseStatus(HttpStatus.NOT_FOUND)
-  public ExceptionResponseBody resourceNotFoundException(NotFoundException ex) {
+  public ExceptionResponseBody notFoundException(NotFoundException ex) {
     return new ExceptionResponseBody(
         HttpStatus.NOT_FOUND.value(),
         ex.getMessage(),
-        "Resource Not Found"
+        "Not Found"
     );
   }
 }
