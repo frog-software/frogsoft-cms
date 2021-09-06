@@ -1,31 +1,38 @@
-import Vue from 'vue'
+import {createApp} from 'vue'
 import App from './App.vue'
-import router from './router'
-import store from './store'
+import store from "./store";
+import Antd, {message} from 'ant-design-vue'
 import 'ant-design-vue/dist/antd.css'
-import Antd, { message } from 'ant-design-vue'
-import axios from 'axios'
+import axios from "axios";
+import router from "./router";
 
-Vue.config.productionTip = false
-Vue.use(Antd)
 
-// axios
-Vue.prototype.$axios = axios
+const app = createApp(App)
+
+app.use(store)
+app.use(router)
+
+
+app.use(Antd)
+app.config.productionTip = false;
+
+app.config.globalProperties.$store = store
+
 axios.defaults.baseURL = 'https://api.pxm.edialect.top/'
-
+app.config.globalProperties.Axios = axios
+export default axios
 /**
  * axios请求拦截器
  */
 axios.interceptors.request.use(function (config) {
   // Do something before request is sent
-  config.headers.token = localStorage.getItem('token') || [] // 将token放到请求头发送给服务器
+  config.headers.token = localStorage.getItem('token') || ""// 将token放到请求头发送给服务器
   return config
 }, function (error) {
   // Do something with request error
   message.error(error.toString())
   return Promise.reject(error)
 })
-
 /**
  * axios回应拦截器
  */
@@ -48,10 +55,4 @@ axios.interceptors.response.use(function (response) {
   return Promise.reject(error)
 })
 
-export default axios
-
-new Vue({
-  router,
-  store,
-  render: h => h(App)
-}).$mount('#app')
+app.mount('#app')
