@@ -1,6 +1,7 @@
 package com.frogsoft.frogsoftcms.controller.v1.api;
 
 import com.frogsoft.frogsoftcms.controller.v1.request.User.UserEmailResetRequest;
+import com.frogsoft.frogsoftcms.controller.v1.request.User.UserChangePasswordRequest;
 import com.frogsoft.frogsoftcms.controller.v1.request.User.UserRegisterRequest;
 import com.frogsoft.frogsoftcms.dto.model.user.UserDto;
 import com.frogsoft.frogsoftcms.exception.basic.forbidden.ForbiddenException;
@@ -86,6 +87,13 @@ public class UserController {
     String newEmail = resetRequest.getNewemail();
     String code = resetRequest.getVaryficationcode();
     return ResponseEntity.ok().body(userService.resetEmail(username, newEmail, code));
+  @PutMapping("/{username}/password")
+  public ResponseEntity<EntityModel<UserDto>> changePassword(
+      @PathVariable(name = "username") String username,
+      @RequestBody UserChangePasswordRequest userChangePasswordRequest,
+      @AuthenticationPrincipal User authenticatedUser
+  ){
+    return ResponseEntity.ok().body(userService.changePassword(username, userChangePasswordRequest, authenticatedUser));
   }
 
 

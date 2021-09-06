@@ -25,4 +25,10 @@ public class HomeController {
   public ResponseEntity<?> getDailyArticle() {
     return ResponseEntity.status(200).body(homeService.getDailyArticle());
   }
+  
+  @GetMapping("/hot-articles")
+  public ResponseEntity<?> getRankList(){
+    return ResponseEntity.status(200).body(homeService.getRankList());
+  }
+  
 }

@@ -2,12 +2,15 @@ package com.frogsoft.frogsoftcms.service.user;
 
 import static com.frogsoft.frogsoftcms.FrogsoftCmsBackendApplication.verificationCodeStorage;
 
+import com.frogsoft.frogsoftcms.controller.v1.request.User.UserChangePasswordRequest;
 import com.frogsoft.frogsoftcms.controller.v1.request.User.UserRegisterRequest;
 import com.frogsoft.frogsoftcms.dto.assembler.user.UserModelAssembler;
 import com.frogsoft.frogsoftcms.dto.mapper.user.UserMapper;
 import com.frogsoft.frogsoftcms.dto.model.user.UserDto;
 import com.frogsoft.frogsoftcms.exception.basic.conflict.ConflictException;
 import com.frogsoft.frogsoftcms.exception.basic.notfound.NotFoundException;
+import com.frogsoft.frogsoftcms.exception.basic.forbidden.ForbiddenException;
+import com.frogsoft.frogsoftcms.exception.basic.unauthorized.UnauthorizedException;
 import com.frogsoft.frogsoftcms.exception.user.UserNotFoundException;
 import com.frogsoft.frogsoftcms.model.user.User;
 import com.frogsoft.frogsoftcms.repository.user.UserRepository;
@@ -82,5 +85,19 @@ public class UserServiceImpl implements UserService {
     } else {
       throw new NotFoundException("验证码错误");
     }
+  public EntityModel<UserDto> changePassword(String username,
+      UserChangePasswordRequest changePasswordRequest,
+      User authenticatedUser){
+    if (!authenticatedUser.getUsername().equals(username)){
+      throw new UnauthorizedException("身份验证不一致，无法修改密码");
+    }
+    User oldUser = userRepository.findByUsername(username);
+    if (!passwordEncoder.matches(changePasswordRequest.getOldPassword(), oldUser.getPassword())) {
+      throw new UnauthorizedException("旧密码错误");
+    }
+    oldUser.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
+    User newUser = userRepository.save(oldUser);
+
+    return userModelAssembler.toModel(userMapper.toUserDto(newUser));
   }
 }
