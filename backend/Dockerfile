@@ -1,5 +1,6 @@
 FROM maven:3.6.0-jdk-11-slim AS build
-WORKDIR /application
+RUN mkdir -p /usr/src/app
+WORKDIR /usr/src/app
 COPY ./pom.xml ./pom.xml
 RUN mvn dependency:go-offline -B
 COPY src src
@@ -9,10 +10,10 @@ RUN java -Djarmode=layertools -jar application.jar extract
 
 
 FROM openjdk:11-jre-slim
-WORKDIR /application
-COPY --from=build /application/dependencies/ ./
-COPY --from=build /application/snapshot-dependencies/ ./
-COPY --from=build /application/spring-boot-loader/ ./
-COPY --from=build /application/application/ ./
+WORKDIR /usr/src/app
+COPY --from=build /usr/src/app/dependencies/ ./
+COPY --from=build /usr/src/app/snapshot-dependencies/ ./
+COPY --from=build /usr/src/app/spring-boot-loader/ ./
+COPY --from=build /usr/src/app/application/ ./
 RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo 'Asia/Shanghai' >/etc/timezone
 ENTRYPOINT ["java", "org.springframework.boot.loader.JarLauncher"]

@@ -27,7 +27,6 @@ public class VerificationConfig {
     VerificationCode verificationCode = new VerificationCode(userId, code);
 
     storage.put(userId, verificationCode);
-    System.out.println(verificationCode);
 
     return verificationCode;
   }

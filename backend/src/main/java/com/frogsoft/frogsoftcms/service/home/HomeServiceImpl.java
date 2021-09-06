@@ -8,6 +8,9 @@ import com.frogsoft.frogsoftcms.model.article.Article;
 import com.frogsoft.frogsoftcms.model.user.User;
 import com.frogsoft.frogsoftcms.repository.article.ArticleRepository;
 import com.frogsoft.frogsoftcms.repository.user.UserRepository;
+import java.util.List;
+import java.util.Random;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -25,9 +28,10 @@ public class HomeServiceImpl implements HomeService {
   private final ArticleMapper articleMapper;
   private final UserRepository userRepository;
 
+
   private List<ArticleDto> getAllArticleDtos(){
     return articleRepository.findAll().stream().map(
-            articleMapper::toArticleDto
+        articleMapper::toArticleDto
     ).collect(Collectors.toList());
   }
 
@@ -47,11 +51,12 @@ public class HomeServiceImpl implements HomeService {
   }
 
   @Override
-  public EntityModel<ArticleDto> getDailyArticle(){
+  public EntityModel<ArticleDto> getDailyArticle() {
     Random randArt = new Random();
+    
     List<ArticleDto> articles = getAllArticleDtos();
 
-    if(articles.size() <= 0){
+    if (articles.size() <= 0) {
       throw new NotFoundException("目前暂无文章");
     }
     // 获取一个随机文章作为每日推荐
