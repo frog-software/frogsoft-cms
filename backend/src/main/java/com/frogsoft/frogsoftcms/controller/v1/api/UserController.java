@@ -1,5 +1,6 @@
 package com.frogsoft.frogsoftcms.controller.v1.api;
 
+import com.frogsoft.frogsoftcms.controller.v1.request.User.UserChangePasswordRequest;
 import com.frogsoft.frogsoftcms.controller.v1.request.User.UserRegisterRequest;
 import com.frogsoft.frogsoftcms.dto.model.user.UserDto;
 import com.frogsoft.frogsoftcms.exception.basic.forbidden.ForbiddenException;
@@ -16,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -77,6 +79,15 @@ public class UserController {
       @RequestBody UserRegisterRequest userRegisterRequest
   ){
     return ResponseEntity.ok().body(userService.registerUser(userRegisterRequest));
+  }
+
+  @PutMapping("/{username}/password")
+  public ResponseEntity<EntityModel<UserDto>> changePassword(
+      @PathVariable(name = "username") String username,
+      @RequestBody UserChangePasswordRequest userChangePasswordRequest,
+      @AuthenticationPrincipal User authenticatedUser
+  ){
+    return ResponseEntity.ok().body(userService.changePassword(username, userChangePasswordRequest, authenticatedUser));
   }
 
 
