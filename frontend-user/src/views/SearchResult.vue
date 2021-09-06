@@ -1,88 +1,89 @@
+<script setup>
+import ArticleList from '../components/Articles/ArticleList.vue';
+</script>
 <template>
   <a-spin
-    :spinning="spinning"
-    :delay="500"
-    style="width: 90%"
+      :spinning="spinning"
+      :delay="500"
+      style="width: 90%"
   >
     <a-card>
-      <template slot="title">
+      <template #title>
         <a-input-search
-          placeholder="请输入搜索内容"
-          enter-button
-          size="large"
-          @search="$router.push({name:'Search',query:{key:searchContent}})"
-          v-model="searchContent"
+            v-model:value="searchContent"
+            placeholder="请输入搜索内容"
+            enter-button
+            size="large"
+            @search="$router.push({name:'Search',query:{key:searchContent}})"
         />
       </template>
-      <WordList :list-data="words" :page-size="8"/>
-      <ArticleList :list-data="articles" :page-size="8"/>
+      <ArticleList
+          :list-data="articles"
+          :page-size="8"
+      />
     </a-card>
   </a-spin>
 </template>
 
 <script>
-import WordList from '@/components/Tools/WordList'
-import ArticleList from '@/components/Articles/ArticleList'
-import axios from 'axios'
+/* eslint-disable import/order */
+
+import axios from 'axios';
 
 export default {
   name: 'SearchResult',
-  components: {
-    ArticleList,
-    WordList
+  props: {
+    keyWords: String,
   },
-  props: [
-    'keyWords'
-  ],
-  computed: {
-    spinning () {
-      for (const key in this.loading) {
-        if (this.loading[key] === true) return true
-      }
-      return false
-    }
-  },
-  data () {
+  data() {
     return {
       loading: {
         articles: false,
-        words: false
+        words: false,
       },
       articles: [],
       words: [],
-      searchContent: ''
-    }
+      searchContent: '',
+    };
   },
-  created () {
-    this.loadingData()
+  computed: {
+    spinning() {
+      let result = false;
+      this.loading.forEach((value) => {
+        if (value === true) result = true;
+      });
+      return result;
+    },
   },
 
   watch: {
-    keyWords () {
-      this.loadingData()
-    }
+    keyWords() {
+      this.loadingData();
+    },
+  },
+  created() {
+    this.loadingData();
   },
   methods: {
-    loadingData () {
-      this.searchContent = this.keyWords
-      for (const i in this.loading) {
-        this.loading[i] = true
-      }
-      axios.get('/articles', { params: { search: this.keyWords } }).then(res => {
-        this.articles = res.data.articles
+    loadingData() {
+      this.searchContent = this.keyWords;
+      Object.keys(this.loading).forEach((i) => {
+        this.loading[i] = true;
+      });
+      axios.get('/articles', {params: {search: this.keyWords}}).then((res) => {
+        this.articles = res.data.articles;
       }).finally(() => {
-        this.loading.articles = false
-      })
-      axios.get('/words', { params: { search: this.keyWords } }).then(res => {
-        this.words = res.data.words
-      }
-      ).finally(() => {
-        this.loading.words = false
-      })
-    }
-  }
+        this.loading.articles = false;
+      });
+      axios.get('/words', {params: {search: this.keyWords}}).then((res) => {
+        this.words = res.data.words;
+      }).finally(() => {
+        this.loading.words = false;
+      });
+    },
+  },
 
-}
+};
 </script>
 
 <style scoped>

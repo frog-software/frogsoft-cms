@@ -1,23 +1,31 @@
 <template>
   <a-card>
-    <div v-for="item in tools" :key="item.id">
-      <a-card-grid hoverable style="width:50%;text-align:center">
+    <div
+        v-for="item in tools"
+        :key="item.id"
+    >
+      <a-card-grid
+          hoverable
+          style="width:50%;text-align:center"
+      >
         <a-card
-          :bordered="false"
-          @click="()=>{if(!item.disabled)$router.push({name:item.routerName})}"
+            :bordered="false"
+            @click="()=>{if(!item.disabled)$router.push({name:item.routerName})}"
         >
-          <template v-slot:cover>
-            <img :src="item.cover"/>
+          <template #cover>
+            <img :src="item.cover">
           </template>
 
-          <template v-slot:title>
-            <a-button type="link" :disabled="item.disabled">
-               {{ item.name }}
+          <template #title>
+            <a-button
+                :disabled="item.disabled"
+                type="link"
+            >
+              {{ item.name }}
             </a-button>
           </template>
 
-          <a-card-meta :description="item.description">
-          </a-card-meta>
+          <a-card-meta :description="item.description"/>
         </a-card>
       </a-card-grid>
     </div>
@@ -27,7 +35,7 @@
 <script>
 export default {
   name: 'Tools',
-  data () {
+  data() {
     return {
       tools: [
         {
@@ -36,7 +44,7 @@ export default {
           name: '条件查字',
           description: '根据声母、韵母、声调筛选符合要求的单字',
           routerName: 'Conditions',
-          disabled: false
+          disabled: false,
         },
         {
           id: 1,
@@ -44,7 +52,7 @@ export default {
           name: '方言词典',
           description: '提供方言词语查询',
           routerName: 'wordDict',
-          disabled: false
+          disabled: false,
         },
         {
           id: 2,
@@ -52,20 +60,20 @@ export default {
           name: '方言语音识别工具',
           description: '努力研发中',
           routerName: 'Voice',
-          disabled: true
-        }
-      ]
-    }
+          disabled: true,
+        },
+      ],
+    };
   },
   computed: {
-    pagination: function () {
+    pagination() {
       return {
         pageSize: this.pageSize,
-        total: this.tools.length
-      }
-    }
-  }
-}
+        total: this.tools.length,
+      };
+    },
+  },
+};
 </script>
 
 <style scoped>

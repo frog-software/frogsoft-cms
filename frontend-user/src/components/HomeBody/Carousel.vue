@@ -1,63 +1,71 @@
+<script setup>
+import {
+  LeftCircleOutlined,
+  RightCircleOutlined,
+} from '@ant-design/icons-vue';
+</script>
 <template>
-
   <div class="my_carousel">
-
     <a-carousel
-      ref="zmd"
-      arrows
-      :slideToScroll="current"
-      :autoplay="true"
-      :autoplaySpeed="6000"
-      @click="console.log('carousel')"
+        ref="zmd"
+        arrows
+        :autoplay-speed="6000"
+        :autoplay="true"
+        :slide-to-scroll="current"
+        @click="console.log('carousel')"
     >
-      <div
-        slot="prevArrow"
-        class="custom-slick-arrow"
-        style="left: 10px;"
+      <template
+          #prevArrow
+          class="custom-slick-arrow"
+          style="left: 10px;"
       >
-        <a-icon type="left-circle"/>
-      </div>
+        <LeftCircleOutlined/>
+      </template>
 
-      <div
-        slot="nextArrow"
-        class="custom-slick-arrow"
-        style="right: 10px">
-        <a-icon type="right-circle"/>
-      </div>
+      <template
+          #nextArrow
+          class="custom-slick-arrow"
+          style="right: 10px"
+      >
+        <RightCircleOutlined/>
+      </template>
       <!--BUG:触屏下click无反应-->
       <router-link
-        style="touch-action: none"
-        v-for="item in carousel"
-        :key="item.id"
-        :to="{name:'ArticleDetails', params:{id:item.id.toString()}}"
+          v-for="item in carousel"
+          :key="item.id"
+          style="touch-action: none"
+          :to="{name:'ArticleDetails', params:{id:item.id.toString()}}"
       >
-        <img :alt="item.id" :src="item.url" style="height: 380px"/>
+        <img
+            :alt="item.id"
+            :src="item.url"
+            style="height: 380px"
+        >
       </router-link>
-
     </a-carousel>
   </div>
-
 </template>
 
 <script>
-import axios from 'axios'
+import axios from 'axios';
+import {message} from 'ant-design-vue';
 
 export default {
   name: 'Carousel',
-  data () {
+  data() {
     return {
       carousel: [], // 轮播图上的图片以及对应的链接:[{id,url}]
-      current: 0
-    }
+      current: 0,
+    };
   },
-  created () {
+  created() {
     axios.get('/website/carousel', {}).then((res) => {
-      this.carousel = res.data.carousel
-    }).catch(err => {
-      this.$message.error(err.toString())
-    })
-  }
-}
+      this.carousel = res.data.carousel;
+    }).catch((err) => {
+      message.error(err.toString());
+    });
+  },
+};
 </script>
 
 <style scoped>
