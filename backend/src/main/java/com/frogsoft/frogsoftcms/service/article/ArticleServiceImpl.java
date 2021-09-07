@@ -48,8 +48,13 @@ public class ArticleServiceImpl implements ArticleService {
   }
 
   @Override
-  public EntityModel<ArticleDto> getOneArticle(Long id) {
-    Article article = articleRepository.findById(id)
+  public EntityModel<ArticleDto> getOneArticle(Long id, String role) {
+    if (role.equals("admin")) {
+      Article article = articleRepository.findById(id)
+          .orElseThrow(() -> new ArticleNotFoundException(id));
+      return articleModelAssembler.toModel(articleMapper.toArticleDto(article));
+    }
+    Article article = articleRepository.findByIdAndStatus(id, Status.NORMAL)
         .orElseThrow(() -> new ArticleNotFoundException(id));
     return articleModelAssembler.toModel(articleMapper.toArticleDto(article));
   }
