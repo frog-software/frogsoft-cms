@@ -117,16 +117,27 @@ public class UserServiceImpl implements UserService {
   @Override
   public EntityModel<UserDto> alterUserInformation(String oldUserName,
       UserRequest userRequest, User authenticatedUser) {
-    if (!authenticatedUser.getUsername().equals(oldUserName)) {
-      throw new UnauthorizedException("身份验证不一致，无法修改信息");
+    if (!authenticatedUser.getRoles().contains(Roles.ROLE_ADMIN.getRole())) {
+      if (!authenticatedUser.getUsername().equals(oldUserName)) {
+        throw new UnauthorizedException("身份验证不一致，无法修改信息");
+      }
     }
     User oldUser = userRepository.findByUsername(oldUserName);
     User newUser = userRepository.findByUsername(userRequest.getUsername());
-    if (newUser != null) {
-      throw new ConflictException("用户名已存在");
+    if (authenticatedUser.getRoles().contains(Roles.ROLE_ADMIN.getRole())){
+      oldUser.setRoles(userRequest.getRoles());
+      if (!oldUserName.equals(userRequest.getUsername())){
+        if (newUser != null) {
+          throw new ConflictException("用户名已存在");
+        }
+      }
     }
-    oldUser.setUsername(userRequest.getUsername())
-        .setEmail(userRequest.getEmail());
+    else {
+      if (newUser != null) {
+        throw new ConflictException("用户名已存在");
+      }
+    }
+    oldUser.setUsername(userRequest.getUsername());
     User newUser1 = userRepository.save(oldUser);
     return userModelAssembler.toModel(userMapper.toUserDto(newUser1));
   }

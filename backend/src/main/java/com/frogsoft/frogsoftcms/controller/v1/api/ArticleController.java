@@ -79,8 +79,7 @@ public class ArticleController {
   @DeleteMapping("/{id}")
   public ResponseEntity<?> deleteArticle(@PathVariable(value = "id") Long id,
       @AuthenticationPrincipal User authenticateUser) {
-    Long userId = authenticateUser.getId();
-    articleService.deleteArticle(id, userId);
+    articleService.deleteArticle(id, authenticateUser);
     return ResponseEntity.noContent().build();
   }
 

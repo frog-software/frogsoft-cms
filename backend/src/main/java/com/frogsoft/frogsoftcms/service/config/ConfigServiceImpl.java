@@ -51,6 +51,12 @@ public class ConfigServiceImpl implements ConfigService {
         .setConfigKey("email_title")
         .setConfigValue(configRequest.getEmail().getTitle()));
     configList.add(new Config()
+        .setConfigKey("email_host")
+        .setConfigValue(configRequest.getEmail().getHost()));
+    configList.add(new Config()
+        .setConfigKey("email_port")
+        .setConfigValue(configRequest.getEmail().getPort()));
+    configList.add(new Config()
         .setConfigKey("header_logo")
         .setConfigValue(configRequest.getHeader().getLogo()));
     configList.add(new Config()
