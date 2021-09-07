@@ -4,6 +4,7 @@ import com.frogsoft.frogsoftcms.controller.v1.request.User.UserChangePasswordReq
 import com.frogsoft.frogsoftcms.controller.v1.request.User.UserEmailResetRequest;
 import com.frogsoft.frogsoftcms.controller.v1.request.User.UserRegisterRequest;
 import com.frogsoft.frogsoftcms.controller.v1.request.User.UserRequest;
+import com.frogsoft.frogsoftcms.dto.model.user.UserDetailDto;
 import com.frogsoft.frogsoftcms.dto.model.user.UserDto;
 import com.frogsoft.frogsoftcms.exception.basic.forbidden.ForbiddenException;
 import com.frogsoft.frogsoftcms.model.user.User;
@@ -62,7 +63,7 @@ public class UserController {
    * @return EntityModel<UserDto>
    */
   @GetMapping("/{username}")
-  public ResponseEntity<EntityModel<UserDto>> getOneUser(
+  public ResponseEntity<EntityModel<UserDetailDto>> getOneUser(
       @PathVariable(value = "username") String username,
       @AuthenticationPrincipal User authenticatedUser
   ) {
