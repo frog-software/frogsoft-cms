@@ -60,7 +60,7 @@ services:
     container_name: frogsoft-cms-admin
     restart: unless-stopped
     environment: 
-      VITE_BACKEND_URL: localhost:${BACKEND_PORT}
+      VITE_BACKEND_URL: http://localhost:${BACKEND_PORT}
     ports:
       - "${FRONTEND_ADMIN_PORT}:80"
 

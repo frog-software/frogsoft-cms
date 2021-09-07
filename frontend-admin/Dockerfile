@@ -9,7 +9,8 @@ RUN yarn build
 
 FROM nginx:stable-alpine
 COPY nginx.conf /etc/nginx/conf.d/default.conf
-COPY scripts/replace_api_prod.sh /usr/src/app
+COPY scripts/replace_api_prod.sh /
+RUN chmod +x /replace_api_prod.sh
 COPY --from=build /usr/src/app/dist /usr/share/nginx/html
 
-CMD ["sh", "/usr/src/app/replace_api_prod.sh"]
+CMD ["sh", "/replace_api_prod.sh"]

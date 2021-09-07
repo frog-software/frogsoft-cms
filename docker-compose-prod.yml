@@ -7,15 +7,11 @@ services:
     networks:
       - frogsoft-cms-network
     command: 
-      - --providers.docker=true
-      - --providers.file.watch=true
       - --api
-      - --entrypoints.web.address=:80
-      - --entrypoints.websecure.address=:443
+      - --entrypoints.web.address=:${TRAEFIK_ENTRYPOINT_PORT}
       - --providers.docker.exposedByDefault=false
     ports:
-      - "80:80"
-      - "443:443"
+      - "${TRAEFIK_ENTRYPOINT_PORT}:${TRAEFIK_ENTRYPOINT_PORT}"
     volumes:
       # - .:/etc/traefik
       # - ./dynamic:/etc/traefik/dynamic
@@ -24,8 +20,8 @@ services:
     labels:
       - "traefik.enable=true" # enable the dashboard
       - "traefik.http.routers.traefik.rule=Host(`${TRAEFIK_DASHBOARD_HOST}`)" # domain for dashboard
-      - "traefik.http.routers.traefik.entrypoints=websecure"
-      - "traefik.http.routers.traefik.tls=true"
+      - "traefik.http.routers.traefik.entrypoints=web"
+      # - "traefik.http.routers.traefik.tls=true"
       - "traefik.http.routers.traefik.service=api@internal" # points to dashboard
       - "traefik.http.routers.traefik.middlewares=auth" # enable password auth
       - "traefik.http.middlewares.auth.basicauth.users=root:$$apr1$$qxlAutEf$$ztoeod7s4TgWQB8I1NAfW/"
@@ -69,7 +65,7 @@ services:
       - "traefik.http.routers.frogsoft-cms-backend.rule=Host(`${BACKEND_TRAEFIK_HOST}`)"
       - "traefik.http.routers.frogsoft-cms-backend.entrypoints=${TRAEFIK_ENTRYPOINT}"
       # - "traefik.http.routers.frogsoft-cms-backend.tls=true"
-      - "traefik.http.services.frogsoft-cms-backend.loadbalancer.server.port=${BACKEND_PORT}"
+      - "traefik.http.services.frogsoft-cms-backend.loadbalancer.server.port=80"
       - "traefik.http.routers.frogsoft-cms-backend.middlewares=frogsoft-cms-backend-compress"
       - "traefik.http.middlewares.frogsoft-cms-backend-compress.compress=true"
     environment:
@@ -84,7 +80,7 @@ services:
       MAIL_USERNAME: ${MAIL_USERNAME}
       MAIL_PASSWORD: ${MAIL_PASSWORD}
     expose:
-      - "${BACKEND_PORT}"
+      - "80"
 
 
   frogsoft-cms-user:
@@ -99,31 +95,34 @@ services:
       - "traefik.http.routers.frogsoft-cms-user.rule=Host(`${FRONTEND_USER_TRAEFIK_HOST}`)"
       - "traefik.http.routers.frogsoft-cms-user.entrypoints=${TRAEFIK_ENTRYPOINT}"
       # - "traefik.http.routers.frogsoft-cms-user.tls=true"
-      - "traefik.http.services.frogsoft-cms-user.loadbalancer.server.port=${FRONTEND_USER_PORT}"
+      - "traefik.http.services.frogsoft-cms-user.loadbalancer.server.port=80"
       - "traefik.http.routers.frogsoft-cms-user.middlewares=frogsoft-cms-user-compress"
       - "traefik.http.middlewares.frogsoft-cms-user-compress.compress=true"
     expose:
-      - "${FRONTEND_USER_PORT}"
+      - "80"
 
   frogsoft-cms-admin:
     build: ./frontend-admin
     image: ${DOCKERHUB_USERNAME}/frogsoft-cms-admin:latest
     container_name: frogsoft-cms-admin
     restart: unless-stopped
-    networks:
-      - frogsoft-cms-network
+    # networks:
+    #   - frogsoft-cms-network
+    # network_mode: "host"
     environment: 
-      VITE_BACKEND_URL: ${BACKEND_TRAEFIK_HOST}
+      VITE_BACKEND_URL: "${BACKEND_PORTOCOL}://${BACKEND_TRAEFIK_HOST}:${TRAEFIK_ENTRYPOINT_PORT}"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.frogsoft-cms-admin.rule=Host(`${FRONTEND_ADMIN_TRAEFIK_HOST}`)"
       - "traefik.http.routers.frogsoft-cms-admin.entrypoints=${TRAEFIK_ENTRYPOINT}"
       # - "traefik.http.routers.frogsoft-cms-admin.tls=true"
-      - "traefik.http.services.frogsoft-cms-admin.loadbalancer.server.port=${FRONTEND_ADMIN_PORT}"
+      - "traefik.http.services.frogsoft-cms-admin.loadbalancer.server.port=80"
       - "traefik.http.routers.frogsoft-cms-admin.middlewares=frogsoft-cms-admin-compress"
       - "traefik.http.middlewares.frogsoft-cms-admin-compress.compress=true"
     expose:
-      - "${FRONTEND_ADMIN_PORT}"
+      - "80"
+    ports: 
+      - "10002:80"
 
 networks:
   frogsoft-cms-network:
