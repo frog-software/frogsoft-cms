@@ -57,6 +57,7 @@ services:
     command:
       - "./wait-for-it.sh"
       - "mysql:3306"
+      - "--timeout=120"
       - "--"
       - "java"
       - "org.springframework.boot.loader.JarLauncher"
