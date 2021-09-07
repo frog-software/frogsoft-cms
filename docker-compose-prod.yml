@@ -63,7 +63,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.frogsoft-cms-backend.rule=Host(`${BACKEND_TRAEFIK_HOST}`)"
-      - "traefik.http.routers.frogsoft-cms-backend.entrypoints=${TRAEFIK_ENTRYPOINT}"
+      - "traefik.http.routers.frogsoft-cms-backend.entrypoints=web"
       # - "traefik.http.routers.frogsoft-cms-backend.tls=true"
       - "traefik.http.services.frogsoft-cms-backend.loadbalancer.server.port=80"
       - "traefik.http.routers.frogsoft-cms-backend.middlewares=frogsoft-cms-backend-compress"
@@ -73,7 +73,7 @@ services:
       MYSQL_DB: ${MYSQL_DATABASE}
       MYSQL_USERNAME: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      PORT: ${BACKEND_PORT}
+      PORT: 80
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRATION_DELAY: ${JWT_EXPIRATION_DELAY}
       MAIL_HOST: ${MAIL_HOST}
@@ -93,7 +93,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.frogsoft-cms-user.rule=Host(`${FRONTEND_USER_TRAEFIK_HOST}`)"
-      - "traefik.http.routers.frogsoft-cms-user.entrypoints=${TRAEFIK_ENTRYPOINT}"
+      - "traefik.http.routers.frogsoft-cms-user.entrypoints=web"
       # - "traefik.http.routers.frogsoft-cms-user.tls=true"
       - "traefik.http.services.frogsoft-cms-user.loadbalancer.server.port=80"
       - "traefik.http.routers.frogsoft-cms-user.middlewares=frogsoft-cms-user-compress"
@@ -114,7 +114,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.frogsoft-cms-admin.rule=Host(`${FRONTEND_ADMIN_TRAEFIK_HOST}`)"
-      - "traefik.http.routers.frogsoft-cms-admin.entrypoints=${TRAEFIK_ENTRYPOINT}"
+      - "traefik.http.routers.frogsoft-cms-admin.entrypoints=web"
       # - "traefik.http.routers.frogsoft-cms-admin.tls=true"
       - "traefik.http.services.frogsoft-cms-admin.loadbalancer.server.port=80"
       - "traefik.http.routers.frogsoft-cms-admin.middlewares=frogsoft-cms-admin-compress"
