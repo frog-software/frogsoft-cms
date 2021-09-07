@@ -8,6 +8,7 @@ import com.frogsoft.frogsoftcms.exception.article.ArticleNotFoundException;
 import com.frogsoft.frogsoftcms.exception.basic.forbidden.ForbiddenException;
 import com.frogsoft.frogsoftcms.model.article.Article;
 import com.frogsoft.frogsoftcms.model.article.Status;
+import com.frogsoft.frogsoftcms.model.user.Roles;
 import com.frogsoft.frogsoftcms.model.user.User;
 import com.frogsoft.frogsoftcms.repository.article.ArticleRepository;
 import com.frogsoft.frogsoftcms.repository.user.UserRepository;
@@ -72,14 +73,15 @@ public class ArticleServiceImpl implements ArticleService {
   }
 
   @Override
-  public void deleteArticle(Long id, Long userId) {
+  public void deleteArticle(Long id, User authenticateUser) {
     Article article = articleRepository.findById(id)
         .orElseThrow(() -> new ArticleNotFoundException(id));
-    if (userId.equals(article.getAuthor().getId())) {
-      articleRepository.delete(article);
-    } else {
-      throw new ForbiddenException("无权限删除该文章");
+    if (!authenticateUser.getRoles().contains(Roles.ROLE_ADMIN.getRole())){
+      if (!authenticateUser.equals(article.getAuthor())){
+        throw new ForbiddenException("无权限删除该文章");
+      }
     }
+    articleRepository.delete(article);
   }
 
   @Override
