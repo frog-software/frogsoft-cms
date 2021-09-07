@@ -54,7 +54,7 @@ const NavBar: FC = () => (
     <Link to="/home">
       <div className="nav-bar-title">
         <Row justify="center">
-          <Avatar src="/logo.png" shape="square" size={120} />
+          <Avatar src="/logo.svg" shape="square" size={120} />
           Frogsoft CMS
         </Row>
       </div>
