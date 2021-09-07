@@ -13,19 +13,18 @@ import com.frogsoft.frogsoftcms.repository.article.ArticleRepository;
 import com.frogsoft.frogsoftcms.repository.config.ConfigRepository;
 import com.frogsoft.frogsoftcms.repository.user.UserRepository;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.stereotype.Service;
-
-
-import java.util.*;
 
 @RequiredArgsConstructor
 @Service
@@ -40,6 +39,7 @@ public class HomeServiceImpl implements HomeService {
 
   /**
    * getAllArticleDtos 获得所有文章的Dto列表
+   *
    * @return List<ArticleDto>类型
    */
   private List<ArticleDto> getAllArticleDtos() {
@@ -50,8 +50,9 @@ public class HomeServiceImpl implements HomeService {
 
   /**
    * getRecommendations 返回推荐文章列表的CollectionModel
+   *
    * @param authenticatedUser 登陆的用户，该参数暂不使用，用于后续个性化推荐
-   * @return CollectionModel<EntityModel<ArticleDto>>
+   * @return CollectionModel<EntityModel < ArticleDto>>
    */
   @Override
   public CollectionModel<EntityModel<ArticleDto>> getRecommendations(User authenticatedUser) {
@@ -69,6 +70,7 @@ public class HomeServiceImpl implements HomeService {
 
   /**
    * getDailyArticle 返回一个管理员设置的每日推荐文章的EntityModel
+   *
    * @return EntityModel<ArticleDto>
    */
   @Override
@@ -88,7 +90,8 @@ public class HomeServiceImpl implements HomeService {
 
   /**
    * changeDailyArticle 设置每日推荐文章（仅限管理员）
-   * @param articleId 要设置的文章id
+   *
+   * @param articleId         要设置的文章id
    * @param authenticatedUser 设置人
    * @return EntityModel<ArticleDto> 设置好的推荐文章的数据模型
    */
@@ -98,7 +101,7 @@ public class HomeServiceImpl implements HomeService {
     Config dailyPickupConfig = configRepository.findByConfigKey("DailyPickup");
 
     Optional<Article> articlePickupNew = articleRepository.findById(articlePickupId);
-    if(articlePickupNew.isEmpty()){
+    if (articlePickupNew.isEmpty()) {
       throw new ArticleNotFoundException(articlePickupId);
     }
 
@@ -111,7 +114,8 @@ public class HomeServiceImpl implements HomeService {
 
   /**
    * getRankList 返回全站文章排行榜（数据模型列表）
-   * @return CollectionModel<EntityModel<ArticleDto>>
+   *
+   * @return CollectionModel<EntityModel < ArticleDto>>
    */
   @Override
   public CollectionModel<EntityModel<ArticleDto>> getRankList() {
@@ -154,13 +158,14 @@ public class HomeServiceImpl implements HomeService {
 
   /**
    * getAnnouncements 获取管理员设置公告文章的数据模型列表
-   * @return CollectionModel<EntityModel<ArticleDto>>
+   *
+   * @return CollectionModel<EntityModel < ArticleDto>>
    */
   @Override
-  public CollectionModel<EntityModel<ArticleDto>> getAnnouncements(){
+  public CollectionModel<EntityModel<ArticleDto>> getAnnouncements() {
     String announcements = configRepository.findByConfigKey("AnnouncementsId").getConfigValue();
 
-    if(announcements.equals("")){
+    if (announcements.equals("")) {
       throw new NotFoundException("暂无公告");
     }
 
@@ -170,10 +175,10 @@ public class HomeServiceImpl implements HomeService {
 
     List<Optional<Article>> announceArticles = new ArrayList<>();
 
-    for (Long announcementId:announcementIds
+    for (Long announcementId : announcementIds
     ) {
       Optional<Article> _announceArticle = articleRepository.findById(announcementId);
-      if(_announceArticle.isEmpty()) {
+      if (_announceArticle.isEmpty()) {
         throw new ArticleNotFoundException(announcementId);
       }
       announceArticles.add(_announceArticle);
@@ -189,9 +194,10 @@ public class HomeServiceImpl implements HomeService {
 
   /**
    * changeAnnouncements 设置公告文章的id列表（仅限管理员）
+   *
    * @param announcementsSetRequest 要设置公告文章的id（请求类）
-   * @param authenticatedUser 设置人
-   * @return CollectionModel<EntityModel<ArticleDto>> 设置好的对应的公告文章数据模型列表
+   * @param authenticatedUser       设置人
+   * @return CollectionModel<EntityModel < ArticleDto>> 设置好的对应的公告文章数据模型列表
    */
   @Override
   public CollectionModel<EntityModel<ArticleDto>> changeAnnouncements(
@@ -201,10 +207,10 @@ public class HomeServiceImpl implements HomeService {
 
     List<Optional<Article>> announceArticles = new ArrayList<>();
 
-    for (Long announcementId:announcementsSetRequest.getArticleIds()
+    for (Long announcementId : announcementsSetRequest.getArticleIds()
     ) {
       Optional<Article> _announceArticle = articleRepository.findById(announcementId);
-      if(_announceArticle.isEmpty()) {
+      if (_announceArticle.isEmpty()) {
         throw new ArticleNotFoundException(announcementId);
       }
       announceArticles.add(_announceArticle);

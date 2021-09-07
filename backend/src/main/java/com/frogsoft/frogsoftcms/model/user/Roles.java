@@ -1,4 +1,3 @@
-
 package com.frogsoft.frogsoftcms.model.user;
 
 public enum Roles {
