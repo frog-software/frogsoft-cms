@@ -5,7 +5,6 @@ import com.frogsoft.frogsoftcms.controller.v1.request.comment.CommentRequest;
 import com.frogsoft.frogsoftcms.model.user.User;
 import com.frogsoft.frogsoftcms.service.article.ArticleService;
 import com.frogsoft.frogsoftcms.service.comment.CommentService;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +29,6 @@ public class ArticleController {
 
   @GetMapping("")
   public ResponseEntity<?> search(
-      @AuthenticationPrincipal User authenticatedUser,
       @RequestParam(defaultValue = "") String search,
       @RequestParam(defaultValue = "publishDate") String sortBy,
       @RequestParam(defaultValue = "DESC") String order,
@@ -66,16 +64,8 @@ public class ArticleController {
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<?> getOneArticle(@PathVariable(value = "id") Long id,
-      @AuthenticationPrincipal User authenticatedUser) {
-
-    List<String> roles = authenticatedUser.getRoles();
-    Long userId = authenticatedUser.getId();
-    String role = "user";
-    if (roles.contains("ROLE_ADMIN")) {
-      role = "admin";
-    }
-    return ResponseEntity.status(201).body(articleService.getOneArticle(id, role, userId));
+  public ResponseEntity<?> getOneArticle(@PathVariable(value = "id") Long id) {
+    return ResponseEntity.status(201).body(articleService.getOneArticle(id));
   }
 
   @PutMapping("/{id}")
@@ -89,7 +79,8 @@ public class ArticleController {
   @DeleteMapping("/{id}")
   public ResponseEntity<?> deleteArticle(@PathVariable(value = "id") Long id,
       @AuthenticationPrincipal User authenticateUser) {
-    articleService.deleteArticle(id, authenticateUser);
+    Long userId = authenticateUser.getId();
+    articleService.deleteArticle(id, userId);
     return ResponseEntity.noContent().build();
   }
 
