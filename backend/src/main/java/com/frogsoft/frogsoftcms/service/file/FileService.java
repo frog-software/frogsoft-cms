@@ -3,8 +3,6 @@ package com.frogsoft.frogsoftcms.service.file;
 import com.frogsoft.frogsoftcms.dto.model.file.FileDto;
 import com.frogsoft.frogsoftcms.model.user.User;
 import org.springframework.hateoas.EntityModel;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface FileService {

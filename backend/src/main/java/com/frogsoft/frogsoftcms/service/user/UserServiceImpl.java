@@ -124,15 +124,14 @@ public class UserServiceImpl implements UserService {
     }
     User oldUser = userRepository.findByUsername(oldUserName);
     User newUser = userRepository.findByUsername(userRequest.getUsername());
-    if (authenticatedUser.getRoles().contains(Roles.ROLE_ADMIN.getRole())){
+    if (authenticatedUser.getRoles().contains(Roles.ROLE_ADMIN.getRole())) {
       oldUser.setRoles(userRequest.getRoles());
-      if (!oldUserName.equals(userRequest.getUsername())){
+      if (!oldUserName.equals(userRequest.getUsername())) {
         if (newUser != null) {
           throw new ConflictException("用户名已存在");
         }
       }
-    }
-    else {
+    } else {
       if (newUser != null) {
         throw new ConflictException("用户名已存在");
       }
