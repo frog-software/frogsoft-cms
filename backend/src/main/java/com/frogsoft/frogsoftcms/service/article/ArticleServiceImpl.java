@@ -65,7 +65,8 @@ public class ArticleServiceImpl implements ArticleService {
           .setContent(articleRequest.getContent())
           .setDescription(articleRequest.getDescription())
           .setStatus(articleRequest.getStatus())
-          .setCover(articleRequest.getCover()));
+          .setCover(articleRequest.getCover())
+          .setUpdateDate(LocalDateTime.now()));
       return articleModelAssembler.toModel(articleMapper.toArticleDto(newArticle));
     } else {
       throw new ForbiddenException("无权限修改");
@@ -76,8 +77,8 @@ public class ArticleServiceImpl implements ArticleService {
   public void deleteArticle(Long id, User authenticateUser) {
     Article article = articleRepository.findById(id)
         .orElseThrow(() -> new ArticleNotFoundException(id));
-    if (!authenticateUser.getRoles().contains(Roles.ROLE_ADMIN.getRole())){
-      if (!authenticateUser.equals(article.getAuthor())){
+    if (!authenticateUser.getRoles().contains(Roles.ROLE_ADMIN.getRole())) {
+      if (!authenticateUser.equals(article.getAuthor())) {
         throw new ForbiddenException("无权限删除该文章");
       }
     }
