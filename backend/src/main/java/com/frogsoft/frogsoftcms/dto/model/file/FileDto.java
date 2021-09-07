@@ -8,6 +8,7 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(chain = true)
 public class FileDto {
+
   private Long id;
   private UserDto user;
   private String shortName;

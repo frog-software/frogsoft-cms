@@ -12,7 +12,7 @@ public class FileMapper {
 
   private final UserMapper userMapper;
 
-  public FileDto toFileDto(Material material){
+  public FileDto toFileDto(Material material) {
     return new FileDto().setFullName(material.getFullName())
         .setId(material.getId())
         .setPublishDate(material.getPublishDate())

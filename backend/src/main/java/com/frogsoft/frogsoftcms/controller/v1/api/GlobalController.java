@@ -56,17 +56,18 @@ public class GlobalController {
     }
     return ResponseEntity.ok().body(configService.putConfig(configRequest));
   }
+
   @PostMapping("/files")
-  public ResponseEntity<EntityModel<FileDto>>  putFile(
+  public ResponseEntity<EntityModel<FileDto>> putFile(
       @AuthenticationPrincipal User authenticatedUser,
-      @RequestParam("file") MultipartFile file){
+      @RequestParam("file") MultipartFile file) {
     return ResponseEntity.ok().body(fileService.putFile(authenticatedUser, file));
   }
 
   @DeleteMapping("/files")
-  public ResponseEntity<?>  deleteFile(
+  public ResponseEntity<?> deleteFile(
       @AuthenticationPrincipal User authenticatedUser,
-      @RequestBody Long id){
+      @RequestBody Long id) {
     fileService.deleteFile(authenticatedUser, id);
     return ResponseEntity.ok(201);
   }

@@ -8,7 +8,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -22,6 +21,7 @@ import lombok.experimental.Accessors;
 @Entity
 @ToString
 public class Material {
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
