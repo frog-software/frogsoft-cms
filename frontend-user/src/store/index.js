@@ -1,18 +1,29 @@
 import {createStore} from 'vuex';
-import axios from 'axios';
-import moment from 'moment';
+import axios         from 'axios';
+import moment        from 'moment';
 
 moment.locale('zh-cn');
 
-const defaultUser = {
+const defaultUser   = {
   id: 0,
   username: 'username',
   nickname: 'nickname',
-  email: 'pxm@edialect.top',
+  email: 'email@frogsoft.com',
   avatar: 'https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png',
   is_admin: false,
 };
-const store = createStore({
+const defaultConfig = {
+  "favicon": "http://dummyimage.com/100x100",
+  "title": "Frogsoft CMS",
+  "logo": "http://dummyimage.com/400x400",
+  "header": {
+    "logo": "http://dummyimage.com/400x200"
+  },
+  "footer": {
+    "logo": "http://dummyimage.com/400x200"
+  }
+};
+const store         = createStore({
   state: {
     tab: [],
     drawerVisibility: false,
@@ -36,6 +47,7 @@ const store = createStore({
         parent: 123,
       },
     ],
+    config: Object.assign({}, defaultConfig)
   },
   getters: {
     /**
@@ -78,6 +90,9 @@ const store = createStore({
     commentsLoading(state) {
       return state.commentsLoading;
     },
+    config(state) {
+      return state.config;
+    }
   },
   mutations: {
     tab(state, value) {
@@ -92,27 +107,27 @@ const store = createStore({
         this.commit('userUpdate');
       }
     },
-    userLogin(state, id) {
-      if (state.user.id.toString() === id) return;
-      state.user.id = Number(id);
-      localStorage.setItem('id', id);
+    userLogin(state, username) {
+      if (state.user.username === username) return;
+      state.user.username = username
+      localStorage.setItem('username', username);
       this.commit('userUpdate');
     },
     userLogout(state) {
       localStorage.removeItem('id');
       localStorage.removeItem('token');
-      state.user = Object.create(defaultUser);
+      state.user             = Object.create(defaultUser);
       state.publish_articles = [];
-      state.like_articles = [];
+      state.like_articles    = [];
       state.drawerVisibility = false;
     },
     userUpdate(state) {
       state.drawerLoading = true;
-      axios.get(`/users/${state.user.id}`).then((res) => {
-        state.user = res.data.user;
+      axios.get(`/v1/users/${state.user.username}`).then((res) => {
+        state.user             = res.data.user;
         state.publish_articles = res.data.publish_articles;
-        state.like_articles = res.data.like_articles;
-        state.drawerLoading = false;
+        state.like_articles    = res.data.like_articles;
+        state.drawerLoading    = false;
       });
     },
     changeMusic(state, id) {
@@ -123,7 +138,7 @@ const store = createStore({
     },
     updateComments(state, id) {
       state.commentsLoading = true;
-      return axios.get(`/articles/${id}/comments`).then((res) => {
+      return axios.get(`/v1/articles/${id}/comments`).then((res) => {
         state.comments = res.data.comments;
         state.comments.forEach((item) => {
           item.time = moment(item.time).fromNow();
@@ -132,6 +147,14 @@ const store = createStore({
         state.commentsLoading = false;
       });
     },
+    updateConfig(state, id) {
+      return axios.get('/v1/global/config/frontend-user').then(res => {
+        state.config = Object.create(res.data)
+      }).finally(() => {
+        document.title                      = state.config.title
+        document.getElementById('qwq').href = state.config.favicon
+      })
+    }
   },
   actions: {},
   modules: {},

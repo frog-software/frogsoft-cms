@@ -32,9 +32,11 @@ export default {
     });
   },
   created() {
-    if (window.localStorage.getItem('id')) {
-      store.commit('userLogin', window.localStorage.getItem('id'));
+    if (window.localStorage.getItem('username')) {
+      store.commit('userLogin', window.localStorage.getItem('username'));
     }
+    store.commit('updateConfig')
+
   },
   mounted() {
     window.addEventListener('resize', this.onResize);
