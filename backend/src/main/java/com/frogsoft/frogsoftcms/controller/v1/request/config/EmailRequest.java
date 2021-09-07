@@ -5,6 +5,7 @@ import lombok.Data;
 
 @Data
 public class EmailRequest implements Serializable {
+
   private static final long serialVersionUID = 32974805623333756L;
   private String password;
   private String account;

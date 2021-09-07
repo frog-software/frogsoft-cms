@@ -8,8 +8,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class ConfigModelAssembler implements
     RepresentationModelAssembler<ConfigDto, EntityModel<ConfigDto>> {
+
   @Override
-  public EntityModel<ConfigDto> toModel(ConfigDto configDto){
+  public EntityModel<ConfigDto> toModel(ConfigDto configDto) {
     return EntityModel.of(
         configDto
     );

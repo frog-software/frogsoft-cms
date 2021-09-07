@@ -6,5 +6,6 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(chain = true)
 public class FooterDto {
+
   private String logo;
 }

@@ -6,6 +6,7 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(chain = true)
 public class EmailDto {
+
   private String password;
   private String account;
   private String body;

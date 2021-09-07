@@ -22,6 +22,4 @@ public interface HomeService {
       AnnouncementsSetRequest announcementsSetRequest, User authenticatedUser);
 
 
-
-
 }

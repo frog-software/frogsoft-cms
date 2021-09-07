@@ -14,20 +14,20 @@ import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
-public class ConfigServiceImpl implements ConfigService{
+public class ConfigServiceImpl implements ConfigService {
 
   private final ConfigRepository configRepository;
   private final ConfigModelAssembler configModelAssembler;
   private final ConfigMapper configMapper;
 
   @Override
-  public EntityModel<ConfigDto> getConfig(){
+  public EntityModel<ConfigDto> getConfig() {
     List<Config> configList = configRepository.findAll();
     return configModelAssembler.toModel(configMapper.toConfigDto(configList));
   }
 
   @Override
-  public EntityModel<ConfigDto> putConfig(ConfigRequest configRequest){
+  public EntityModel<ConfigDto> putConfig(ConfigRequest configRequest) {
     List<Config> configList = new ArrayList<>();
     configList.add(new Config()
         .setConfigKey("favicon")

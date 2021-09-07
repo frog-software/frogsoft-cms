@@ -56,6 +56,7 @@ public class SecurityConfig {
             .antMatchers("/v1/auth/login").permitAll()
             .antMatchers(HttpMethod.POST, "/v1/auth/forget").permitAll()
             .antMatchers(HttpMethod.POST, "/v1/users").permitAll()
+            .antMatchers(HttpMethod.POST, "/v1/global/email").permitAll()
             .anyRequest().authenticated()
         )
         .addFilterBefore(
@@ -69,7 +70,8 @@ public class SecurityConfig {
     return new WebMvcConfigurer() {
       @Override
       public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**").allowedOrigins("*").allowedMethods("GET", "POST","PUT", "DELETE");
+        registry.addMapping("/**").allowedOrigins("*")
+            .allowedMethods("GET", "POST", "PUT", "DELETE");
       }
     };
   }

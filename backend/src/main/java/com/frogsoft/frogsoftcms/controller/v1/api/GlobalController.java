@@ -1,5 +1,6 @@
 package com.frogsoft.frogsoftcms.controller.v1.api;
 
+
 import com.frogsoft.frogsoftcms.controller.v1.request.config.ConfigRequest;
 import com.frogsoft.frogsoftcms.dto.model.config.ConfigDto;
 import com.frogsoft.frogsoftcms.dto.model.file.FileDto;
@@ -19,7 +20,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -33,16 +33,16 @@ public class GlobalController {
   private final FileService fileService;
 
   @PostMapping("/email")
-  public ResponseEntity<?> sendCode(@AuthenticationPrincipal User authenticatedUser) {
-    String username = authenticatedUser.getUsername();
-    return ResponseEntity.ok().body(mailService.sendCode(username));
+  public ResponseEntity<?> sendCode(@RequestParam String email) {
+    mailService.sendCode(email);
+    return ResponseEntity.noContent().build();
   }
 
   @GetMapping("/config")
   public ResponseEntity<EntityModel<ConfigDto>> getConfig(
-      @AuthenticationPrincipal User authenticatedUser){
-    if (!authenticatedUser.getRoles().contains("ROLE_ADMIN")){
-      throw new  UnauthorizedException("权限不足");
+      @AuthenticationPrincipal User authenticatedUser) {
+    if (!authenticatedUser.getRoles().contains("ROLE_ADMIN")) {
+      throw new UnauthorizedException("权限不足");
     }
     return ResponseEntity.ok().body(configService.getConfig());
   }
@@ -50,9 +50,9 @@ public class GlobalController {
   @PutMapping("/config")
   public ResponseEntity<EntityModel<ConfigDto>> putConfig(
       @AuthenticationPrincipal User authenticatedUser,
-      @RequestBody ConfigRequest configRequest){
-    if (!authenticatedUser.getRoles().contains("ROLE_ADMIN")){
-      throw new  UnauthorizedException("权限不足");
+      @RequestBody ConfigRequest configRequest) {
+    if (!authenticatedUser.getRoles().contains("ROLE_ADMIN")) {
+      throw new UnauthorizedException("权限不足");
     }
     return ResponseEntity.ok().body(configService.putConfig(configRequest));
   }
