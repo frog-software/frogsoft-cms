@@ -109,7 +109,7 @@ services:
     build: 
       context: ./frontend-admin
       args: 
-        VITE_BACKEND_URL: ${BACKEND_URL}
+        VITE_BACKEND_URL: ${BACKEND_TRAEFIK_HOST}
     image: ${DOCKERHUB_USERNAME}/frogsoft-cms-admin:latest
     container_name: frogsoft-cms-admin
     restart: unless-stopped
