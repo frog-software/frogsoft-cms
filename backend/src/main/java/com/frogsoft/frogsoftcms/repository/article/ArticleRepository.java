@@ -2,10 +2,9 @@ package com.frogsoft.frogsoftcms.repository.article;
 
 import com.frogsoft.frogsoftcms.model.article.Article;
 import com.frogsoft.frogsoftcms.model.article.Status;
-import java.util.Optional;
 import com.frogsoft.frogsoftcms.model.user.User;
 import java.util.List;
-import java.util.Set;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

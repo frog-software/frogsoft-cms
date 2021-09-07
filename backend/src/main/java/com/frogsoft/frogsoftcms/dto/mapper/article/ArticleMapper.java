@@ -2,7 +2,6 @@ package com.frogsoft.frogsoftcms.dto.mapper.article;
 
 import com.frogsoft.frogsoftcms.dto.mapper.user.UserMapper;
 import com.frogsoft.frogsoftcms.dto.model.article.ArticleDto;
-import com.frogsoft.frogsoftcms.dto.model.comment.CommentDto;
 import com.frogsoft.frogsoftcms.model.article.Article;
 import java.util.LinkedList;
 import java.util.List;
@@ -31,10 +30,10 @@ public class ArticleMapper {
         .setFavorites(article.getFavoritesNum());
   }
 
-  public List<ArticleDto> toArticleDto(List<Article> articleList){
+  public List<ArticleDto> toArticleDto(List<Article> articleList) {
     List<ArticleDto> articleDtoList = new LinkedList<>();
-    for (Article article:articleList){
-      ArticleDto articleDto =new ArticleDto()
+    for (Article article : articleList) {
+      ArticleDto articleDto = new ArticleDto()
           .setId(article.getId())
           .setContent(article.getContent())
           .setAuthor(userMapper.toUserDto(article.getAuthor()))
