@@ -119,9 +119,6 @@ public class UserController {
       @AuthenticationPrincipal User authenticatedUser
 
   ) {
-    userService.deleteUser(username, userRequest, authenticatedUser);
-
-  ){
     userService.deleteUser(username, authenticatedUser);
 
     return ResponseEntity.ok(201);
