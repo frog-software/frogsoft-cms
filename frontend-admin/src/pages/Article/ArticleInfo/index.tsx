@@ -16,22 +16,25 @@ import Block                              from 'components/Block';
 import { useParams }                      from 'react-router-dom';
 import http                               from 'utils/http';
 import {
-  Badge, Comment, Avatar,
+  Badge,
   Button, Col, Descriptions, Divider, Image, Row, Space,
-  Statistic, Popconfirm, Form, Select, message, Input,
-}                                         from 'antd';
-import DescriptionsItem                   from 'antd/es/descriptions/Item';
+  Statistic, Popconfirm, Form, Select, message, Input, Table,
+}                               from 'antd';
+import DescriptionsItem         from 'antd/es/descriptions/Item';
 import {
   CloudOutlined, LikeOutlined, StarOutlined,
-}                                         from '@ant-design/icons';
-import { useForm }                        from 'antd/es/form/Form';
-import { useHistory }                     from 'react-router';
-import TextArea                           from 'antd/es/input/TextArea';
-import { deleteArticle }                  from 'services/article';
+}                               from '@ant-design/icons';
+import { useForm }              from 'antd/es/form/Form';
+import { useHistory }           from 'react-router';
+import TextArea                 from 'antd/es/input/TextArea';
+import { deleteArticle }        from 'services/article';
+import { Comment }                             from 'types/comment';
+import { JavaCollectionModel }             from 'types/common';
+import { collectionModelSimplifier } from 'utils/common';
 
 const ArticleInfo: FC = () => {
   const params: { id: string }              = useParams();
-  const [articleInfo, setArticleInfo]        = useState<Article>();
+  const [articleInfo, setArticleInfo]       = useState<Article>();
   const [editDetail, setEditDetail]         = useState<boolean>(false);
   const [editContent, setEditContent]       = useState<boolean>(false);
   const [articleDetail]                     = useForm();
@@ -40,18 +43,34 @@ const ArticleInfo: FC = () => {
   const { Option }                            = Select;
   const [detailLoading, setDetailLoading]   = useState<boolean>(false);
   const [contentLoading, setContentLoading] = useState<boolean>(false);
+  const [commentLoading, setCommentLoading] = useState<boolean>(false);
   const [render, setRender]                 = useState<boolean>(false);
+  const [commentList, setCommentList]       = useState<Comment[]>();
 
   useEffect(() => {
     (async () => {
       setDetailLoading(true);
       setContentLoading(true);
-      const data = await http.get<Article>(`v1/articles/${params.id}`);
-      setArticleInfo(data);
+      setCommentLoading(true);
+      const article = await http.get<Article>(`v1/articles/${params.id}`);
+      setArticleInfo(article);
 
-      console.log(data);
+      const comments = await http.get<JavaCollectionModel<Comment>>(`v1/articles/${params.id}/comments`);
+      const simplifiedComments = collectionModelSimplifier<Comment>(comments);
+
+      const tableList = simplifiedComments?.list?.map((i) => ({
+        ...i,
+        status: i.status === 'NORMAL' ? (
+          <Badge status="processing" color="green" text="正常" />
+        ) : (
+          <Badge status="default" color="gray" text="屏蔽" />
+        ),
+      }));
+      setCommentList(tableList as any);
+
       setDetailLoading(false);
       setContentLoading(false);
+      setCommentLoading(false);
     })();
   }, [render]);
 
@@ -111,6 +130,75 @@ const ArticleInfo: FC = () => {
     // eslint-disable-next-line no-template-curly-in-string
     required: '${label}不能为空！',
   };
+
+  // 删除评论
+  const deleteComment = (commentId: number) => {
+    setCommentLoading(true);
+
+    http.del(`v1/comments/${commentId}`)
+      .then(() => {
+        message.success('评论删除成功！');
+      })
+      .catch(() => {
+        message.error('评论删除失败！');
+      })
+      .finally(() => {
+        setCommentLoading(false);
+        setRender(!render);
+      });
+  };
+
+  // 评论列表属性
+  const tableColumns = [
+    {
+      key: 'id',
+      dataIndex: 'id',
+      title: '评论ID',
+    },
+    {
+      key: 'author',
+      dataIndex: ['author', 'username'],
+      title: '评论用户',
+    },
+    {
+      key: 'status',
+      dataIndex: 'status',
+      title: '评论状态',
+    },
+    {
+      key: 'content',
+      dataIndex: 'content',
+      title: '评论内容',
+    },
+    {
+      key: 'publishDate',
+      dataIndex: 'localDateTime',
+      title: '评论时间',
+    },
+    {
+      key: 'likes',
+      dataIndex: 'likes',
+      title: '点赞数量',
+    },
+    {
+      key: 'action',
+      title: '执行操作',
+      render: (comment) => (
+        <Space>
+          <Popconfirm
+            title="确定删除该评论吗？删除后不可恢复！"
+            okText="确定"
+            cancelText="取消"
+            onConfirm={() => {
+              deleteComment(comment.id);
+            }}
+          >
+            <Button type="text" danger>删除评论</Button>
+          </Popconfirm>
+        </Space>
+      ),
+    },
+  ];
 
   return (
     <>
@@ -291,25 +379,11 @@ const ArticleInfo: FC = () => {
         </Divider>
       </Block>
 
-      <Block title="文章评论">
-        <Comment
-          author={<p>Han Solo</p>}
-          avatar={(
-            <Avatar
-              src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
-              alt="Han Solo"
-            />
-          )}
-          content={(
-            <p>
-              We supply a series of design principles, practical patterns and high quality design
-              resources (Sketch and Axure), to help people create their product prototypes beautifully
-              and efficiently.
-            </p>
-          )}
-          datetime={(
-            <p>几秒前</p>
-          )}
+      <Block title="文章评论" loading={commentLoading}>
+        <Table
+          rowKey="id"
+          columns={tableColumns}
+          dataSource={commentList}
         />
       </Block>
     </>
