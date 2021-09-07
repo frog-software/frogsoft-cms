@@ -1,4 +1,10 @@
 #!/bin/bash
-docker-compose build \
+docker-compose \
     --file docker-compose-prod.yml \
-    --env-file .env.prod || exit 1
+    --env-file .env.prod \
+    build || exit 1
+
+docker-compose \
+    --file docker-compose-prod.yml \
+    --env-file .env.prod \
+    push || exit 1

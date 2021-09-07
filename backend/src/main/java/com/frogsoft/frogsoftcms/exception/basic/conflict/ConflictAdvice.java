@@ -14,11 +14,11 @@ public class ConflictAdvice {
   @ResponseBody
   @ExceptionHandler(ConflictException.class)
   @ResponseStatus(HttpStatus.CONFLICT)
-  public ExceptionResponseBody resourceConflictAdvice(ConflictException ex) {
+  public ExceptionResponseBody conflictAdvice(ConflictException ex) {
     return new ExceptionResponseBody(
         HttpStatus.CONFLICT.value(),
         ex.getMessage(),
-        "Resource Conflict"
+        "Conflict"
     );
   }
 }

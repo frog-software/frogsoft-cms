@@ -45,4 +45,7 @@ node_modules
 dist-ssr
 *.local
 tsconfig.tsbuildinfo
+*.log
 dist
+*.local
+db_data

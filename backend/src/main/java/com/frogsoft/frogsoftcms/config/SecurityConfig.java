@@ -1,14 +1,16 @@
 package com.frogsoft.frogsoftcms.config;
 
+import com.frogsoft.frogsoftcms.exception.basic.unauthorized.UnauthorizedException;
 import com.frogsoft.frogsoftcms.exception.user.UserNotFoundException;
 import com.frogsoft.frogsoftcms.model.user.User;
 import com.frogsoft.frogsoftcms.repository.user.UserRepository;
+import com.frogsoft.frogsoftcms.security.RestAuthenticationEntryPoint;
 import com.frogsoft.frogsoftcms.security.jwt.JwtTokenAuthenticationFilter;
 import com.frogsoft.frogsoftcms.security.jwt.JwtTokenProvider;
+import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -21,8 +23,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(
@@ -30,26 +33,47 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
     jsr250Enabled = true,
     prePostEnabled = true
 )
+@AllArgsConstructor
 public class SecurityConfig {
 
   @Bean
-  SecurityFilterChain springWebFilterChain(HttpSecurity http, JwtTokenProvider tokenProvider)
-      throws Exception {
+  SecurityFilterChain springWebFilterChain(
+      HttpSecurity http,
+      JwtTokenProvider tokenProvider,
+      RestAuthenticationEntryPoint restAuthenticationEntryPoint
+  ) throws Exception {
 
     return http.httpBasic(AbstractHttpConfigurer::disable)
+        .cors()
+        .and()
         .csrf(AbstractHttpConfigurer::disable)
         .sessionManagement(c ->
             c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .exceptionHandling(c ->
-            c.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
-        .authorizeRequests(c ->
-            c.antMatchers("/v1/auth/login").permitAll()
-                .anyRequest().authenticated()
+        .exceptionHandling()
+        .authenticationEntryPoint(restAuthenticationEntryPoint)
+        .and()
+        .authorizeRequests(c -> c
+            .antMatchers("/v1/auth/login").permitAll()
+            .antMatchers(HttpMethod.POST, "/v1/auth/forget").permitAll()
+            .antMatchers(HttpMethod.POST, "/v1/users").permitAll()
+            .antMatchers(HttpMethod.POST, "/v1/global/email").permitAll()
+            .anyRequest().authenticated()
         )
         .addFilterBefore(
             new JwtTokenAuthenticationFilter(tokenProvider),
             UsernamePasswordAuthenticationFilter.class)
         .build();
+  }
+
+  @Bean
+  public WebMvcConfigurer corsConfigurer() {
+    return new WebMvcConfigurer() {
+      @Override
+      public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**").allowedOrigins("*")
+            .allowedMethods("GET", "POST", "PUT", "DELETE");
+      }
+    };
   }
 
   @Bean
@@ -73,10 +97,10 @@ public class SecurityConfig {
       String password = authentication.getCredentials() + "";
       UserDetails user = userDetailsService.loadUserByUsername(username);
       if (!encoder.matches(password, user.getPassword())) {
-        throw new BadCredentialsException("Bad credentials");
+        throw new UnauthorizedException("密码错误");
       }
       if (!user.isEnabled()) {
-        throw new DisabledException("User account is not active");
+        throw new DisabledException("账户未启用");
       }
       return new UsernamePasswordAuthenticationToken(username, null, user.getAuthorities());
     };
@@ -86,4 +110,5 @@ public class SecurityConfig {
   public PasswordEncoder passwordEncoder() {
     return PasswordEncoderFactories.createDelegatingPasswordEncoder();
   }
+
 }

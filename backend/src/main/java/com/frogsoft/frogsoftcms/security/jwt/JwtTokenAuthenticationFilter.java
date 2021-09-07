@@ -1,19 +1,14 @@
 package com.frogsoft.frogsoftcms.security.jwt;
 
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.frogsoft.frogsoftcms.exception.basic.ExceptionResponseBody;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -40,24 +35,6 @@ public class JwtTokenAuthenticationFilter extends GenericFilterBean {
         SecurityContextHolder.getContext().setAuthentication(auth);
       }
 
-    } else if (token != null) {
-      ObjectMapper objectMapper = new ObjectMapper();
-      objectMapper.findAndRegisterModules();
-      objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssSSS"));
-
-      ExceptionResponseBody exceptionResponseBody = new ExceptionResponseBody(
-          HttpStatus.UNAUTHORIZED.value(),
-          "Token 无效",
-          "Unauthorized"
-      );
-
-      res.setCharacterEncoding("utf-8");
-
-      res.getWriter().write(objectMapper.writeValueAsString(exceptionResponseBody));
-      HttpServletResponse httpServletResponse = (HttpServletResponse) res;
-      httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
-
-      return;
     }
 
     filterChain.doFilter(req, res);
