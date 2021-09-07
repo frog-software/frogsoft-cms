@@ -59,7 +59,8 @@ public class CommentServiceImpl implements CommentService {
 
   @Override
   public EntityModel<CommentDto> getByDetail(Long commentId, User authenticatedUser) {
-    Comment comment = commentRepository.getById(commentId);
+    Comment comment = commentRepository.findById(commentId)
+        .orElseThrow(() -> new CommentNotFoundException(commentId));
     return commentModelAssembler.toModel(commentMapper.toCommentDto(comment));
   }
 
