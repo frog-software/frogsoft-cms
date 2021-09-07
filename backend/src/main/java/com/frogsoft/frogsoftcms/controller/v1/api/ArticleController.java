@@ -70,11 +70,12 @@ public class ArticleController {
       @AuthenticationPrincipal User authenticatedUser) {
 
     List<String> roles = authenticatedUser.getRoles();
+    Long userId = authenticatedUser.getId();
     String role = "user";
     if (roles.contains("ROLE_ADMIN")) {
       role = "admin";
     }
-    return ResponseEntity.status(201).body(articleService.getOneArticle(id, role));
+    return ResponseEntity.status(201).body(articleService.getOneArticle(id, role, userId));
   }
 
   @PutMapping("/{id}")
