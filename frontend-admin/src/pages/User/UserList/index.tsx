@@ -11,26 +11,36 @@
 //--------------------------------------------------------------------------
 
 import React, { FC, useEffect, useState } from 'react';
-import Block                              from 'components/Block';
-import { getUserList }                    from 'services/user';
-import { User }                           from 'types/user';
+import Block                       from 'components/Block';
+import { deleteUser, getUserList } from 'services/user';
+import { User }                    from 'types/user';
 import { useQuery }                       from 'react-query';
 import {
-  Button, message, Popconfirm, Space, Table,
-} from 'antd';
+  Button, Col, message, Popconfirm, Row, Space, Table,
+}                                         from 'antd';
 import { useHistory }                     from 'react-router';
+import Search                             from 'antd/es/input/Search';
 
 const UserList: FC = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pageSize, setPageSize]       = useState<number>(10);
   const [userList, setUserList]       = useState<User[]>();
   const [totalItems, setTotalItems]   = useState<number>();
+  const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
   const history                       = useHistory();
 
-  // 删除用户
-  const handleDelete = () => {
-    console.log('点击了删除用户');
-  };
+  const {
+    isLoading, data, refetch, remove,
+  } = useQuery(
+    ['userList', currentPage - 1, pageSize],
+    getUserList,
+    {
+      staleTime: 5000,
+      onError: (err) => {
+        message.error(String(err));
+      },
+    },
+  );
 
   const tableColumns = [
     {
@@ -60,10 +70,25 @@ const UserList: FC = () => {
             查看详情
           </Button>
           <Popconfirm
-            title="确定删除该文章吗？删除之后不可恢复！"
+            title="确定删除该用户吗？删除之后不可恢复！"
             okText="确定"
             cancelText="取消"
-            onConfirm={handleDelete}
+            onConfirm={() => {
+              setDeleteLoading(true);
+              deleteUser(user.username)
+                .then(() => {
+                  message.success('用户删除成功');
+                  remove();
+                  refetch({
+                    throwOnError: true,
+                    cancelRefetch: false,
+                  });
+                }).catch(() => {
+                  message.error('用户删除失败');
+                }).finally(() => {
+                  setDeleteLoading(false);
+                });
+            }}
           >
             <Button danger type="text">删除用户</Button>
           </Popconfirm>
@@ -71,17 +96,6 @@ const UserList: FC = () => {
       ),
     },
   ];
-
-  const { isLoading, data } = useQuery(
-    ['userList', currentPage - 1, pageSize],
-    getUserList,
-    {
-      staleTime: 30000,
-      onError: (err) => {
-        message.error(String(err));
-      },
-    },
-  );
 
   useEffect(() => {
     if (!data) return;
@@ -93,22 +107,35 @@ const UserList: FC = () => {
   return (
     <>
       <Block title="用户管理">
-        <Table
-          rowKey="username"
-          loading={isLoading}
-          dataSource={userList}
-          columns={tableColumns}
-          pagination={{
-            pageSize,
-            total: totalItems,
-            showSizeChanger: true,
-            current: currentPage,
-            onChange: (page, size) => {
-              setCurrentPage(size === pageSize ? page : 1);
-              setPageSize(size);
-            },
-          }}
-        />
+        <Row>
+          <Col span={4} offset={20}>
+            <Search
+              placeholder="输入文章搜索关键字"
+              onSearch={() => (console.log('搜索文章'))}
+              enterButton
+              style={{ marginBottom: '16px' }}
+            />
+          </Col>
+          <Col span={24}>
+            <Table
+              rowKey="username"
+              loading={isLoading}
+              dataSource={userList}
+              columns={tableColumns}
+              pagination={{
+                pageSize,
+                total: totalItems,
+                showSizeChanger: true,
+                current: currentPage,
+                onChange: (page, size) => {
+                  setCurrentPage(size === pageSize ? page : 1);
+                  setPageSize(size);
+                },
+              }}
+            />
+          </Col>
+        </Row>
+
       </Block>
     </>
   );
