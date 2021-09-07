@@ -41,7 +41,7 @@ const UserInfo: FC = () => {
   const [createdList, setCreatedList]   = useState<Article[]>();
   const [favoriteList, setFavoriteList] = useState<Article[]>();
   const [viewList, setViewList]         = useState<Article[]>();
-  const [editPassword, setEditPassword] = useState<boolean>(false);
+  // const [editPassword, setEditPassword] = useState<boolean>(false);
 
   useEffect(() => {
     (async () => {
@@ -82,21 +82,21 @@ const UserInfo: FC = () => {
   }, []);
 
   // 修改用户密码
-  const handleResetPassword = (data) => {
-    setIsLoading(true);
-
-    http.put(`/v1/users/${params.username}`, data)
-      .then(() => {
-        message.success('密码重置成功！');
-        setEditPassword(false);
-      })
-      .catch(() => {
-        message.error('密码重置失败！');
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  };
+  // const handleResetPassword = (data) => {
+  //   setIsLoading(true);
+  //
+  //   http.put(`/v1/users/${params.username}`, data)
+  //     .then(() => {
+  //       message.success('密码重置成功！');
+  //       setEditPassword(false);
+  //     })
+  //     .catch(() => {
+  //       message.error('密码重置失败！');
+  //     })
+  //     .finally(() => {
+  //       setIsLoading(false);
+  //     });
+  // };
 
   // 删除用户
   const handleDeleteUser = (username: string) => {
@@ -299,12 +299,12 @@ const UserInfo: FC = () => {
         showBack
         description={(
           <Space>
-            <Button onClick={editPassword
-              ? () => formPassword.submit()
-              : () => setEditPassword(true)}
-            >
-              {editPassword ? '保存密码' : '重置密码'}
-            </Button>
+            {/*<Button onClick={editPassword*/}
+            {/*  ? () => formPassword.submit()*/}
+            {/*  : () => setEditPassword(true)}*/}
+            {/*>*/}
+            {/*  {editPassword ? '保存密码' : '重置密码'}*/}
+            {/*</Button>*/}
             <Popconfirm
               title="确定删除该用户吗？删除之后不可恢复！"
               okText="确定"
@@ -318,8 +318,8 @@ const UserInfo: FC = () => {
             <Button htmlType="submit" onClick={editable ? () => formDetail.submit() : () => setEditable(true)}>
               {editable ? '保存' : '编辑'}
             </Button>
-            {editable || editPassword ? (
-              <Button onClick={() => { setEditable(false); setEditPassword(false); }}>取消</Button>
+            {editable ? (
+              <Button onClick={() => { setEditable(false); }}>取消</Button>
             ) : ''}
 
           </Space>
@@ -365,30 +365,30 @@ const UserInfo: FC = () => {
             }
           </Col>
         </Row>
-        <Row>
-          <Col offset={2} span={5}>
-            {
-              !editPassword ? (
-                <></>
-              ) : (
-                <Form
-                  form={formPassword}
-                  name="newPassword"
-                  onFinish={handleResetPassword}
-                  validateMessages={validateMessages}
-                >
-                  <Descriptions title="重置密码" />
-                  <Form.Item name="oldPassword" label="输入旧密码" rules={[{ required: true }]}>
-                    <Input.Password />
-                  </Form.Item>
-                  <Form.Item name="newPassword" label="输入新密码" rules={[{ required: true }]}>
-                    <Input.Password />
-                  </Form.Item>
-                </Form>
-              )
-            }
-          </Col>
-        </Row>
+        {/*<Row>*/}
+        {/*  <Col offset={2} span={5}>*/}
+        {/*    {*/}
+        {/*      !editPassword ? (*/}
+        {/*        <></>*/}
+        {/*      ) : (*/}
+        {/*        <Form*/}
+        {/*          form={formPassword}*/}
+        {/*          name="newPassword"*/}
+        {/*          onFinish={handleResetPassword}*/}
+        {/*          validateMessages={validateMessages}*/}
+        {/*        >*/}
+        {/*          <Descriptions title="重置密码" />*/}
+        {/*          <Form.Item name="oldPassword" label="输入旧密码" rules={[{ required: true }]}>*/}
+        {/*            <Input.Password />*/}
+        {/*          </Form.Item>*/}
+        {/*          <Form.Item name="newPassword" label="输入新密码" rules={[{ required: true }]}>*/}
+        {/*            <Input.Password />*/}
+        {/*          </Form.Item>*/}
+        {/*        </Form>*/}
+        {/*      )*/}
+        {/*    }*/}
+        {/*  </Col>*/}
+        {/*</Row>*/}
       </Block>
       <Block title="数据统计">
         <Row justify="center" gutter={120}>
