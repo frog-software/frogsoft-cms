@@ -11,7 +11,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ConfigMapper {
-  public ConfigDto toConfigDto(List<Config> configList){
+
+  public ConfigDto toConfigDto(List<Config> configList) {
     ConfigDto configDto = new ConfigDto();
     EmailDto emailDto = new EmailDto();
     HeaderDto headerDto = new HeaderDto();

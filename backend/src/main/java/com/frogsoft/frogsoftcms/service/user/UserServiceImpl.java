@@ -96,6 +96,7 @@ public class UserServiceImpl implements UserService {
       throw new NotFoundException("验证码错误");
     }
   }
+
   @Override
   public EntityModel<UserDto> changePassword(String username,
       UserChangePasswordRequest changePasswordRequest,

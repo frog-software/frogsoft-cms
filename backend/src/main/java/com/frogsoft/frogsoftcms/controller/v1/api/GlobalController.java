@@ -6,15 +6,12 @@ import com.frogsoft.frogsoftcms.dto.model.config.ConfigDto;
 import com.frogsoft.frogsoftcms.exception.basic.unauthorized.UnauthorizedException;
 import com.frogsoft.frogsoftcms.model.user.User;
 import com.frogsoft.frogsoftcms.service.config.ConfigService;
-
 import com.frogsoft.frogsoftcms.service.mail.MailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
-
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
-
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -38,9 +35,9 @@ public class GlobalController {
 
   @GetMapping("/config")
   public ResponseEntity<EntityModel<ConfigDto>> getConfig(
-      @AuthenticationPrincipal User authenticatedUser){
-    if (!authenticatedUser.getRoles().contains("ROLE_ADMIN")){
-      throw new  UnauthorizedException("权限不足");
+      @AuthenticationPrincipal User authenticatedUser) {
+    if (!authenticatedUser.getRoles().contains("ROLE_ADMIN")) {
+      throw new UnauthorizedException("权限不足");
     }
     return ResponseEntity.ok().body(configService.getConfig());
   }
@@ -48,9 +45,9 @@ public class GlobalController {
   @PutMapping("/config")
   public ResponseEntity<EntityModel<ConfigDto>> putConfig(
       @AuthenticationPrincipal User authenticatedUser,
-      @RequestBody ConfigRequest configRequest){
-    if (!authenticatedUser.getRoles().contains("ROLE_ADMIN")){
-      throw new  UnauthorizedException("权限不足");
+      @RequestBody ConfigRequest configRequest) {
+    if (!authenticatedUser.getRoles().contains("ROLE_ADMIN")) {
+      throw new UnauthorizedException("权限不足");
     }
     return ResponseEntity.ok().body(configService.putConfig(configRequest));
   }

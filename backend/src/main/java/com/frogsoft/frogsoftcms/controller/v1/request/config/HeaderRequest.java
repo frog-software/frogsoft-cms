@@ -5,6 +5,7 @@ import lombok.Data;
 
 @Data
 public class HeaderRequest implements Serializable {
+
   private static final long serialVersionUID = 32974805623333756L;
   private String logo;
 }
