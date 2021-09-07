@@ -90,6 +90,8 @@ services:
     restart: unless-stopped
     networks:
       - frogsoft-cms-network
+    environment: 
+      VITE_BACKEND_URL: "${BACKEND_PORTOCOL}://${BACKEND_TRAEFIK_HOST}:${TRAEFIK_ENTRYPOINT_PORT}"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.frogsoft-cms-user.rule=Host(`${FRONTEND_USER_TRAEFIK_HOST}`)"
@@ -106,9 +108,8 @@ services:
     image: ${DOCKERHUB_USERNAME}/frogsoft-cms-admin:latest
     container_name: frogsoft-cms-admin
     restart: unless-stopped
-    # networks:
-    #   - frogsoft-cms-network
-    # network_mode: "host"
+    networks:
+      - frogsoft-cms-network
     environment: 
       VITE_BACKEND_URL: "${BACKEND_PORTOCOL}://${BACKEND_TRAEFIK_HOST}:${TRAEFIK_ENTRYPOINT_PORT}"
     labels:
