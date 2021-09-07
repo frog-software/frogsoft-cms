@@ -3,7 +3,7 @@ RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 COPY package*.json yarn.lock ./
 ENV NODE_ENV=production
-RUN yarn install --frozen-lockfile --production=false --registry https://registry.npm.taobao.org/
+RUN yarn install --frozen-lockfile --production=false
 COPY . .
 RUN yarn build
 
