@@ -1,10 +1,10 @@
-import {createApp} from 'vue'
-import App from './App.vue'
-import store from "./store";
+import {createApp}     from 'vue'
+import App             from './App.vue'
+import store           from "./store";
 import Antd, {message} from 'ant-design-vue'
 import 'ant-design-vue/dist/antd.css'
-import axios from "axios";
-import router from "./router";
+import axios           from "axios";
+import router          from "./router";
 
 
 const app = createApp(App)
@@ -18,7 +18,10 @@ app.config.productionTip = false;
 
 app.config.globalProperties.$store = store
 
-axios.defaults.baseURL = 'https://api.pxm.edialect.top/'
+export const VITE_BACKEND_URL     = import.meta.env.DEV
+  ? import.meta.env.VITE_BACKEND_URL
+  : 'VITE_BACKEND_URL_RUNTIME_REPLACEMENT';
+axios.defaults.baseURL            = VITE_BACKEND_URL
 app.config.globalProperties.Axios = axios
 export default axios
 /**

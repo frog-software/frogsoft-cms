@@ -17,4 +17,4 @@ COPY --from=build /usr/src/app/spring-boot-loader/ ./
 COPY --from=build /usr/src/app/application/ ./
 COPY ./wait-for-it.sh ./
 RUN chmod +x ./wait-for-it.sh && ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo 'Asia/Shanghai' >/etc/timezone
-CMD ["./wait-for-it.sh", "localhost:3306", "--", "java", "org.springframework.boot.loader.JarLauncher"]
+CMD ["./wait-for-it.sh", "localhost:3306", "--timeout=120", "--", "java", "org.springframework.boot.loader.JarLauncher"]
