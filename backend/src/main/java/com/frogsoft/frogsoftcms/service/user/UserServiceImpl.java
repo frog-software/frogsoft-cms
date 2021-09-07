@@ -6,7 +6,9 @@ import com.frogsoft.frogsoftcms.controller.v1.request.User.UserChangePasswordReq
 import com.frogsoft.frogsoftcms.controller.v1.request.User.UserRegisterRequest;
 import com.frogsoft.frogsoftcms.controller.v1.request.User.UserRequest;
 import com.frogsoft.frogsoftcms.dto.assembler.user.UserModelAssembler;
+import com.frogsoft.frogsoftcms.dto.mapper.user.UserDetailMapper;
 import com.frogsoft.frogsoftcms.dto.mapper.user.UserMapper;
+import com.frogsoft.frogsoftcms.dto.model.user.UserDetailDto;
 import com.frogsoft.frogsoftcms.dto.model.user.UserDto;
 import com.frogsoft.frogsoftcms.exception.basic.conflict.ConflictException;
 import com.frogsoft.frogsoftcms.exception.basic.notfound.NotFoundException;
@@ -15,7 +17,7 @@ import com.frogsoft.frogsoftcms.exception.user.UserNotFoundException;
 import com.frogsoft.frogsoftcms.model.user.Roles;
 import com.frogsoft.frogsoftcms.model.user.User;
 import com.frogsoft.frogsoftcms.repository.user.UserRepository;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +37,7 @@ public class UserServiceImpl implements UserService {
   private final UserModelAssembler userModelAssembler;
   private final PagedResourcesAssembler<UserDto> pagedResourcesAssembler;
   private final UserMapper userMapper;
+  private final UserDetailMapper userDetailMapper;
   private final PasswordEncoder passwordEncoder;
 
 
@@ -48,15 +51,14 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public EntityModel<UserDto> getOneUser(String username) {
+  public EntityModel<UserDetailDto> getOneUser(String username) {
 
     User user = userRepository.findByUsername(username);
-
     if (user == null) {
       throw new UserNotFoundException(username);
     }
 
-    return userModelAssembler.toModel(userMapper.toUserDto(user));
+    return userModelAssembler.toDetailModel(userDetailMapper.toUserDetailDto(user));
   }
 
   @Override
@@ -64,18 +66,23 @@ public class UserServiceImpl implements UserService {
 
     String username = userRegisterRequest.getUsername();
     User user = userRepository.findByUsername(username);
+    List<String> role = new LinkedList<>();
+    role.add(Roles.ROLE_USER.getRole());
 
     if (user != null) {
       throw new ConflictException("用户名已存在");
     }
-    List<String> roles = new ArrayList<>();
-    roles.add(Roles.ROLE_USER.getRole());
-    User user1 = userRepository.save(new User()
-    .setEmail(userRegisterRequest.getEmail())
-    .setRoles(roles)
-    .setUsername(userRegisterRequest.getUsername())
-    .setPassword(passwordEncoder.encode(userRegisterRequest.getPassword())));
-    return userModelAssembler.toModel(userMapper.toUserDto(user1));
+    if (verificationCodeStorage
+        .verifyCode(userRegisterRequest.getEmail(), userRegisterRequest.getCode()) != null) {
+      User user1 = userRepository.save(new User()
+          .setEmail(userRegisterRequest.getEmail())
+          .setRoles(role)
+          .setUsername(userRegisterRequest.getUsername())
+          .setPassword(passwordEncoder.encode(userRegisterRequest.getPassword())));
+      return userModelAssembler.toModel(userMapper.toUserDto(user1));
+    } else {
+      throw new NotFoundException("验证码错误");
+    }
   }
 
   @Override
@@ -84,7 +91,7 @@ public class UserServiceImpl implements UserService {
     if (user == null) {
       throw new UserNotFoundException(username);
     }
-    if (verificationCodeStorage.verifyCode(user.getId(), code) != null) {
+    if (verificationCodeStorage.verifyCode(user.getEmail(), code) != null) {
       User newUser = userRepository.save(user.setEmail(newEmail));
       return userModelAssembler.toModel(userMapper.toUserDto(newUser));
     } else {
@@ -92,6 +99,7 @@ public class UserServiceImpl implements UserService {
     }
   }
 
+  @Override
   public EntityModel<UserDto> changePassword(String username,
       UserChangePasswordRequest changePasswordRequest,
       User authenticatedUser) {
@@ -110,35 +118,43 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public EntityModel<UserDto> alterUserInformation(String oldUserName,
-      UserRequest userRequest, User authenticatedUser){
-    if (!authenticatedUser.getUsername().equals(oldUserName)){
-      throw new UnauthorizedException("身份验证不一致，无法修改信息");
+      UserRequest userRequest, User authenticatedUser) {
+    if (!authenticatedUser.getRoles().contains(Roles.ROLE_ADMIN.getRole())) {
+      if (!authenticatedUser.getUsername().equals(oldUserName)) {
+        throw new UnauthorizedException("身份验证不一致，无法修改信息");
+      }
     }
     User oldUser = userRepository.findByUsername(oldUserName);
     User newUser = userRepository.findByUsername(userRequest.getUsername());
-    if (newUser != null){
-      throw new ConflictException("用户名已存在");
+    if (authenticatedUser.getRoles().contains(Roles.ROLE_ADMIN.getRole())) {
+      oldUser.setRoles(userRequest.getRoles());
+      if (!oldUserName.equals(userRequest.getUsername())) {
+        if (newUser != null) {
+          throw new ConflictException("用户名已存在");
+        }
+      }
+    } else {
+      if (newUser != null) {
+        throw new ConflictException("用户名已存在");
+      }
     }
-    oldUser.setUsername(userRequest.getUsername())
-        .setEmail(userRequest.getEmail());
+    oldUser.setUsername(userRequest.getUsername());
     User newUser1 = userRepository.save(oldUser);
     return userModelAssembler.toModel(userMapper.toUserDto(newUser1));
   }
 
   @Override
   @Transactional
-  public Void deleteUser(String username,
-      UserRequest userRequest, User authenticatedUser){
-    if (!userRequest.getRoles().contains(Roles.ROLE_ADMIN.getRole())) {
+  public void deleteUser(String username, User authenticatedUser) {
+    if (!authenticatedUser.getRoles().contains(Roles.ROLE_ADMIN.getRole())) {
       if (!authenticatedUser.getUsername().equals(username)) {
         throw new UnauthorizedException("身份验证不一致，无法删除用户");
       }
     }
     User user = userRepository.findByUsername(username);
-    if (user == null){
+    if (user == null) {
       throw new UserNotFoundException(username);
     }
     userRepository.delete(user);
-    return null;
   }
 }
