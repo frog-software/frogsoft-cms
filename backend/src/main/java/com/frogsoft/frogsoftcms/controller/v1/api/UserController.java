@@ -116,10 +116,14 @@ public class UserController {
   @DeleteMapping("/{username}")
   public ResponseEntity<?> deleteUser(
       @PathVariable String username,
-      @RequestBody UserRequest userRequest,
       @AuthenticationPrincipal User authenticatedUser
+
   ) {
     userService.deleteUser(username, userRequest, authenticatedUser);
+
+  ){
+    userService.deleteUser(username, authenticatedUser);
+
     return ResponseEntity.ok(201);
   }
 }

@@ -132,9 +132,14 @@ public class UserServiceImpl implements UserService {
 
   @Override
   @Transactional
+
   public void deleteUser(String username,
       UserRequest userRequest, User authenticatedUser) {
     if (!userRequest.getRoles().contains(Roles.ROLE_ADMIN.getRole())) {
+
+  public void deleteUser(String username, User authenticatedUser) {
+    if (!authenticatedUser.getRoles().contains(Roles.ROLE_ADMIN.getRole())) {
+
       if (!authenticatedUser.getUsername().equals(username)) {
         throw new UnauthorizedException("身份验证不一致，无法删除用户");
       }
