@@ -17,7 +17,19 @@ service.interceptors.response.use((res) => res,
   (err) => {
     switch (err?.response?.status) {
       case 401:
-        message.error('你没有权限');
+        message.error('你没有权限！');
+        // to login page
+        break;
+      case 403:
+        message.error('禁止访问！');
+        // to login page
+        break;
+      case 404:
+        message.error('资源不存在！');
+        // to login page
+        break;
+      case 409:
+        message.error('用户名已存在！');
         // to login page
         break;
       default:
