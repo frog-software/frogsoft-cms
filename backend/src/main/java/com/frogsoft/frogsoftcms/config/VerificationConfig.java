@@ -11,12 +11,12 @@ public class VerificationConfig {
   // 验证码过期时间
   private final int EXPIRATION_TIME = 120;
 
-  private final HashMap<String, VerificationCode> storage = new HashMap<>();
+  private final HashMap<Long, VerificationCode> storage = new HashMap<>();
 
   // 生成验证码，生成失败返回 null
-  public VerificationCode generateCode(String email) {
+  public VerificationCode generateCode(Long userId) {
 
-    VerificationCode previousCode = storage.get(email);
+    VerificationCode previousCode = storage.get(userId);
 
     if (previousCode != null && previousCode.getGenerationTime()
         .isAfter(LocalDateTime.now().minusSeconds(RESEND_INTERVAL))) {
@@ -24,18 +24,18 @@ public class VerificationConfig {
     }
 
     String code = Integer.toString((int) (Math.random() * 9000 + 1000));
-    VerificationCode verificationCode = new VerificationCode(email, code);
+    VerificationCode verificationCode = new VerificationCode(userId, code);
 
-    storage.put(email, verificationCode);
+    storage.put(userId, verificationCode);
 
     return verificationCode;
   }
 
   // 验证验证码，验证失败返回 null
-  public VerificationCode verifyCode(String email, String code) {
+  public VerificationCode verifyCode(Long userId, String code) {
     deleteExpiredCode();
 
-    VerificationCode storedCode = storage.get(email);
+    VerificationCode storedCode = storage.get(userId);
 
     if (storedCode == null || !storedCode.getCode().equals(code)) {
       return null;
@@ -45,7 +45,7 @@ public class VerificationConfig {
   }
 
   private void deleteExpiredCode() {
-    ArrayList<String> codeToBeDeletedList = new ArrayList<>();
+    ArrayList<Long> codeToBeDeletedList = new ArrayList<>();
 
     for (var entry : storage.entrySet()) {
       if (entry.getValue().getGenerationTime().isBefore(
@@ -55,7 +55,7 @@ public class VerificationConfig {
       }
     }
 
-    for (String codeToBeDeleted : codeToBeDeletedList) {
+    for (Long codeToBeDeleted : codeToBeDeletedList) {
       storage.remove(codeToBeDeleted);
     }
 

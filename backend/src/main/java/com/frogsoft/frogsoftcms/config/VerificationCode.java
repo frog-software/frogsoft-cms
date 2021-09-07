@@ -4,22 +4,22 @@ import java.time.LocalDateTime;
 
 public class VerificationCode {
 
-  private String email;
+  private Long userId;
   private String code;
   private LocalDateTime generationTime;
 
-  public VerificationCode(String email, String code) {
-    this.email = email;
+  public VerificationCode(Long userId, String code) {
+    this.userId = userId;
     this.code = code;
     this.generationTime = LocalDateTime.now();
   }
 
-  public String getEmail() {
-    return email;
+  public Long getUserId() {
+    return userId;
   }
 
-  public void setEmail(Long userId) {
-    this.email = email;
+  public void setUserId(Long userId) {
+    this.userId = userId;
   }
 
   public String getCode() {

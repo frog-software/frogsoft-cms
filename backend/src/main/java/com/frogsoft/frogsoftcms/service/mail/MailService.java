@@ -1,8 +1,11 @@
 package com.frogsoft.frogsoftcms.service.mail;
 
 
+import com.frogsoft.frogsoftcms.dto.model.user.UserDto;
+import org.springframework.hateoas.EntityModel;
+
 public interface MailService {
 
-  void sendCode(String email);
+  EntityModel<UserDto> sendCode(String username);
 
 }
