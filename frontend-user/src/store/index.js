@@ -6,8 +6,7 @@ moment.locale('zh-cn');
 
 const defaultUser   = {
   id: 0,
-  username: 'username',
-  nickname: 'nickname',
+  username: null,
   email: 'email@frogsoft.com',
   avatar: 'https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png',
   is_admin: false,
@@ -56,7 +55,7 @@ const store         = createStore({
      * @returns {boolean} 是否已经登录
      */
     loginStatus(state) {
-      return state.user.id > 0;
+      return state.user.username;
     },
 
     // getter区
@@ -109,12 +108,12 @@ const store         = createStore({
     },
     userLogin(state, username) {
       if (state.user.username === username) return;
-      state.user.username = username
+      state.user.username = username.toString()
       localStorage.setItem('username', username);
       this.commit('userUpdate');
     },
     userLogout(state) {
-      localStorage.removeItem('id');
+      localStorage.removeItem('username');
       localStorage.removeItem('token');
       state.user             = Object.create(defaultUser);
       state.publish_articles = [];
@@ -124,10 +123,10 @@ const store         = createStore({
     userUpdate(state) {
       state.drawerLoading = true;
       axios.get(`/v1/users/${state.user.username}`).then((res) => {
-        state.user             = res.data.user;
-        state.publish_articles = res.data.publish_articles;
-        state.like_articles    = res.data.like_articles;
-        state.drawerLoading    = false;
+        state.user.email    = res.data.email;
+        state.user.is_admin = res.data.roles.includes("ROLE_ADMIN");
+      }).finally(() => {
+        state.drawerLoading = false;
       });
     },
     changeMusic(state, id) {
@@ -149,7 +148,7 @@ const store         = createStore({
     },
     updateConfig(state, id) {
       return axios.get('/v1/global/config/frontend-user').then(res => {
-        state.config = Object.create(res.data)
+        state.config = Object.assign({}, res.data)
       }).finally(() => {
         document.title                      = state.config.title
         document.getElementById('qwq').href = state.config.favicon

@@ -1,5 +1,5 @@
 import {createRouter, createWebHistory} from 'vue-router';
-import store from '../store';
+import store                            from '../store';
 
 const routes = [
   {
@@ -67,7 +67,7 @@ const routes = [
   },
   // Users区
   {
-    path: '/users/:id',
+    path: '/users/:username',
     name: 'UserDetails',
     props: true,
     component: () => import('../views/Users/UserDetails.vue'),

@@ -4,7 +4,7 @@
   <a-spin :spinning="drawerLoading">
     <a-descriptions layout="vertical">
       <template #title>
-        <router-link :to="{name:'UserDetails',params:{id:user.id.toString()}}">
+        <router-link :to="{name:'UserDetails',params:{username:user.username}}">
           用户信息
         </router-link>
         <a-button
@@ -66,8 +66,8 @@
 
 <script>
 import {mapGetters} from 'vuex';
-import ArticleList from '../Articles/ArticleList.vue';
-import store from '../../store';
+import ArticleList  from '../Articles/ArticleList.vue';
+import store        from '../../store';
 
 export default {
   name: 'UserPage',
