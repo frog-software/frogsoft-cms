@@ -16,7 +16,7 @@ public class CommentDto {
   private ArticleDto article;
   private Status status;
   private String content;
-  private LocalDateTime publishDateTime;
+  private LocalDateTime localDateTime;
   private Integer likes;
   private Long parent;
 }

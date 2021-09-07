@@ -43,13 +43,10 @@ public class User implements UserDetails {
   private String password;
 
   @ManyToMany
-  private List<Article> favoriteArticles;
+  private Set<Article> favoriteArticles;
 
   @ManyToMany
-  private List<Article> likeArticles;
-
-  @ManyToMany
-  private List<Article> historyArticles;
+  private Set<Article> likeArticles;
 
   @ElementCollection(fetch = FetchType.EAGER)
   private List<String> roles = new ArrayList<>();

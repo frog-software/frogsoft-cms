@@ -9,7 +9,6 @@ import com.frogsoft.frogsoftcms.security.jwt.JwtTokenAuthenticationFilter;
 import com.frogsoft.frogsoftcms.security.jwt.JwtTokenProvider;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,8 +23,12 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(
@@ -52,12 +55,9 @@ public class SecurityConfig {
         .exceptionHandling()
         .authenticationEntryPoint(restAuthenticationEntryPoint)
         .and()
-        .authorizeRequests(c -> c
-            .antMatchers("/v1/auth/login").permitAll()
-            .antMatchers(HttpMethod.POST, "/v1/auth/forget").permitAll()
-            .antMatchers(HttpMethod.POST, "/v1/users").permitAll()
-            .antMatchers(HttpMethod.POST, "/v1/global/email").permitAll()
-            .anyRequest().authenticated()
+        .authorizeRequests(c ->
+            c.antMatchers("/v1/auth/login", "/v1/auth/forget", "/v1/users").permitAll()
+                .anyRequest().authenticated()
         )
         .addFilterBefore(
             new JwtTokenAuthenticationFilter(tokenProvider),
@@ -70,8 +70,7 @@ public class SecurityConfig {
     return new WebMvcConfigurer() {
       @Override
       public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**").allowedOrigins("*")
-            .allowedMethods("GET", "POST", "PUT", "DELETE");
+        registry.addMapping("/**").allowedOrigins("*").allowedMethods("GET", "POST","PUT", "DELETE");
       }
     };
   }
