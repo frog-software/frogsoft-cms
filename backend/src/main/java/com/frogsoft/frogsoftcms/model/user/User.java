@@ -5,7 +5,6 @@ import com.frogsoft.frogsoftcms.model.article.Article;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -43,10 +42,13 @@ public class User implements UserDetails {
   private String password;
 
   @ManyToMany
-  private Set<Article> favoriteArticles;
+  private List<Article> favoriteArticles;
 
   @ManyToMany
-  private Set<Article> likeArticles;
+  private List<Article> likeArticles;
+
+  @ManyToMany
+  private List<Article> historyArticles;
 
   @ElementCollection(fetch = FetchType.EAGER)
   private List<String> roles = new ArrayList<>();

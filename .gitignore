@@ -47,3 +47,5 @@ dist-ssr
 tsconfig.tsbuildinfo
 *.log
 dist
+*.local
+db_data

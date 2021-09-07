@@ -37,12 +37,19 @@ export VERBOSE=false
 # You can also define RUNNER_SCRIPT_DIR in .env file
 RUNNER_SCRIPT_DIR="."
 
-# Load environment variables from .env (always loads)
+# Load environment variables from .env and .env.local (always loads)
 if [ -f ".env" ]; then
     if [ "${VERBOSE}" = true ]; then
         echo -e "${HEADER_INFO}loading environment variables from .env"
     fi
     export $(echo $(cat ".env" | sed 's/#.*//g' | xargs) | envsubst)
+fi
+
+if [ -f ".env.local" ]; then
+    if [ "${VERBOSE}" = true ]; then
+        echo -e "${HEADER_INFO}loading environment variables from .env.local"
+    fi
+    export $(echo $(cat ".env.local" | sed 's/#.*//g' | xargs) | envsubst)
 fi
 
 RUNNER_SCRIPT_DIR+="/"
@@ -193,12 +200,19 @@ case $RUNNER_ENV in
     ;;
 esac
 
-# Load environment variables from .env.[mode] (only loads in that environment)
+# Load environment variables from .env.[mode] and .env.[mode].local (only loads in that environment)
 if [ -f "${ENV_FILE}" ]; then
     if [ "${VERBOSE}" = true ]; then
         echo -e "${HEADER_INFO}loading environment variables from ${ENV_FILE}"
     fi
     export $(echo $(cat "${ENV_FILE}" | sed 's/#.*//g' | xargs) | envsubst)
+fi
+
+if [ -f "${ENV_FILE}.local" ]; then
+    if [ "${VERBOSE}" = true ]; then
+        echo -e "${HEADER_INFO}loading environment variables from ${ENV_FILE}.local"
+    fi
+    export $(echo $(cat "${ENV_FILE}.local" | sed 's/#.*//g' | xargs) | envsubst)
 fi
 
 # Show configuration (verbose)

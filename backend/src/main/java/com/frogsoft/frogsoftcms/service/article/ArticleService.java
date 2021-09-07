@@ -11,11 +11,11 @@ public interface ArticleService {
 
   EntityModel<ArticleDto> saveArticles(ArticleRequest articleRequest, User authenticatedUser);
 
-  EntityModel<ArticleDto> getOneArticle(Long id);
+  EntityModel<ArticleDto> getOneArticle(Long id, String role, Long userId);
 
   EntityModel<ArticleDto> editArticle(Long id, Long userId, ArticleRequest articleRequest);
 
-  void deleteArticle(Long id, Long userId);
+  void deleteArticle(Long id, User authenticateUser);
 
   EntityModel<ArticleDto> likeArticle(Long id, Long userId);
 
@@ -25,7 +25,8 @@ public interface ArticleService {
 
   EntityModel<ArticleDto> deleteFavor(Long id, Long userId);
 
-  PagedModel<EntityModel<ArticleDto>> findAll(Pageable pageable);
+  PagedModel<EntityModel<ArticleDto>> findAll(String sortBy, String order, Pageable pageable);
 
-  PagedModel<EntityModel<ArticleDto>> findBySearch(String search, Pageable pageable);
+  PagedModel<EntityModel<ArticleDto>> findBySearch(String search, String sortBy, String order,
+      Pageable pageable);
 }
