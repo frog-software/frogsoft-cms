@@ -26,6 +26,6 @@ public interface UserService {
   EntityModel<UserDto> alterUserInformation(String username,
       UserRequest userRequest, User authenticatedUser);
 
-  Void deleteUser(String username,
+  void deleteUser(String username,
       UserRequest userRequest, User authenticatedUser);
 }
