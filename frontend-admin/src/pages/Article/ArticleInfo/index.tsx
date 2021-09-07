@@ -17,55 +17,98 @@ import { useParams }                      from 'react-router-dom';
 import http                               from 'utils/http';
 import {
   Badge, Comment, Avatar,
-  Button, Col, Descriptions, Divider, Image, Row, Space, Statistic, Popconfirm, Form, Select, message, Input,
-}                        from 'antd';
-import DescriptionsItem  from 'antd/es/descriptions/Item';
+  Button, Col, Descriptions, Divider, Image, Row, Space,
+  Statistic, Popconfirm, Form, Select, message, Input,
+}                                         from 'antd';
+import DescriptionsItem                   from 'antd/es/descriptions/Item';
 import {
   CloudOutlined, LikeOutlined, StarOutlined,
-}                        from '@ant-design/icons';
-import { useForm }       from 'antd/es/form/Form';
-import { useHistory }    from 'react-router';
-import TextArea          from 'antd/es/input/TextArea';
-import { deleteArticle } from 'services/article';
+}                                         from '@ant-design/icons';
+import { useForm }                        from 'antd/es/form/Form';
+import { useHistory }                     from 'react-router';
+import TextArea                           from 'antd/es/input/TextArea';
+import { deleteArticle }                  from 'services/article';
 
 const ArticleInfo: FC = () => {
-  const params: { id: string }       = useParams();
-  const [articleInfo, setAricleInfo] = useState<Article>();
-  const [editDetail, setEditDetail]      = useState<boolean>(false);
-  const [editContent, setEditContent]      = useState<boolean>(false);
-  const [articleDetail]              = useForm();
-  const [articleContent]             = useForm();
-  const history                      = useHistory();
-  const { Option }                     = Select;
+  const params: { id: string }              = useParams();
+  const [articleInfo, setArticleInfo]        = useState<Article>();
+  const [editDetail, setEditDetail]         = useState<boolean>(false);
+  const [editContent, setEditContent]       = useState<boolean>(false);
+  const [articleDetail]                     = useForm();
+  const [articleContent]                    = useForm();
+  const history                             = useHistory();
+  const { Option }                            = Select;
+  const [detailLoading, setDetailLoading]   = useState<boolean>(false);
+  const [contentLoading, setContentLoading] = useState<boolean>(false);
+  const [render, setRender]                 = useState<boolean>(false);
 
   useEffect(() => {
     (async () => {
+      setDetailLoading(true);
+      setContentLoading(true);
       const data = await http.get<Article>(`v1/articles/${params.id}`);
-      setAricleInfo(data);
-      // console.log('这是假数据', data);
+      setArticleInfo(data);
+
+      console.log(data);
+      setDetailLoading(false);
+      setContentLoading(false);
     })();
-  }, []);
+  }, [render]);
 
   // 编辑文章资料
   const handleSubmitDetail = (data) => {
-    console.log(data);
-    setEditDetail(false);
+    setDetailLoading(true);
+    setContentLoading(true);
+    // eslint-disable-next-line no-param-reassign
+    data.content = articleInfo?.content;
+
+    http.put(`/v1/articles/${params.id}`, data)
+      .then(() => {
+        message.success('文章信息更新成功！');
+        setEditDetail(false);
+      })
+      .catch(() => {
+        message.error('文章信息更新失败！');
+      })
+      .finally(() => {
+        setDetailLoading(false);
+        setContentLoading(false);
+        setRender(!render);
+      });
   };
 
   // 编辑文章正文
   const handleSubmitContent = (data) => {
-    console.log(data);
-    setEditContent(false);
-  };
+    setDetailLoading(true);
+    setContentLoading(true);
 
-  // 删除文章
-  const handleDelete = async (articleId) => {
-    await deleteArticle(articleId);
-    history.goBack();
+    // eslint-disable-next-line no-param-reassign
+    data.title       = articleInfo?.title;
+    // eslint-disable-next-line no-param-reassign
+    data.description = articleInfo?.description;
+    // eslint-disable-next-line no-param-reassign
+    data.cover       = articleInfo?.cover;
+    // eslint-disable-next-line no-param-reassign
+    data.status      = articleInfo?.status;
+
+    http.put(`/v1/articles/${params.id}`, data)
+      .then(() => {
+        message.success('文章正文更新成功！');
+        setEditContent(false);
+      })
+      .catch(() => {
+        message.error('文章正文更新失败！');
+      })
+      .finally(() => {
+        setDetailLoading(false);
+        setContentLoading(false);
+        setRender(!render);
+      });
   };
 
   // 输入内容规范
   const validateMessages = {
+    // eslint-disable-next-line no-template-curly-in-string
     required: '${label}不能为空！',
   };
 
@@ -73,6 +116,7 @@ const ArticleInfo: FC = () => {
     <>
       <Block
         title="文章详细信息"
+        loading={detailLoading}
         showBack
         description={(
           <Space>
@@ -113,12 +157,12 @@ const ArticleInfo: FC = () => {
                   />
                 </Col>
                 <Col span={20}>
-                  <Descriptions title={articleInfo?.title || '文章标题未定义'} bordered style={{ color: 'red' }}>
-                    <DescriptionsItem label="文章ID">{articleInfo?.id || '未定义'}</DescriptionsItem>
-                    <DescriptionsItem label="文章发表时间">{articleInfo?.publishDate || '未定义'}</DescriptionsItem>
+                  <Descriptions title={articleInfo?.title ?? '文章标题未定义'} bordered style={{ color: 'red' }}>
+                    <DescriptionsItem label="文章ID">{articleInfo?.id ?? '未定义'}</DescriptionsItem>
+                    <DescriptionsItem label="文章发表时间">{articleInfo?.publishDate ?? '未定义'}</DescriptionsItem>
                     <br />
-                    <DescriptionsItem label="文章作者">{articleInfo?.author.username || '未定义'}</DescriptionsItem>
-                    <DescriptionsItem label="最后一次更新时间">{articleInfo?.updateDate || '未定义'}</DescriptionsItem>
+                    <DescriptionsItem label="文章作者">{articleInfo?.author.username ?? '未定义'}</DescriptionsItem>
+                    <DescriptionsItem label="最后一次更新时间">{articleInfo?.updateDate ?? '未定义'}</DescriptionsItem>
                     <br />
                     <Descriptions.Item label="文章状态" span={3}>
                       <Badge
@@ -192,13 +236,13 @@ const ArticleInfo: FC = () => {
         <Divider orientation="left" style={{ fontSize: '90%' }}>文章数据一览</Divider>
         <Row justify="space-around">
           <Col span={4}>
-            <Statistic title="阅读量" value={articleInfo?.views || '未定义'} prefix={<CloudOutlined />} />
+            <Statistic title="阅读量" value={articleInfo?.views ?? '未定义'} prefix={<CloudOutlined />} />
           </Col>
           <Col span={4}>
-            <Statistic title="点赞量" value={articleInfo?.likes || '未定义'} prefix={<LikeOutlined />} />
+            <Statistic title="点赞量" value={articleInfo?.likes ?? '未定义'} prefix={<LikeOutlined />} />
           </Col>
           <Col span={4}>
-            <Statistic title="收藏量" value={articleInfo?.favorites || '未定义'} prefix={<StarOutlined />} />
+            <Statistic title="收藏量" value={articleInfo?.favorites ?? '未定义'} prefix={<StarOutlined />} />
           </Col>
         </Row>
         <Divider />
@@ -206,9 +250,13 @@ const ArticleInfo: FC = () => {
 
       <Block
         title="文章正文内容"
+        loading={contentLoading}
         description={(
           <Space>
-            <Button htmlType="submit" onClick={editContent ? () => articleContent.submit() : () => setEditContent(true)}>
+            <Button
+              htmlType="submit"
+              onClick={editContent ? () => articleContent.submit() : () => setEditContent(true)}
+            >
               {editContent ? '保存' : '编辑'}
             </Button>
             {editContent ? (
@@ -219,7 +267,7 @@ const ArticleInfo: FC = () => {
       >
         {
           !editContent ? (
-            <DescriptionsItem>{articleInfo?.content || '未定义'}</DescriptionsItem>
+            <DescriptionsItem>{articleInfo?.content ?? '未定义'}</DescriptionsItem>
           ) : (
             <Form
               form={articleContent}

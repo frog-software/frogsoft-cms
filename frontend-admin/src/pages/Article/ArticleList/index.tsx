@@ -18,12 +18,13 @@ import {
   Button, Col, message, Popconfirm, Row, Space, Table,
 }                                         from 'antd';
 import { useQuery }                       from 'react-query';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { useHistory }                    from 'react-router';
 import { getArticleList, deleteArticle } from 'services/article';
 import Search                            from 'antd/es/input/Search';
 
 const ArticleList: FC = () => {
-  const [articleList, setAricleList]  = useState<Article[]>();
+  const [articleList, setArticleList]  = useState<Article[]>();
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pageSize, setPageSize]       = useState<number>(10);
   const [totalItems, setTotalItems]   = useState<number>();
@@ -118,16 +119,6 @@ const ArticleList: FC = () => {
     },
   ];
 
-  // useEffect(() => {
-  //   (async () => {
-  //     const data = await http.get<JavaPagedModel<Article>>('http://127.0.0.1:4523/mock/419258/v1/articles');
-  //     // const data2 = pagedModelSimplifier(data);
-  //     setAricleList(data._embedded.articleDtoList);
-  //     setTotalItems(data.page.totalElements);
-  //     // setIsLoading(false);
-  //   })();
-  // }, [currentPage]);
-
   useEffect(() => {
     if (!data) return;
 
@@ -140,7 +131,7 @@ const ArticleList: FC = () => {
       ),
     }));
 
-    setAricleList(tableList as any);
+    setArticleList(tableList as any);
     setTotalItems(data.page.total);
   }, [data]);
 
