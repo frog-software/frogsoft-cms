@@ -64,8 +64,9 @@ public class ArticleController {
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<?> getOneArticle(@PathVariable(value = "id") Long id) {
-    return ResponseEntity.status(201).body(articleService.getOneArticle(id));
+  public ResponseEntity<?> getOneArticle(@PathVariable(value = "id") Long id,
+      @AuthenticationPrincipal User authenticatedUser) {
+    return ResponseEntity.status(201).body(articleService.getOneArticle(id,authenticatedUser));
   }
 
   @PutMapping("/{id}")

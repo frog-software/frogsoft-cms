@@ -43,22 +43,31 @@ public class ArticleServiceImpl implements ArticleService {
         .setPublishDate(LocalDateTime.now())
         .setUpdateDate(LocalDateTime.now())
         .setStatus(articleRequest.getStatus())
-        .setViews(0));
+        .setViews(0)
+        .setFavoritesNum(0)
+        .setLikesNum(0));
     return articleModelAssembler.toModel(articleMapper.toArticleDto(article));
   }
 
   @Override
-  public EntityModel<ArticleDto> getOneArticle(Long id) {
+  public EntityModel<ArticleDto> getOneArticle(Long id,User authenticatedUser) {
+    Long userId = authenticatedUser.getId();
     Article article = articleRepository.findById(id)
         .orElseThrow(() -> new ArticleNotFoundException(id));
-    return articleModelAssembler.toModel(articleMapper.toArticleDto(article));
+    article.setViews(article.getViews()+1);
+    if (userRepository != null){
+      article.getHistories().add(userRepository
+          .findById(userId)
+          .orElseThrow(() -> new ArticleNotFoundException(userId)));
+    }
+    Article newArticle = articleRepository.save(article);
+    return articleModelAssembler.toModel(articleMapper.toArticleDto(newArticle));
   }
 
   @Override
   public EntityModel<ArticleDto> editArticle(Long id, Long userId, ArticleRequest articleRequest) {
     Article article = articleRepository.findById(id)
         .orElseThrow(() -> new ArticleNotFoundException(id));
-
     if (userId.equals(article.getAuthor().getId())) {
       Article newArticle = articleRepository.save(article
           .setTitle(articleRequest.getTitle())
@@ -92,6 +101,7 @@ public class ArticleServiceImpl implements ArticleService {
     article.getLikes().add(userRepository
         .findById(userId)
         .orElseThrow(() -> new ArticleNotFoundException(userId)));
+    article.setLikesNum(article.getLikesNum()+1);
     Article newArticle = articleRepository.save(article);
     return articleModelAssembler.toModel(articleMapper.toArticleDto(newArticle));
   }
@@ -103,6 +113,7 @@ public class ArticleServiceImpl implements ArticleService {
     article.getLikes().remove(userRepository
         .findById(userId)
         .orElseThrow(() -> new ArticleNotFoundException(userId)));
+    article.setLikesNum(article.getLikesNum()-1);
     Article newArticle = articleRepository.save(article);
     return articleModelAssembler.toModel(articleMapper.toArticleDto(newArticle));
   }
@@ -114,6 +125,7 @@ public class ArticleServiceImpl implements ArticleService {
     article.getFavorites().add(userRepository
         .findById(userId)
         .orElseThrow(() -> new ArticleNotFoundException(userId)));
+    article.setFavoritesNum(article.getFavoritesNum()+1);
     Article newArticle = articleRepository.save(article);
     return articleModelAssembler.toModel(articleMapper.toArticleDto(newArticle));
   }
@@ -125,6 +137,7 @@ public class ArticleServiceImpl implements ArticleService {
     article.getFavorites().remove(userRepository
         .findById(userId)
         .orElseThrow(() -> new ArticleNotFoundException(userId)));
+    article.setFavoritesNum(article.getFavoritesNum()-1);
     Article newArticle = articleRepository.save(article);
     return articleModelAssembler.toModel(articleMapper.toArticleDto(newArticle));
   }

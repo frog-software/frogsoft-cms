@@ -7,6 +7,7 @@ import com.frogsoft.frogsoftcms.controller.v1.request.User.UserRegisterRequest;
 import com.frogsoft.frogsoftcms.controller.v1.request.User.UserRequest;
 import com.frogsoft.frogsoftcms.dto.assembler.user.UserModelAssembler;
 import com.frogsoft.frogsoftcms.dto.mapper.user.UserMapper;
+import com.frogsoft.frogsoftcms.dto.model.user.UserDetailDto;
 import com.frogsoft.frogsoftcms.dto.model.user.UserDto;
 import com.frogsoft.frogsoftcms.exception.basic.conflict.ConflictException;
 import com.frogsoft.frogsoftcms.exception.basic.notfound.NotFoundException;
@@ -48,15 +49,14 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public EntityModel<UserDto> getOneUser(String username) {
+  public EntityModel<UserDetailDto> getOneUser(String username) {
 
     User user = userRepository.findByUsername(username);
-
     if (user == null) {
       throw new UserNotFoundException(username);
     }
 
-    return userModelAssembler.toModel(userMapper.toUserDto(user));
+    return userModelAssembler.toDetailModel(userMapper.toUserDetailDto(user));
   }
 
   @Override
@@ -145,7 +145,6 @@ public class UserServiceImpl implements UserService {
   @Transactional
   public void deleteUser(String username, User authenticatedUser) {
     if (!authenticatedUser.getRoles().contains(Roles.ROLE_ADMIN.getRole())) {
-
       if (!authenticatedUser.getUsername().equals(username)) {
         throw new UnauthorizedException("身份验证不一致，无法删除用户");
       }

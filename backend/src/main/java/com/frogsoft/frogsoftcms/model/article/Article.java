@@ -44,6 +44,9 @@ public class Article {
   @ManyToMany
   private Set<User> likes;
 
+  @ManyToMany
+  private Set<User> histories;
+
   @Column(nullable = false)
   private String title;
   @Column(nullable = false)
@@ -52,5 +55,9 @@ public class Article {
   private String content;
   @Column(nullable = false)
   private String cover;
+  @Column(nullable = false)
+  private Integer likesNum;
+  @Column(nullable = false)
+  private Integer favoritesNum;
 
 }
