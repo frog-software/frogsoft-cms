@@ -106,15 +106,14 @@ services:
       - "${FRONTEND_USER_PORT}"
 
   frogsoft-cms-admin:
-    build: 
-      context: ./frontend-admin
-      args: 
-        VITE_BACKEND_URL: ${BACKEND_TRAEFIK_HOST}
+    build: ./frontend-admin
     image: ${DOCKERHUB_USERNAME}/frogsoft-cms-admin:latest
     container_name: frogsoft-cms-admin
     restart: unless-stopped
     networks:
       - frogsoft-cms-network
+    environment: 
+      VITE_BACKEND_URL: ${BACKEND_TRAEFIK_HOST}
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.frogsoft-cms-admin.rule=Host(`${FRONTEND_ADMIN_TRAEFIK_HOST}`)"

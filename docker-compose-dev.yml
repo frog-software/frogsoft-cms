@@ -56,12 +56,11 @@ services:
 
 
   frogsoft-cms-admin:
-    build: 
-      context: ./frontend-admin
-      args: 
-        VITE_BACKEND_URL: ${BACKEND_URL}
+    build: ./frontend-admin
     container_name: frogsoft-cms-admin
     restart: unless-stopped
+    environment: 
+      VITE_BACKEND_URL: localhost:${BACKEND_PORT}
     ports:
       - "${FRONTEND_ADMIN_PORT}:80"
 
