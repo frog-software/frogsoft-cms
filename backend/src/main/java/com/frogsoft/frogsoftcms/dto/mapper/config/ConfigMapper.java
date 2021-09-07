@@ -17,8 +17,10 @@ public class ConfigMapper {
     EmailDto emailDto = new EmailDto();
     HeaderDto headerDto = new HeaderDto();
     FooterDto footerDto = new FooterDto();
-    footerDto.setLogo(configList.get(8).getConfigValue());
-    headerDto.setLogo(configList.get(7).getConfigValue());
+    footerDto.setLogo(configList.get(10).getConfigValue());
+    headerDto.setLogo(configList.get(9).getConfigValue());
+    emailDto.setPort(configList.get(8).getConfigValue());
+    emailDto.setHost(configList.get(7).getConfigValue());
     emailDto.setTitle(configList.get(6).getConfigValue());
     emailDto.setBody(configList.get(5).getConfigValue());
     emailDto.setAccount(configList.get(4).getConfigValue());

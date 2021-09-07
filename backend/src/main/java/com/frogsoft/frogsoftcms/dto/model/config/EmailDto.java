@@ -11,4 +11,6 @@ public class EmailDto {
   private String account;
   private String body;
   private String title;
+  private String host;
+  private String port;
 }

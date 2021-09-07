@@ -36,7 +36,7 @@ public class CommentServiceImpl implements CommentService {
   public EntityModel<CommentDto> saveComment(Long articleId, CommentRequest commentRequest,
       User authenticatedUser) {
     Comment comment = new Comment()
-        .setStatus(Status.Normal)
+        .setStatus(Status.NORMAL)
         .setArticle(articleRepository.getById(articleId))
         .setContent(commentRequest.getContent())
         .setAuthor(authenticatedUser)
