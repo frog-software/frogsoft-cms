@@ -1,13 +1,11 @@
 #!/bin/bash
 if [ "${DETACH}" = true ]; then
-    docker-compose \
+    docker-compose up \
         --file docker-compose-prod.yml \
         --env-file .env.prod \
-        --detach \
-        up || exit 1
+        --detach || exit 1
 else
-    docker-compose \
+    docker-compose up \
         --file docker-compose-prod.yml \
-        --env-file .env.prod \
-        up || exit 1
+        --env-file .env.prod || exit 1
 fi

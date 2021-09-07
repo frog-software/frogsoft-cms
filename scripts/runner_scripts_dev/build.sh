@@ -1,5 +1,4 @@
 #!/bin/bash
-docker-compose \
+docker-compose build \
     --file docker-compose-dev.yml \
-    --env-file .env.dev \
-    build || exit 1
+    --env-file .env.dev || exit 1

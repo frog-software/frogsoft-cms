@@ -5,13 +5,17 @@ services:
     container_name: frogsoft-cms-traefik
     restart: unless-stopped
     networks:
-      - frogsoft-cms-network
+      - traefik-global-proxy
     command: 
+      - --providers.docker=true
+      - --providers.file.watch=true
       - --api
-      - --entrypoints.web.address=:${TRAEFIK_ENTRYPOINT_PORT}
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
       - --providers.docker.exposedByDefault=false
     ports:
-      - "${TRAEFIK_ENTRYPOINT_PORT}:${TRAEFIK_ENTRYPOINT_PORT}"
+      - "80:80"
+      - "443:443"
     volumes:
       # - .:/etc/traefik
       # - ./dynamic:/etc/traefik/dynamic
@@ -20,8 +24,8 @@ services:
     labels:
       - "traefik.enable=true" # enable the dashboard
       - "traefik.http.routers.traefik.rule=Host(`${TRAEFIK_DASHBOARD_HOST}`)" # domain for dashboard
-      - "traefik.http.routers.traefik.entrypoints=web"
-      # - "traefik.http.routers.traefik.tls=true"
+      - "traefik.http.routers.traefik.entrypoints=websecure"
+      - "traefik.http.routers.traefik.tls=true"
       - "traefik.http.routers.traefik.service=api@internal" # points to dashboard
       - "traefik.http.routers.traefik.middlewares=auth" # enable password auth
       - "traefik.http.middlewares.auth.basicauth.users=root:$$apr1$$qxlAutEf$$ztoeod7s4TgWQB8I1NAfW/"
@@ -36,24 +40,20 @@ services:
       - "./mysql/conf.d:/etc/mysql/conf.d"
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-    networks: 
-      frogsoft-cms-network:
-        aliases:
-          - mysql
+      - "MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}"
+      - "MYSQL_DATABASE=${MYSQL_DATABASE}"
+      - "MYSQL_USER=${MYSQL_USER}"
+      - "MYSQL_PASSWORD=${MYSQL_PASSWORD}"
+
 
   frogsoft-cms-backend:
     depends_on: 
       - mysql
-    build: ./backend
     image: ${DOCKERHUB_USERNAME}/frogsoft-cms-backend:latest
     container_name: frogsoft-cms-backend
     restart: unless-stopped
     networks:
-      - frogsoft-cms-network
+      - traefik-global-proxy
     command:
       - "./wait-for-it.sh"
       - "mysql:3306"
@@ -63,68 +63,60 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.frogsoft-cms-backend.rule=Host(`${BACKEND_TRAEFIK_HOST}`)"
-      - "traefik.http.routers.frogsoft-cms-backend.entrypoints=web"
+      - "traefik.http.routers.frogsoft-cms-backend.entrypoints=${TRAEFIK_ENTRYPOINT}"
       # - "traefik.http.routers.frogsoft-cms-backend.tls=true"
-      - "traefik.http.services.frogsoft-cms-backend.loadbalancer.server.port=80"
+      - "traefik.http.services.frogsoft-cms-backend.loadbalancer.server.port=${BACKEND_PORT}"
       - "traefik.http.routers.frogsoft-cms-backend.middlewares=frogsoft-cms-backend-compress"
       - "traefik.http.middlewares.frogsoft-cms-backend-compress.compress=true"
     environment:
-      MYSQL_URL: mysql
+      MYSQL_URL: mysql:3306
       MYSQL_DB: ${MYSQL_DATABASE}
       MYSQL_USERNAME: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      PORT: 80
+      PORT: ${BACKEND_PORT}
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRATION_DELAY: ${JWT_EXPIRATION_DELAY}
       MAIL_HOST: ${MAIL_HOST}
       MAIL_USERNAME: ${MAIL_USERNAME}
       MAIL_PASSWORD: ${MAIL_PASSWORD}
     expose:
-      - "80"
+      - "${BACKEND_PORT}"
 
 
   frogsoft-cms-user:
-    build: ./frontend-user
     image: ${DOCKERHUB_USERNAME}/frogsoft-cms-user:latest
     container_name: frogsoft-cms-user
     restart: unless-stopped
     networks:
-      - frogsoft-cms-network
-    environment: 
-      VITE_BACKEND_URL: "${BACKEND_PORTOCOL}://${BACKEND_TRAEFIK_HOST}:${TRAEFIK_ENTRYPOINT_PORT}"
+      - traefik-global-proxy
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.frogsoft-cms-user.rule=Host(`${FRONTEND_USER_TRAEFIK_HOST}`)"
-      - "traefik.http.routers.frogsoft-cms-user.entrypoints=web"
+      - "traefik.http.routers.frogsoft-cms-user.entrypoints=${TRAEFIK_ENTRYPOINT}"
       # - "traefik.http.routers.frogsoft-cms-user.tls=true"
-      - "traefik.http.services.frogsoft-cms-user.loadbalancer.server.port=80"
+      - "traefik.http.services.frogsoft-cms-user.loadbalancer.server.port=${FRONTEND_USER_PORT}"
       - "traefik.http.routers.frogsoft-cms-user.middlewares=frogsoft-cms-user-compress"
       - "traefik.http.middlewares.frogsoft-cms-user-compress.compress=true"
     expose:
-      - "80"
+      - "${FRONTEND_USER_PORT}"
 
   frogsoft-cms-admin:
-    build: ./frontend-admin
     image: ${DOCKERHUB_USERNAME}/frogsoft-cms-admin:latest
     container_name: frogsoft-cms-admin
     restart: unless-stopped
     networks:
-      - frogsoft-cms-network
-    environment: 
-      VITE_BACKEND_URL: "${BACKEND_PORTOCOL}://${BACKEND_TRAEFIK_HOST}:${TRAEFIK_ENTRYPOINT_PORT}"
+      - traefik-global-proxy
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.frogsoft-cms-admin.rule=Host(`${FRONTEND_ADMIN_TRAEFIK_HOST}`)"
-      - "traefik.http.routers.frogsoft-cms-admin.entrypoints=web"
+      - "traefik.http.routers.frogsoft-cms-admin.entrypoints=${TRAEFIK_ENTRYPOINT}"
       # - "traefik.http.routers.frogsoft-cms-admin.tls=true"
-      - "traefik.http.services.frogsoft-cms-admin.loadbalancer.server.port=80"
+      - "traefik.http.services.frogsoft-cms-admin.loadbalancer.server.port=${FRONTEND_ADMIN_PORT}"
       - "traefik.http.routers.frogsoft-cms-admin.middlewares=frogsoft-cms-admin-compress"
       - "traefik.http.middlewares.frogsoft-cms-admin-compress.compress=true"
     expose:
-      - "80"
-    ports: 
-      - "10002:80"
+      - "${FRONTEND_ADMIN_PORT}"
 
 networks:
-  frogsoft-cms-network:
-    name: frogsoft-cms-network
+  traefik-global-proxy:
+    name: traefik-global-proxy

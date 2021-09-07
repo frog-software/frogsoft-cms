@@ -1,5 +1,3 @@
 #!/bin/bash
-docker-compose \
-    --file docker-compose-prod.yml \
-    --env-file .env.prod \
-    rm -s -f || exit 1
+docker-compose rm -s -f \
+    --file docker-compose-prod.yml
