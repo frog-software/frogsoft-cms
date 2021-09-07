@@ -29,7 +29,7 @@ public class AuthServiceImpl implements AuthService {
     if (user == null) {
       throw new UserNotFoundException(username);
     }
-    if (verificationCodeStorage.verifyCode(user.getId(), code) != null) {
+    if (verificationCodeStorage.verifyCode(user.getEmail(), code) != null) {
       User newUser = userRepository.save(user.setPassword(passwordEncoder.encode(newPassword)));
       return userModelAssembler.toModel(userMapper.toUserDto(newUser));
     } else {

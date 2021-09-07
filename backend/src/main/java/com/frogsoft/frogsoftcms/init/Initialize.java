@@ -35,7 +35,7 @@ public class Initialize {
 
       // store default keys and values in the config repository
       Config dailyPickup = configRepository.findByConfigKey("DailyPickup");
-      if(dailyPickup == null){
+      if (dailyPickup == null) {
         configRepository.save(new Config()
             .setConfigKey("DailyPickup")
             .setConfigValue("0")
@@ -43,7 +43,7 @@ public class Initialize {
         );
       }
       Config announcementsId = configRepository.findByConfigKey("AnnouncementsId");
-      if(announcementsId == null){
+      if (announcementsId == null) {
         configRepository.save(new Config()
             .setConfigKey("AnnouncementsId")
             .setConfigValue("0,")

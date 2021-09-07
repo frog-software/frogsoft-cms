@@ -107,8 +107,9 @@ public class UserController {
       @PathVariable String username,
       @RequestBody UserRequest userRequest,
       @AuthenticationPrincipal User authenticatedUser
-      ){
-    return ResponseEntity.ok().body(userService.alterUserInformation(username, userRequest, authenticatedUser));
+  ) {
+    return ResponseEntity.ok()
+        .body(userService.alterUserInformation(username, userRequest, authenticatedUser));
   }
 
 
@@ -116,8 +117,13 @@ public class UserController {
   public ResponseEntity<?> deleteUser(
       @PathVariable String username,
       @AuthenticationPrincipal User authenticatedUser
+
+  ) {
+    userService.deleteUser(username, userRequest, authenticatedUser);
+
   ){
     userService.deleteUser(username, authenticatedUser);
+
     return ResponseEntity.ok(201);
   }
 }

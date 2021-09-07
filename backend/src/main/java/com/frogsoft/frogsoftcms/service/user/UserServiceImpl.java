@@ -15,6 +15,8 @@ import com.frogsoft.frogsoftcms.exception.user.UserNotFoundException;
 import com.frogsoft.frogsoftcms.model.user.Roles;
 import com.frogsoft.frogsoftcms.model.user.User;
 import com.frogsoft.frogsoftcms.repository.user.UserRepository;
+import java.util.LinkedList;
+import java.util.List;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -62,17 +64,23 @@ public class UserServiceImpl implements UserService {
 
     String username = userRegisterRequest.getUsername();
     User user = userRepository.findByUsername(username);
+    List<String> role = new LinkedList<>();
+    role.add(Roles.ROLE_USER.getRole());
 
     if (user != null) {
       throw new ConflictException("用户名已存在");
     }
-
-    User user1 = userRepository.save(new User()
-        .setEmail(userRegisterRequest.getEmail())
-        .setUsername(userRegisterRequest.getUsername())
-        .setPassword(passwordEncoder.encode(userRegisterRequest.getPassword())));
-
-    return userModelAssembler.toModel(userMapper.toUserDto(user1));
+    if (verificationCodeStorage
+        .verifyCode(userRegisterRequest.getEmail(), userRegisterRequest.getCode()) != null) {
+      User user1 = userRepository.save(new User()
+          .setEmail(userRegisterRequest.getEmail())
+          .setRoles(role)
+          .setUsername(userRegisterRequest.getUsername())
+          .setPassword(passwordEncoder.encode(userRegisterRequest.getPassword())));
+      return userModelAssembler.toModel(userMapper.toUserDto(user1));
+    } else {
+      throw new NotFoundException("验证码错误");
+    }
   }
 
   @Override
@@ -81,7 +89,7 @@ public class UserServiceImpl implements UserService {
     if (user == null) {
       throw new UserNotFoundException(username);
     }
-    if (verificationCodeStorage.verifyCode(user.getId(), code) != null) {
+    if (verificationCodeStorage.verifyCode(user.getEmail(), code) != null) {
       User newUser = userRepository.save(user.setEmail(newEmail));
       return userModelAssembler.toModel(userMapper.toUserDto(newUser));
     } else {
@@ -124,8 +132,14 @@ public class UserServiceImpl implements UserService {
 
   @Override
   @Transactional
+
+  public void deleteUser(String username,
+      UserRequest userRequest, User authenticatedUser) {
+    if (!userRequest.getRoles().contains(Roles.ROLE_ADMIN.getRole())) {
+
   public void deleteUser(String username, User authenticatedUser) {
     if (!authenticatedUser.getRoles().contains(Roles.ROLE_ADMIN.getRole())) {
+
       if (!authenticatedUser.getUsername().equals(username)) {
         throw new UnauthorizedException("身份验证不一致，无法删除用户");
       }
