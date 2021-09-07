@@ -7,6 +7,7 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(chain = true)
 public class ConfigDto {
+
   private String favicon;
   private String title;
   private String logo;

@@ -5,6 +5,7 @@ import com.frogsoft.frogsoftcms.dto.model.config.ConfigDto;
 import org.springframework.hateoas.EntityModel;
 
 public interface ConfigService {
+
   EntityModel<ConfigDto> getConfig();
 
   EntityModel<ConfigDto> putConfig(ConfigRequest configRequest);
