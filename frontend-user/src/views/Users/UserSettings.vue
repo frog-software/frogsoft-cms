@@ -344,7 +344,7 @@ export default {
     changePassword() {
       if (this.newPassword === this.confirmPassword) {
         this.btnPasswordLoading = true;
-        axios.put(`${'/users' / +this.user.id}/password`, {
+        axios.put(`/v1${'/users' / +this.user.id}/password`, {
           oldpassword: this.oldpassword,
           newpassword: this.newPassword,
         }).then(() => {
@@ -371,7 +371,7 @@ export default {
      */
     sendCode(email) {
       this.btnCodeLoading = true;
-      axios.post('/website/email', {email}).then(
+      axios.post('/v1/website/email', {email}).then(
           () => {
             message.success(`验证码已成功发送至${email}`);
           },
@@ -386,7 +386,7 @@ export default {
      */
     changeEmail() {
       this.btnEmailLoading = true;
-      axios.put(`${'/users' / +this.user.id}/email`, {
+      axios.put(`/v1${'/users' / +this.user.id}/email`, {
         email: this.newEmail,
         code: this.emailCode,
       }).then(() => {
@@ -401,7 +401,7 @@ export default {
      * @return {Promise<void>}
      */
     async updateUser() {
-      return axios.put(`/users/${this.user.id}`, {user: this.user}).then((res) => {
+      return axios.put(`/v1/users/${this.user.id}`, {user: this.user}).then((res) => {
         localStorage.setItem('token', res.data.token);
         store.commit('userUpdate');
         message.success('修改成功！');

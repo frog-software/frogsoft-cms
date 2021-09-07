@@ -181,7 +181,7 @@ export default {
     },
   },
   created() {
-    axios.get(`/articles/${this.id}`).then(async (res) => {
+    axios.get(`/v1/articles/${this.id}`).then(async (res) => {
       this.article = res.data.article;
       this.me = res.data.me;
       store.commit('updateComments', this.id);
@@ -199,14 +199,14 @@ export default {
     btnLikeClick() {
       this.btnLikeLoading = true;
       if (this.me.liked) {
-        axios.delete(`/articles/${this.id}/like`).finally(() => {
+        axios.delete(`/v1/articles/${this.id}/like`).finally(() => {
           this.me.liked = false;
           setTimeout(() => {
             this.btnLikeLoading = false;
           }, 500);
         });
       } else {
-        axios.post(`/articles/${this.id}/like`).finally(() => {
+        axios.post(`/v1/articles/${this.id}/like`).finally(() => {
           this.me.liked = true;
           // this.btnLikeLoading = false
           setTimeout(() => {
@@ -220,8 +220,8 @@ export default {
      */
     deleteArticle() {
       this.btnDeleteLoading = true;
-      axios.delete(`/articles/${this.id}`).finally(() => {
-        // axios.delete('http://127.0.0.1:4523/mock/404238/articles/' + this.id).finally(() => {
+      axios.delete(`/v1/articles/${this.id}`).finally(() => {
+        // axios.delete('/v1http://127.0.0.1:4523/mock/404238/articles/' + this.id).finally(() => {
         setTimeout(() => {
           this.btnDeleteLoading = false;
           this.hasDeleted = true;

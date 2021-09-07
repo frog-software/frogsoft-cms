@@ -135,7 +135,7 @@ export default {
         content: this.newCommentValue,
         parent: this.parent,
       };
-      axios.post(`/articles/${this.id}/comments`, data).then(async () => {
+      axios.post(`/v1/articles/${this.id}/comments`, data).then(async () => {
         await store.commit('updateComments', this.id);
         this.newCommentValue = '';
         message.success('评论发布成功');
@@ -152,7 +152,7 @@ export default {
      */
     commentDelete(id) {
       this.commentsLoading = true;
-      axios.delete(`/articles/${this.id}/comments`, {
+      axios.delete(`/v1/articles/${this.id}/comments`, {
         data: {
           id,
         },

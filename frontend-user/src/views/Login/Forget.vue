@@ -168,7 +168,7 @@ export default {
      */
     sendCode() {
       let result = 0;
-      axios.get('/users', {
+      axios.get('/v1/users', {
         username: this.username,
       }).then(
           (res) => {
@@ -176,7 +176,7 @@ export default {
               message.error('用户不存在');
             } else {
               this.email = res.data.users[0].email;
-              axios.post('/website/email', {email: this.email}).then();
+              axios.post('/v1/website/email', {email: this.email}).then();
               result = 1;
             }
           },
@@ -188,7 +188,7 @@ export default {
      */
     resetPassword() {
       let result = 1;
-      axios.put('/login/forget', {
+      axios.put('/v1/login/forget', {
         username: this.username,
         email: this.email,
         code: this.code,

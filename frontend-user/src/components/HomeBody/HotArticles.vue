@@ -35,7 +35,7 @@ export default {
     };
   },
   created() {
-    axios.get('/website/hot_articles').then((res) => {
+    axios.get('/v1/website/hot_articles').then((res) => {
       this.hotArticles = res.data.hot_articles;
     });
   },

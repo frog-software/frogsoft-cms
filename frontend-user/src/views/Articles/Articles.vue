@@ -30,7 +30,7 @@ export default {
   },
   created() {
     this.spinning = true;
-    axios.get('/articles').then((res) => {
+    axios.get('/v1/articles').then((res) => {
       this.listData = res.data.articles;
     }).finally(() => {
       this.spinning = false;

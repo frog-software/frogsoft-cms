@@ -106,7 +106,7 @@ export default {
   },
   methods: {
     login() {
-      axios.post('/login', {
+      axios.post('/v1/login', {
         username: this.username,
         password: this.password,
       }).then((res) => {

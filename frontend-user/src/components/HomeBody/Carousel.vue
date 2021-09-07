@@ -59,7 +59,7 @@ export default {
     };
   },
   created() {
-    axios.get('/website/carousel', {}).then((res) => {
+    axios.get('/v1/website/carousel', {}).then((res) => {
       this.carousel = res.data.carousel;
     }).catch((err) => {
       message.error(err.toString());

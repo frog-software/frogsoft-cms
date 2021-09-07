@@ -168,7 +168,7 @@ export default {
      */
     createArticle() {
       this.btnArticleLoading = true;
-      axios.post('/articles', {...this.article}).then((res) => {
+      axios.post('/v1/articles', {...this.article}).then((res) => {
         message.success('恭喜你，创建成功！');
         this.$router.push({name: 'ArticleDetails', params: {id: res.data.id.toString()}});
       }).catch((err) => {
@@ -201,7 +201,7 @@ export default {
      */
     updateArticle() {
       this.btnArticleLoading = true;
-      axios.put(`/articles/${this.id}`, {
+      axios.put(`/v1/articles/${this.id}`, {
         article: {
           title: this.article.title,
           description: this.article.description,
@@ -233,7 +233,7 @@ export default {
      */
     getArticleDetails() {
       if (this.id) {
-        axios.get(`/articles/${this.id}`).then((res) => {
+        axios.get(`/v1/articles/${this.id}`).then((res) => {
           this.isAuthor = res.data.me.is_author;
           if (this.isAuthor === false) {
             message.error('你没有权限编辑本文！');

@@ -108,7 +108,7 @@ export default {
     };
   },
   created() {
-    axios.get(`/users/${this.id}`).then((res) => {
+    axios.get(`/v1/users/${this.id}`).then((res) => {
       this.user = res.data.user;
       this.publish_articles = res.data.publish_articles;
       this.like_articles = res.data.like_articles;

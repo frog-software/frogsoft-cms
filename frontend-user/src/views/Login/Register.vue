@@ -189,7 +189,7 @@ export default {
      */
     sendCode(email) {
       this.btnCodeLoading = true;
-      axios.post('/website/email', {email}).then(
+      axios.post('/v1/website/email', {email}).then(
           () => {
             message.success(`验证码已成功发送至${email}`);
           },
@@ -205,7 +205,7 @@ export default {
       if (this.password !== this.repeatedPassword) {
         message.error('两次输入的密码不一致');
       } else {
-        axios.post('/users', {
+        axios.post('/v1/users', {
           username: this.username,
           password: this.password,
           email: this.email,

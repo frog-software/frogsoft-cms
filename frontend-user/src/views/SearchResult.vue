@@ -70,12 +70,12 @@ export default {
       Object.keys(this.loading).forEach((i) => {
         this.loading[i] = true;
       });
-      axios.get('/articles', {params: {search: this.keyWords}}).then((res) => {
+      axios.get('/v1/articles', {params: {search: this.keyWords}}).then((res) => {
         this.articles = res.data.articles;
       }).finally(() => {
         this.loading.articles = false;
       });
-      axios.get('/words', {params: {search: this.keyWords}}).then((res) => {
+      axios.get('/v1/words', {params: {search: this.keyWords}}).then((res) => {
         this.words = res.data.words;
       }).finally(() => {
         this.loading.words = false;

@@ -1,5 +1,6 @@
 <script setup>
 import HeaderUser from './HeaderUser.vue';
+import store from '../../store';
 </script>
 <template>
   <div class="header">
@@ -12,7 +13,7 @@ import HeaderUser from './HeaderUser.vue';
         <router-link to="/Home">
           <img
               alt="E方言图标"
-              src="../../assets/logo.png"
+              "src="store.getter"
               width="120"
           >
         </router-link>
@@ -60,7 +61,7 @@ import HeaderUser from './HeaderUser.vue';
 
 <script>
 
-import store from '../../store';
+
 
 export default {
   name: 'Header',

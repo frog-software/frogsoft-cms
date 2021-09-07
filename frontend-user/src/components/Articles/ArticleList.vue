@@ -76,7 +76,7 @@ export default {
   methods: {
     getCurrentPageData(page) {
       this.loading = true;
-      axios.put('/articles', {
+      axios.put('/v1/articles', {
         articles: this.listData.slice((page - 1) * this.pageSize, page * this.pageSize),
       }).then((res) => {
         this.listSource = res.data.articles;
