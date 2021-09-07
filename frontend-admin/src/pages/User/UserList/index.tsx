@@ -18,6 +18,7 @@ import { useQuery }                       from 'react-query';
 import {
   Button, Col, message, Popconfirm, Row, Space, Table,
 }                                         from 'antd';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { useHistory }                     from 'react-router';
 import Search                             from 'antd/es/input/Search';
 
@@ -119,7 +120,7 @@ const UserList: FC = () => {
           <Col span={24}>
             <Table
               rowKey="username"
-              loading={isLoading}
+              loading={isLoading || deleteLoading}
               dataSource={userList}
               columns={tableColumns}
               pagination={{

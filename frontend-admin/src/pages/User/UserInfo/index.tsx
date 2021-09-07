@@ -17,17 +17,18 @@ import { User }                                      from 'types/user';
 import { useParams }                                 from 'react-router-dom';
 import Block                                         from 'components/Block';
 import {
-  Avatar, Badge, Button, Checkbox, Col, Descriptions, Form,
-  Input, message, Popconfirm, Row, Space, Table, Tabs,
+  Avatar, Badge, Button, Col, Descriptions, Form,
+  Input, message, Popconfirm, Row, Space, Switch, Table, Tabs,
 }                                                    from 'antd';
 import http                                          from 'utils/http';
 import DescriptionsItem                              from 'antd/es/descriptions/Item';
 import { useForm }                                   from 'antd/es/form/Form';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { useHistory }                                from 'react-router';
 import { Column }                                    from '@ant-design/charts';
 import { CloudOutlined, FormOutlined, StarOutlined } from '@ant-design/icons';
 import { Article }                                   from 'types/article';
-import user, { deleteUser }                          from 'services/user';
+import { deleteUser }                       from 'services/user';
 
 const UserInfo: FC = () => {
   const params: { username: string }    = useParams();
@@ -35,18 +36,20 @@ const UserInfo: FC = () => {
   const [editable, setEditable]         = useState<boolean>(false);
   const [userInfo, setUserInfo]         = useState<User>();
   const [formDetail]                    = useForm();
-  const [formPassword]                  = useForm();
+  // const [formPassword]                  = useForm();
   const history                         = useHistory();
   const { TabPane }                       = Tabs;
   const [createdList, setCreatedList]   = useState<Article[]>();
   const [favoriteList, setFavoriteList] = useState<Article[]>();
   const [viewList, setViewList]         = useState<Article[]>();
   // const [editPassword, setEditPassword] = useState<boolean>(false);
+  const [render, setRender]                 = useState<boolean>(false);
 
   useEffect(() => {
     (async () => {
       const data = await http.get<User>(`v1/users/${params.username}`);
 
+      // 用户创建的文章
       const tempCreatedList = data?.createdArticles?.map((i) => ({
         ...i,
         status: i.status === 'NORMAL' ? (
@@ -57,6 +60,7 @@ const UserInfo: FC = () => {
       }));
       setCreatedList(tempCreatedList as any);
 
+      // 用户收藏的文章
       const tempFavoriteList = data?.favoriteArticles?.map((i) => ({
         ...i,
         status: i.status === 'NORMAL' ? (
@@ -67,6 +71,7 @@ const UserInfo: FC = () => {
       }));
       setFavoriteList(tempFavoriteList as any);
 
+      // 用户浏览过的文章
       const tempViewList = data?.histories?.map((i) => ({
         ...i,
         status: i.article.status === 'NORMAL' ? (
@@ -79,7 +84,7 @@ const UserInfo: FC = () => {
 
       setUserInfo(data);
     })();
-  }, []);
+  }, [render]);
 
   // 修改用户密码
   // const handleResetPassword = (data) => {
@@ -108,24 +113,28 @@ const UserInfo: FC = () => {
     });
   };
 
-  // 编辑用户权限
-  const handleResetRoles = (data) => {
+  // 编辑用户资料
+  const handleEdit = (data) => {
     setIsLoading(true);
 
     if (data.roles) {
+      // eslint-disable-next-line no-param-reassign
       data.roles = ['ROLE_USER', 'ROLE_ADMIN'];
     } else {
+      // eslint-disable-next-line no-param-reassign
       data.roles = ['ROLE_USER'];
     }
     const tempData = {
       email: userInfo.email,
-      username: userInfo.username,
+      username: data.username,
       roles: data.roles,
     };
 
     http.put(`/v1/users/${params.username}`, tempData)
       .then(() => {
         message.success('用户信息更新成功！');
+        history.push(`/users/${tempData.username}`);
+        setRender(!render);
         setEditable(false);
       })
       .catch((error) => {
@@ -138,10 +147,11 @@ const UserInfo: FC = () => {
 
   // 输入内容规范
   const validateMessages = {
+    // eslint-disable-next-line no-template-curly-in-string
     required: '${label}不能为空！',
     types: {
-      email: '${label}不是一个合法的邮箱格式！',
-      username: '${label}已存在！',
+      // eslint-disable-next-line no-template-curly-in-string
+      // email: '${label}不是一个合法的邮箱格式！',
     },
   };
 
@@ -321,7 +331,6 @@ const UserInfo: FC = () => {
             {editable ? (
               <Button onClick={() => { setEditable(false); }}>取消</Button>
             ) : ''}
-
           </Space>
         )}
       >
@@ -337,30 +346,45 @@ const UserInfo: FC = () => {
           <Col span={22}>
             {
               !editable ? (
-                <Descriptions title={userInfo?.username || '用户名未定义'}>
-                  <DescriptionsItem label="用户邮箱">{userInfo?.email || '未定义'}</DescriptionsItem>
+                <Descriptions title={userInfo?.username ?? '用户名未定义'}>
+                  <DescriptionsItem label="用户邮箱">{userInfo?.email ?? '未定义'}</DescriptionsItem>
                   <DescriptionsItem label="用户类型">
                     {userInfo?.roles.includes('ROLE_ADMIN') ? '管理员' : '普通用户'}
                   </DescriptionsItem>
                 </Descriptions>
               ) : (
-                <Form
-                  form={formDetail}
-                  name="newUserInfo"
-                  onFinish={handleResetRoles}
-                  onFinishFailed={() => message.error('用户信息更新失败！')}
-                >
-                  <Descriptions title={userInfo?.username || '用户名未定义'}>
-                    <DescriptionsItem label="用户邮箱">{userInfo?.email || '未定义'}</DescriptionsItem>
+                <Col span={7}>
+                  <Form
+                    form={formDetail}
+                    name="newUserInfo"
+                    onFinish={handleEdit}
+                    onFinishFailed={() => message.error('用户信息更新失败！')}
+                    validateMessages={validateMessages}
+                  >
+                    <Form.Item
+                      name="username"
+                      label="用户名"
+                      initialValue={userInfo?.username}
+                      rules={[{ required: true }]}
+                    >
+                      <Input />
+                    </Form.Item>
+                    <Descriptions>
+                      <DescriptionsItem label="用户邮箱">{userInfo?.email || '未定义'}</DescriptionsItem>
+                    </Descriptions>
                     <Form.Item
                       name="roles"
                       label="用户类型"
                       initialValue={userInfo?.roles.includes('ROLE_ADMIN')}
                     >
-                      <Checkbox defaultChecked={userInfo?.roles.includes('ROLE_ADMIN')}>管理员</Checkbox>
+                      <Switch
+                        checkedChildren="管理员"
+                        unCheckedChildren="普通用户"
+                        defaultChecked={userInfo?.roles.includes('ROLE_ADMIN')}
+                      />
                     </Form.Item>
-                  </Descriptions>
-                </Form>
+                  </Form>
+                </Col>
               )
             }
           </Col>
@@ -393,6 +417,7 @@ const UserInfo: FC = () => {
       <Block title="数据统计">
         <Row justify="center" gutter={120}>
           <Col span={24}>
+            {/* eslint-disable-next-line react/jsx-props-no-spreading */}
             <Column {...config} />
           </Col>
         </Row>
