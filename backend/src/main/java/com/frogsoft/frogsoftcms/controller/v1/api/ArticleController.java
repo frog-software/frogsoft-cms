@@ -68,6 +68,7 @@ public class ArticleController {
   @GetMapping("/{id}")
   public ResponseEntity<?> getOneArticle(@PathVariable(value = "id") Long id,
       @AuthenticationPrincipal User authenticatedUser) {
+
     List<String> roles = authenticatedUser.getRoles();
     String role = "user";
     if (roles.contains("ROLE_ADMIN")) {

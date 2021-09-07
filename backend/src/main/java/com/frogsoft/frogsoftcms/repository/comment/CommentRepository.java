@@ -4,6 +4,7 @@ import com.frogsoft.frogsoftcms.model.article.Article;
 import com.frogsoft.frogsoftcms.model.commment.Comment;
 import com.frogsoft.frogsoftcms.model.user.User;
 import java.util.List;
+import java.util.Set;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
