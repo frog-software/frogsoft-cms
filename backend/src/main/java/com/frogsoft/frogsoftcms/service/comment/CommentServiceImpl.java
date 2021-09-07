@@ -36,7 +36,7 @@ public class CommentServiceImpl implements CommentService {
   public EntityModel<CommentDto> saveComment(Long articleId, CommentRequest commentRequest,
       User authenticatedUser) {
     Comment comment = new Comment()
-        .setStatus(Status.Normal)
+        .setStatus(Status.NORMAL)
         .setArticle(articleRepository.getById(articleId))
         .setContent(commentRequest.getContent())
         .setAuthor(authenticatedUser)
@@ -59,7 +59,8 @@ public class CommentServiceImpl implements CommentService {
 
   @Override
   public EntityModel<CommentDto> getByDetail(Long commentId, User authenticatedUser) {
-    Comment comment = commentRepository.getById(commentId);
+    Comment comment = commentRepository.findById(commentId)
+        .orElseThrow(() -> new CommentNotFoundException(commentId));
     return commentModelAssembler.toModel(commentMapper.toCommentDto(comment));
   }
 

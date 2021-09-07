@@ -1,6 +1,8 @@
 package com.frogsoft.frogsoftcms.init;
 
+import com.frogsoft.frogsoftcms.model.config.Config;
 import com.frogsoft.frogsoftcms.model.user.User;
+import com.frogsoft.frogsoftcms.repository.config.ConfigRepository;
 import com.frogsoft.frogsoftcms.repository.user.UserRepository;
 import java.util.Arrays;
 import org.springframework.boot.CommandLineRunner;
@@ -14,6 +16,7 @@ public class Initialize {
   @Bean
   CommandLineRunner init(
       UserRepository userRepository,
+      ConfigRepository configRepository,
       PasswordEncoder passwordEncoder
   ) {
 
@@ -28,6 +31,23 @@ public class Initialize {
             .setPassword(passwordEncoder.encode("123456"))
             .setUsername("admin")
             .setRoles(Arrays.asList("ROLE_USER", "ROLE_ADMIN")));
+      }
+
+      // store default keys and values in the config repository
+      Config dailyPickup = configRepository.findByConfigKey("DailyPickup");
+      if (dailyPickup == null) {
+        configRepository.save(new Config()
+            .setConfigKey("DailyPickup")
+            .setConfigValue("0")
+
+        );
+      }
+      Config announcementsId = configRepository.findByConfigKey("AnnouncementsId");
+      if (announcementsId == null) {
+        configRepository.save(new Config()
+            .setConfigKey("AnnouncementsId")
+            .setConfigValue("0,")
+        );
       }
 
     };

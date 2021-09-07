@@ -54,8 +54,9 @@ public class AuthController {
   }
 
   @PostMapping("/forget")
-  public ResponseEntity<?> getCode(@RequestParam String username) {
-    return ResponseEntity.ok().body(mailService.sendCode(username));
+  public ResponseEntity<?> getCode(@RequestParam String email) {
+    mailService.sendCode(email);
+    return ResponseEntity.noContent().build();
   }
 
   @PutMapping("/forget")

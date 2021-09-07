@@ -6,8 +6,10 @@ import com.frogsoft.frogsoftcms.dto.mapper.article.ArticleMapper;
 import com.frogsoft.frogsoftcms.dto.model.article.ArticleDto;
 import com.frogsoft.frogsoftcms.exception.article.ArticleNotFoundException;
 import com.frogsoft.frogsoftcms.exception.basic.forbidden.ForbiddenException;
+import com.frogsoft.frogsoftcms.exception.user.UserNotFoundException;
 import com.frogsoft.frogsoftcms.model.article.Article;
 import com.frogsoft.frogsoftcms.model.article.Status;
+import com.frogsoft.frogsoftcms.model.user.Roles;
 import com.frogsoft.frogsoftcms.model.user.User;
 import com.frogsoft.frogsoftcms.repository.article.ArticleRepository;
 import com.frogsoft.frogsoftcms.repository.user.UserRepository;
@@ -42,29 +44,42 @@ public class ArticleServiceImpl implements ArticleService {
         .setPublishDate(LocalDateTime.now())
         .setUpdateDate(LocalDateTime.now())
         .setStatus(articleRequest.getStatus())
-        .setViews(0));
+        .setViews(0)
+        .setFavoritesNum(0)
+        .setLikesNum(0));
     return articleModelAssembler.toModel(articleMapper.toArticleDto(article));
   }
 
   @Override
-  public EntityModel<ArticleDto> getOneArticle(Long id) {
-    Article article = articleRepository.findById(id)
-        .orElseThrow(() -> new ArticleNotFoundException(id));
-    return articleModelAssembler.toModel(articleMapper.toArticleDto(article));
+  public EntityModel<ArticleDto> getOneArticle(Long id, String role, Long userId) {
+    Article article;
+    if (role.equals("admin")) {
+      article = articleRepository.findById(id)
+          .orElseThrow(() -> new ArticleNotFoundException(id));
+    } else {
+      article = articleRepository.findByIdAndStatus(id, Status.NORMAL)
+          .orElseThrow(() -> new ArticleNotFoundException(id));
+    }
+    article.setViews(article.getViews() + 1);
+    article.getHistories().add(userRepository
+        .findById(userId)
+        .orElseThrow(() -> new UserNotFoundException(userId)));
+    Article newArticle = articleRepository.save(article);
+    return articleModelAssembler.toModel(articleMapper.toArticleDto(newArticle));
   }
 
   @Override
   public EntityModel<ArticleDto> editArticle(Long id, Long userId, ArticleRequest articleRequest) {
     Article article = articleRepository.findById(id)
         .orElseThrow(() -> new ArticleNotFoundException(id));
-
     if (userId.equals(article.getAuthor().getId())) {
       Article newArticle = articleRepository.save(article
           .setTitle(articleRequest.getTitle())
           .setContent(articleRequest.getContent())
           .setDescription(articleRequest.getDescription())
           .setStatus(articleRequest.getStatus())
-          .setCover(articleRequest.getCover()));
+          .setCover(articleRequest.getCover())
+          .setUpdateDate(LocalDateTime.now()));
       return articleModelAssembler.toModel(articleMapper.toArticleDto(newArticle));
     } else {
       throw new ForbiddenException("无权限修改");
@@ -72,14 +87,15 @@ public class ArticleServiceImpl implements ArticleService {
   }
 
   @Override
-  public void deleteArticle(Long id, Long userId) {
+  public void deleteArticle(Long id, User authenticateUser) {
     Article article = articleRepository.findById(id)
         .orElseThrow(() -> new ArticleNotFoundException(id));
-    if (userId.equals(article.getAuthor().getId())) {
-      articleRepository.delete(article);
-    } else {
-      throw new ForbiddenException("无权限删除该文章");
+    if (!authenticateUser.getRoles().contains(Roles.ROLE_ADMIN.getRole())) {
+      if (!authenticateUser.equals(article.getAuthor())) {
+        throw new ForbiddenException("无权限删除该文章");
+      }
     }
+    articleRepository.delete(article);
   }
 
   @Override
@@ -89,6 +105,7 @@ public class ArticleServiceImpl implements ArticleService {
     article.getLikes().add(userRepository
         .findById(userId)
         .orElseThrow(() -> new ArticleNotFoundException(userId)));
+    article.setLikesNum(article.getLikesNum() + 1);
     Article newArticle = articleRepository.save(article);
     return articleModelAssembler.toModel(articleMapper.toArticleDto(newArticle));
   }
@@ -100,6 +117,7 @@ public class ArticleServiceImpl implements ArticleService {
     article.getLikes().remove(userRepository
         .findById(userId)
         .orElseThrow(() -> new ArticleNotFoundException(userId)));
+    article.setLikesNum(article.getLikesNum() - 1);
     Article newArticle = articleRepository.save(article);
     return articleModelAssembler.toModel(articleMapper.toArticleDto(newArticle));
   }
@@ -111,6 +129,7 @@ public class ArticleServiceImpl implements ArticleService {
     article.getFavorites().add(userRepository
         .findById(userId)
         .orElseThrow(() -> new ArticleNotFoundException(userId)));
+    article.setFavoritesNum(article.getFavoritesNum() + 1);
     Article newArticle = articleRepository.save(article);
     return articleModelAssembler.toModel(articleMapper.toArticleDto(newArticle));
   }
@@ -122,6 +141,7 @@ public class ArticleServiceImpl implements ArticleService {
     article.getFavorites().remove(userRepository
         .findById(userId)
         .orElseThrow(() -> new ArticleNotFoundException(userId)));
+    article.setFavoritesNum(article.getFavoritesNum() - 1);
     Article newArticle = articleRepository.save(article);
     return articleModelAssembler.toModel(articleMapper.toArticleDto(newArticle));
   }
