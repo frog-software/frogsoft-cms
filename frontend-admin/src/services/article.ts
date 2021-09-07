@@ -15,9 +15,9 @@ import { pagedModelSimplifier }                 from 'utils/common';
 import { JavaPagedModel, SimplifiedPagedModel } from 'types/common';
 import { User }                                 from 'types/user';
 import { QueryFunctionContext }                 from 'react-query';
-import { Article }                              from 'types/article';
-import { Badge }                                from 'antd';
-import React                                    from 'react';
+import { Article }        from 'types/article';
+import { Badge, message } from 'antd';
+import React              from 'react';
 
 const ARTICLE_V1_URL = '/v1/articles';
 
@@ -33,6 +33,10 @@ export const getArticleList = (queryContext: QueryFunctionContext<any, any>) => 
   });
 };
 
+// 删除文章
+export const deleteArticle = (articleId: number) => http.del(`/v1/articles/${articleId}`);
+
 export default {
   getArticleList,
+  deleteArticle,
 };

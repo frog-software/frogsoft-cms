@@ -18,14 +18,15 @@ import http                               from 'utils/http';
 import {
   Badge, Comment, Avatar,
   Button, Col, Descriptions, Divider, Image, Row, Space, Statistic, Popconfirm, Form, Select, message, Input,
-}                                         from 'antd';
-import DescriptionsItem                   from 'antd/es/descriptions/Item';
+}                        from 'antd';
+import DescriptionsItem  from 'antd/es/descriptions/Item';
 import {
   CloudOutlined, LikeOutlined, StarOutlined,
-}                                         from '@ant-design/icons';
-import { useForm }                        from 'antd/es/form/Form';
-import { useHistory }                     from 'react-router';
-import TextArea                           from 'antd/es/input/TextArea';
+}                        from '@ant-design/icons';
+import { useForm }       from 'antd/es/form/Form';
+import { useHistory }    from 'react-router';
+import TextArea          from 'antd/es/input/TextArea';
+import { deleteArticle } from 'services/article';
 
 const ArticleInfo: FC = () => {
   const params: { id: string }       = useParams();
@@ -39,7 +40,7 @@ const ArticleInfo: FC = () => {
 
   useEffect(() => {
     (async () => {
-      const data = await http.get<Article>(`http://127.0.0.1:4523/mock/419258/v1/articles/${params.id}`);
+      const data = await http.get<Article>(`v1/articles/${params.id}`);
       setAricleInfo(data);
       // console.log('这是假数据', data);
     })();
@@ -58,10 +59,12 @@ const ArticleInfo: FC = () => {
   };
 
   // 删除文章
-  const handleDelete = () => {
+  const handleDelete = async (articleId) => {
+    await deleteArticle(articleId);
     history.goBack();
   };
 
+  // 输入内容规范
   const validateMessages = {
     required: '${label}不能为空！',
   };
@@ -77,7 +80,15 @@ const ArticleInfo: FC = () => {
               title="确定删除该文章吗？删除之后不可恢复！"
               okText="确定"
               cancelText="取消"
-              onConfirm={handleDelete}
+              onConfirm={() => {
+                deleteArticle(Number(params.id))
+                  .then(() => {
+                    message.success('文章删除成功');
+                    history.goBack();
+                  }).catch(() => {
+                    message.error('文章删除失败');
+                  });
+              }}
             >
               <Button danger>删除文章</Button>
             </Popconfirm>
