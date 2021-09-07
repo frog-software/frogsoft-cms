@@ -56,6 +56,8 @@ public class SecurityConfig {
             .antMatchers("/v1/auth/login").permitAll()
             .antMatchers(HttpMethod.POST, "/v1/auth/forget").permitAll()
             .antMatchers(HttpMethod.POST, "/v1/users").permitAll()
+            .antMatchers(HttpMethod.POST, "/v1/global/email").permitAll()
+            .antMatchers(HttpMethod.GET, "/v1/articles/**").permitAll()
             .anyRequest().authenticated()
         )
         .addFilterBefore(
