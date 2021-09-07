@@ -11,7 +11,7 @@ public interface ArticleService {
 
   EntityModel<ArticleDto> saveArticles(ArticleRequest articleRequest, User authenticatedUser);
 
-  EntityModel<ArticleDto> getOneArticle(Long id,User authenticatedUser);
+  EntityModel<ArticleDto> getOneArticle(Long id, String role);
 
   EntityModel<ArticleDto> editArticle(Long id, Long userId, ArticleRequest articleRequest);
 
