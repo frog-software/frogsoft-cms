@@ -1,5 +1,7 @@
 package com.frogsoft.frogsoftcms.dto.mapper.user;
 
+import com.frogsoft.frogsoftcms.dto.mapper.article.ArticleMapper;
+import com.frogsoft.frogsoftcms.dto.mapper.comment.CommentMapper;
 import com.frogsoft.frogsoftcms.dto.model.user.UserDetailDto;
 import com.frogsoft.frogsoftcms.dto.model.user.UserDto;
 import com.frogsoft.frogsoftcms.model.article.Article;
@@ -10,12 +12,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-@RequiredArgsConstructor
 @Component
 public class UserMapper {
-
-  private final ArticleRepository articleRepository;
-  private final CommentRepository commentRepository;
 
   public UserDto toUserDto(User user) {
 
@@ -23,33 +21,5 @@ public class UserMapper {
         .setEmail(user.getEmail())
         .setUsername(user.getUsername())
         .setRoles(user.getRoles());
-  }
-
-  public UserDetailDto toUserDetailDto(User user){
-    AtomicReference<Integer> FavoritesNum = new AtomicReference<>(0);
-    for(Article article: user.getFavoriteArticles()){
-      FavoritesNum.set(article.getFavoritesNum() + FavoritesNum.get());
-    }
-    AtomicReference<Integer> LikesNum = new AtomicReference<>(0);
-    for(Article article: user.getLikeArticles()){
-      LikesNum.set(article.getLikesNum() + LikesNum.get());
-    }
-    AtomicReference<Integer> ViewsNum = new AtomicReference<>(0);
-    for(Article article: articleRepository.findByAuthor(user)){
-      ViewsNum.set(article.getViews() + ViewsNum.get());
-    }
-    return new UserDetailDto()
-        .setEmail(user.getEmail())
-        .setUsername(user.getUsername())
-        .setRoles(user.getRoles())
-        .setFavoriteArticles(user.getFavoriteArticles())
-        .setHistoryArticles(user.getHistoryArticles())
-        .setLikeArticles(user.getLikeArticles())
-        .setFavoritesNum(FavoritesNum.get())
-        .setLikesNum(LikesNum.get())
-        .setViewsNum(ViewsNum.get())
-        .setPublishArticles(articleRepository.findByAuthor(user))
-        .setPublishComment(commentRepository.findByAuthor(user))
-        .setPublishArticlesNum(articleRepository.findByAuthor(user).size());
   }
 }

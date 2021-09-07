@@ -6,6 +6,7 @@ import com.frogsoft.frogsoftcms.controller.v1.request.User.UserChangePasswordReq
 import com.frogsoft.frogsoftcms.controller.v1.request.User.UserRegisterRequest;
 import com.frogsoft.frogsoftcms.controller.v1.request.User.UserRequest;
 import com.frogsoft.frogsoftcms.dto.assembler.user.UserModelAssembler;
+import com.frogsoft.frogsoftcms.dto.mapper.user.UserDetailMapper;
 import com.frogsoft.frogsoftcms.dto.mapper.user.UserMapper;
 import com.frogsoft.frogsoftcms.dto.model.user.UserDetailDto;
 import com.frogsoft.frogsoftcms.dto.model.user.UserDto;
@@ -36,6 +37,7 @@ public class UserServiceImpl implements UserService {
   private final UserModelAssembler userModelAssembler;
   private final PagedResourcesAssembler<UserDto> pagedResourcesAssembler;
   private final UserMapper userMapper;
+  private final UserDetailMapper userDetailMapper;
   private final PasswordEncoder passwordEncoder;
 
 
@@ -56,7 +58,7 @@ public class UserServiceImpl implements UserService {
       throw new UserNotFoundException(username);
     }
 
-    return userModelAssembler.toDetailModel(userMapper.toUserDetailDto(user));
+    return userModelAssembler.toDetailModel(userDetailMapper.toUserDetailDto(user));
   }
 
   @Override

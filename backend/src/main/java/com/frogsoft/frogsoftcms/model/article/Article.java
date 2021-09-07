@@ -2,6 +2,7 @@ package com.frogsoft.frogsoftcms.model.article;
 
 import com.frogsoft.frogsoftcms.model.user.User;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -39,13 +40,13 @@ public class Article {
   private Integer views;
 
   @ManyToMany
-  private Set<User> favorites;
+  private List<User> favorites;
 
   @ManyToMany
-  private Set<User> likes;
+  private List<User> likes;
 
   @ManyToMany
-  private Set<User> histories;
+  private List<User> histories;
 
   @Column(nullable = false)
   private String title;

@@ -1,11 +1,8 @@
 package com.frogsoft.frogsoftcms.dto.model.user;
-
-import com.frogsoft.frogsoftcms.model.article.Article;
-import com.frogsoft.frogsoftcms.model.commment.Comment;
+import com.frogsoft.frogsoftcms.dto.model.article.ArticleDto;
+import com.frogsoft.frogsoftcms.dto.model.comment.CommentDto;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import javax.persistence.ManyToMany;
+
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -15,13 +12,10 @@ public class UserDetailDto {
   private String email;
   private String username;
   private List<String> roles;
-  private Set<Article> favoriteArticles;
-  private Set<Article> likeArticles;
-  private Set<Article> historyArticles;
-  private Set<Article> publishArticles;
-  private List<Comment> publishComment;
-  private Integer publishArticlesNum;
-  private Integer viewsNum;
-  private Integer likesNum;
-  private Integer favoritesNum;
+  private List<ArticleDto> favoriteArticles;
+  private List<ArticleDto> likeArticles;
+  private List<ArticleDto> historyArticles;
+  private List<ArticleDto> publishArticles;
+  private List<CommentDto> publishComment;
+  private StatisticsDto statistics;
 }
