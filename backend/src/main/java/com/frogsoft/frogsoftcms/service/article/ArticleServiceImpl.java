@@ -9,9 +9,11 @@ import com.frogsoft.frogsoftcms.exception.basic.forbidden.ForbiddenException;
 import com.frogsoft.frogsoftcms.exception.user.UserNotFoundException;
 import com.frogsoft.frogsoftcms.model.article.Article;
 import com.frogsoft.frogsoftcms.model.article.Status;
+import com.frogsoft.frogsoftcms.model.history.History;
 import com.frogsoft.frogsoftcms.model.user.Roles;
 import com.frogsoft.frogsoftcms.model.user.User;
 import com.frogsoft.frogsoftcms.repository.article.ArticleRepository;
+import com.frogsoft.frogsoftcms.repository.history.HistoryRepository;
 import com.frogsoft.frogsoftcms.repository.user.UserRepository;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +32,7 @@ public class ArticleServiceImpl implements ArticleService {
   private final ArticleModelAssembler articleModelAssembler;
   private final ArticleMapper articleMapper;
   private final UserRepository userRepository;
+  private final HistoryRepository historyRepository;
   private final PagedResourcesAssembler<ArticleDto> pagedResourcesAssembler;
 
   @Override
@@ -61,9 +64,12 @@ public class ArticleServiceImpl implements ArticleService {
           .orElseThrow(() -> new ArticleNotFoundException(id));
     }
     article.setViews(article.getViews() + 1);
-    article.getHistories().add(userRepository
-        .findById(userId)
+    History history = new History();
+    history.setArticle(article)
+        .setTime(LocalDateTime.now())
+        .setUser(userRepository.findById(userId)
         .orElseThrow(() -> new UserNotFoundException(userId)));
+    historyRepository.save(history);
     Article newArticle = articleRepository.save(article);
     return articleModelAssembler.toModel(articleMapper.toArticleDto(newArticle));
   }

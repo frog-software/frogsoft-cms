@@ -5,9 +5,13 @@ import com.frogsoft.frogsoftcms.dto.mapper.comment.CommentMapper;
 import com.frogsoft.frogsoftcms.dto.model.user.StatisticsDto;
 import com.frogsoft.frogsoftcms.dto.model.user.UserDetailDto;
 import com.frogsoft.frogsoftcms.model.article.Article;
+import com.frogsoft.frogsoftcms.model.history.History;
 import com.frogsoft.frogsoftcms.model.user.User;
 import com.frogsoft.frogsoftcms.repository.article.ArticleRepository;
 import com.frogsoft.frogsoftcms.repository.comment.CommentRepository;
+import com.frogsoft.frogsoftcms.repository.history.HistoryRepository;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -19,6 +23,7 @@ public class UserDetailMapper {
 
   private final ArticleRepository articleRepository;
   private final CommentRepository commentRepository;
+  private final HistoryRepository historyRepository;
   private final ArticleMapper articleMapper;
   private final CommentMapper commentMapper;
 
@@ -35,6 +40,10 @@ public class UserDetailMapper {
     for (Article article : articleRepository.findByAuthor(user)) {
       ViewsNum.set(article.getViews() + ViewsNum.get());
     }
+    List<Article> historyList = new ArrayList<>();
+    for (History history:historyRepository.findAllByUser(user)){
+      historyList.add(history.getArticle());
+    }
     StatisticsDto statisticsDto = new StatisticsDto()
         .setFavoritesNum(FavoritesNum.get())
         .setLikesNum(LikesNum.get())
@@ -45,7 +54,7 @@ public class UserDetailMapper {
         .setUsername(user.getUsername())
         .setRoles(user.getRoles())
         .setFavoriteArticles(articleMapper.toArticleDto(user.getFavoriteArticles().subList(0, 9)))
-        .setHistoryArticles(articleMapper.toArticleDto(user.getHistoryArticles().subList(0, 9)))
+        .setHistoryArticles(articleMapper.toArticleDto(historyList.subList(0, 9)))
         .setLikeArticles(articleMapper.toArticleDto(user.getLikeArticles().subList(0, 9)))
         .setStatistics(statisticsDto)
         .setPublishArticles(

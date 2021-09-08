@@ -13,6 +13,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -47,8 +48,6 @@ public class User implements UserDetails {
   @ManyToMany
   private List<Article> likeArticles;
 
-  @ManyToMany
-  private List<Article> historyArticles;
 
   @ElementCollection(fetch = FetchType.EAGER)
   private List<String> roles = new ArrayList<>();

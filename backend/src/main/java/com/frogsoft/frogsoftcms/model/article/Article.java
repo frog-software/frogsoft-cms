@@ -44,9 +44,6 @@ public class Article {
   @ManyToMany
   private List<User> likes;
 
-  @ManyToMany
-  private List<User> histories;
-
   @Column(nullable = false)
   private String title;
   @Column(nullable = false)
