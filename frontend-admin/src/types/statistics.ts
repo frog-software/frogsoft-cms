@@ -11,8 +11,8 @@
 //--------------------------------------------------------------------------
 
 export interface Statistics {
-  published: number,
-  views: number,
-  likes: number,
-  favorites: number
+  publishArticlesNum: number,
+  viewsNum: number,
+  likesNum: number,
+  favoritesNum: number
 }

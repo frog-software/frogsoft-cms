@@ -18,19 +18,20 @@ import http                               from 'utils/http';
 import {
   Badge,
   Button, Col, Descriptions, Divider, Image, Row, Space,
-  Statistic, Popconfirm, Form, Select, message, Input, Table,
-}                               from 'antd';
-import DescriptionsItem         from 'antd/es/descriptions/Item';
+  Statistic, Popconfirm, Form, Select, Input, Table, notification,
+}                                         from 'antd';
+import DescriptionsItem                   from 'antd/es/descriptions/Item';
 import {
   CloudOutlined, LikeOutlined, StarOutlined,
-}                               from '@ant-design/icons';
-import { useForm }              from 'antd/es/form/Form';
-import { useHistory }           from 'react-router';
-import TextArea                 from 'antd/es/input/TextArea';
-import { deleteArticle }        from 'services/article';
-import { Comment }                             from 'types/comment';
-import { JavaCollectionModel }             from 'types/common';
-import { collectionModelSimplifier } from 'utils/common';
+}                                         from '@ant-design/icons';
+import { useForm }                        from 'antd/es/form/Form';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { useHistory }                     from 'react-router';
+import TextArea                           from 'antd/es/input/TextArea';
+import { deleteArticle }                  from 'services/article';
+import { Comment }                        from 'types/comment';
+import { JavaCollectionModel }            from 'types/common';
+import { collectionModelSimplifier }      from 'utils/common';
 
 const ArticleInfo: FC = () => {
   const params: { id: string }              = useParams();
@@ -55,7 +56,7 @@ const ArticleInfo: FC = () => {
       const article = await http.get<Article>(`v1/articles/${params.id}`);
       setArticleInfo(article);
 
-      const comments = await http.get<JavaCollectionModel<Comment>>(`v1/articles/${params.id}/comments`);
+      const comments           = await http.get<JavaCollectionModel<Comment>>(`v1/articles/${params.id}/comments`);
       const simplifiedComments = collectionModelSimplifier<Comment>(comments);
 
       const tableList = simplifiedComments?.list?.map((i) => ({
@@ -83,11 +84,11 @@ const ArticleInfo: FC = () => {
 
     http.put(`/v1/articles/${params.id}`, data)
       .then(() => {
-        message.success('文章信息更新成功！');
+        notification['success']({ message: '文章信息更新成功' });
         setEditDetail(false);
       })
       .catch(() => {
-        message.error('文章信息更新失败！');
+        notification['error']({ message: '文章信息更新失败' });
       })
       .finally(() => {
         setDetailLoading(false);
@@ -112,11 +113,11 @@ const ArticleInfo: FC = () => {
 
     http.put(`/v1/articles/${params.id}`, data)
       .then(() => {
-        message.success('文章正文更新成功！');
+        notification['success']({ message: '文章正文更新成功' });
         setEditContent(false);
       })
       .catch(() => {
-        message.error('文章正文更新失败！');
+        notification['error']({ message: '文章正文更新失败' });
       })
       .finally(() => {
         setDetailLoading(false);
@@ -137,10 +138,10 @@ const ArticleInfo: FC = () => {
 
     http.del(`v1/comments/${commentId}`)
       .then(() => {
-        message.success('评论删除成功！');
+        notification['success']({ message: '评论删除成功' });
       })
       .catch(() => {
-        message.error('评论删除失败！');
+        notification['error']({ message: '评论删除失败' });
       })
       .finally(() => {
         setCommentLoading(false);
@@ -172,7 +173,7 @@ const ArticleInfo: FC = () => {
     },
     {
       key: 'publishDate',
-      dataIndex: 'localDateTime',
+      dataIndex: 'publishDate',
       title: '评论时间',
     },
     {
@@ -215,10 +216,10 @@ const ArticleInfo: FC = () => {
               onConfirm={() => {
                 deleteArticle(Number(params.id))
                   .then(() => {
-                    message.success('文章删除成功');
+                    notification['success']({ message: '文章删除成功' });
                     history.goBack();
                   }).catch(() => {
-                    message.error('文章删除失败');
+                    notification['error']({ message: '文章删除失败' });
                   });
               }}
             >
@@ -279,7 +280,7 @@ const ArticleInfo: FC = () => {
                     form={articleDetail}
                     name="newArticleDetail"
                     onFinish={handleSubmitDetail}
-                    onFinishFailed={() => message.error('文章信息更新失败')}
+                    onFinishFailed={() => notification['error']({ message: '文章信息更新失败' })}
                     validateMessages={validateMessages}
                   >
                     <Form.Item
@@ -361,7 +362,7 @@ const ArticleInfo: FC = () => {
               form={articleContent}
               name="newArticleContent"
               onFinish={handleSubmitContent}
-              onFinishFailed={() => message.error('文章正文更新失败')}
+              onFinishFailed={() => notification['error']({ message: '文章正文更新失败' })}
               validateMessages={validateMessages}
             >
               <Form.Item
@@ -369,7 +370,7 @@ const ArticleInfo: FC = () => {
                 rules={[{ required: true }]}
                 initialValue={articleInfo?.content}
               >
-                <TextArea autoSize showCount />
+                <TextArea autoSize={{ minRows: 3 }} showCount />
               </Form.Item>
             </Form>
           )

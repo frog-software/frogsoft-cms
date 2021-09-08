@@ -19,8 +19,8 @@ export interface User {
   username: string,
   roles: string[],
   favoriteArticles?: Article[],
-  createdArticles?: Article[],
+  publishArticles?: Article[],
   comments?: Comment[],
-  histories?: History[],
+  historyArticles?: History[],
   statistics?: Statistics
 }

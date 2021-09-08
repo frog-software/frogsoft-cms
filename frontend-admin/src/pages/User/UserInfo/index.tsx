@@ -18,7 +18,7 @@ import { useParams }                                 from 'react-router-dom';
 import Block                                         from 'components/Block';
 import {
   Avatar, Badge, Button, Col, Descriptions, Form,
-  Input, message, Popconfirm, Row, Space, Switch, Table, Tabs,
+  Input, notification, Popconfirm, Row, Space, Switch, Table, Tabs,
 }                                                    from 'antd';
 import http                                          from 'utils/http';
 import DescriptionsItem                              from 'antd/es/descriptions/Item';
@@ -28,7 +28,7 @@ import { useHistory }                                from 'react-router';
 import { Column }                                    from '@ant-design/charts';
 import { CloudOutlined, FormOutlined, StarOutlined } from '@ant-design/icons';
 import { Article }                                   from 'types/article';
-import { deleteUser }                       from 'services/user';
+import { deleteUser }                                from 'services/user';
 
 const UserInfo: FC = () => {
   const params: { username: string }    = useParams();
@@ -43,14 +43,14 @@ const UserInfo: FC = () => {
   const [favoriteList, setFavoriteList] = useState<Article[]>();
   const [viewList, setViewList]         = useState<Article[]>();
   // const [editPassword, setEditPassword] = useState<boolean>(false);
-  const [render, setRender]                 = useState<boolean>(false);
+  const [render, setRender]             = useState<boolean>(false);
 
   useEffect(() => {
     (async () => {
       const data = await http.get<User>(`v1/users/${params.username}`);
 
       // 用户创建的文章
-      const tempCreatedList = data?.createdArticles?.map((i) => ({
+      const tempCreatedList = data?.publishArticles?.map((i) => ({
         ...i,
         status: i.status === 'NORMAL' ? (
           <Badge status="processing" color="green" text="正常" />
@@ -72,7 +72,7 @@ const UserInfo: FC = () => {
       setFavoriteList(tempFavoriteList as any);
 
       // 用户浏览过的文章
-      const tempViewList = data?.histories?.map((i) => ({
+      const tempViewList = data?.historyArticles?.map((i) => ({
         ...i,
         status: i.article.status === 'NORMAL' ? (
           <Badge status="processing" color="green" text="正常" />
@@ -106,10 +106,10 @@ const UserInfo: FC = () => {
   // 删除用户
   const handleDeleteUser = (username: string) => {
     deleteUser(username).then(() => {
-      message.success('用户删除成功');
+      notification['success']({ message: '用户删除成功' });
       history.goBack();
     }).catch(() => {
-      message.error('用户删除失败');
+      notification['error']({ message: '用户删除失败' });
     });
   };
 
@@ -132,13 +132,13 @@ const UserInfo: FC = () => {
 
     http.put(`/v1/users/${params.username}`, tempData)
       .then(() => {
-        message.success('用户信息更新成功！');
+        notification['success']({ message: '用户信息更新成功' });
         history.push(`/users/${tempData.username}`);
         setRender(!render);
         setEditable(false);
       })
       .catch((error) => {
-        message.error('用户信息更新失败！', error);
+        notification['error']({ message: '用户信息更新失败', description: String(error) });
       })
       .finally(() => {
         setIsLoading(false);
@@ -159,19 +159,19 @@ const UserInfo: FC = () => {
   const statisticsTable = [
     {
       type: '文章发布数量',
-      count: userInfo?.statistics?.published,
+      count: userInfo?.statistics?.publishArticlesNum,
     },
     {
       type: '文章总阅读量',
-      count: userInfo?.statistics?.views,
+      count: userInfo?.statistics?.viewsNum,
     },
     {
       type: '文章总点赞量',
-      count: userInfo?.statistics?.likes,
+      count: userInfo?.statistics?.likesNum,
     },
     {
       type: '文章总收藏量',
-      count: userInfo?.statistics?.favorites,
+      count: userInfo?.statistics?.favoritesNum,
     },
   ];
 
@@ -329,7 +329,12 @@ const UserInfo: FC = () => {
               {editable ? '保存' : '编辑'}
             </Button>
             {editable ? (
-              <Button onClick={() => { setEditable(false); }}>取消</Button>
+              <Button onClick={() => {
+                setEditable(false);
+              }}
+              >
+                取消
+              </Button>
             ) : ''}
           </Space>
         )}
@@ -358,7 +363,7 @@ const UserInfo: FC = () => {
                     form={formDetail}
                     name="newUserInfo"
                     onFinish={handleEdit}
-                    onFinishFailed={() => message.error('用户信息更新失败！')}
+                    onFinishFailed={() => notification['error']({ message: '用户信息更新失败' })}
                     validateMessages={validateMessages}
                   >
                     <Form.Item
@@ -375,7 +380,6 @@ const UserInfo: FC = () => {
                     <Form.Item
                       name="roles"
                       label="用户类型"
-                      initialValue={userInfo?.roles.includes('ROLE_ADMIN')}
                     >
                       <Switch
                         checkedChildren="管理员"

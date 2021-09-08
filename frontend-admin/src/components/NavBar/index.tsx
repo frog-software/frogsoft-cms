@@ -1,18 +1,14 @@
-import React, { FC, ReactNode }                      from 'react';
-import { Link }                    from 'react-router-dom';
+import React, { FC, ReactNode } from 'react';
+import { Link }                 from 'react-router-dom';
 import {
-  Avatar, Layout, Menu, Row,
-} from 'antd';
+  Avatar, Menu, Row,
+}                               from 'antd';
 import {
   TeamOutlined,
   BarsOutlined,
   UserOutlined, SettingOutlined,
-} from '@ant-design/icons';
+}                               from '@ant-design/icons';
 import './index.css';
-
-const {
-  Header, Content, Footer, Sider,
-} = Layout;
 
 interface EntryTree {
   key: string,
@@ -52,7 +48,7 @@ const entryTree: EntryTree[] = [
 const NavBar: FC = () => (
   <div>
     <Link to="/home">
-      <div className="nav-bar-title">
+      <div className="nav-bar-title" style={{ marginTop: '20px' }}>
         <Row justify="center">
           <Avatar src="/logo.svg" shape="square" size={120} />
           Frogsoft CMS
@@ -62,7 +58,7 @@ const NavBar: FC = () => (
     <Menu
       mode="inline"
       style={{
-        zIndex: 99, width: '100%', fontSize: '90%', alignItems: 'center',
+        zIndex: 99, width: '100%', fontSize: '90%', alignItems: 'center', marginTop: '20px',
       }}
     >
       {entryTree.map((entry) => (

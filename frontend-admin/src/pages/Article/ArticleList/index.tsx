@@ -15,21 +15,21 @@ import { Article }                        from 'types/article';
 import Block                              from 'components/Block';
 import {
   Badge,
-  Button, Col, message, Popconfirm, Row, Space, Table,
+  Button, Col, notification, Popconfirm, Row, Space, Table,
 }                                         from 'antd';
 import { useQuery }                       from 'react-query';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { useHistory }                    from 'react-router';
-import { getArticleList, deleteArticle } from 'services/article';
-import Search                            from 'antd/es/input/Search';
+import { useHistory }                     from 'react-router';
+import { getArticleList, deleteArticle }  from 'services/article';
+import Search                             from 'antd/es/input/Search';
 
 const ArticleList: FC = () => {
-  const [articleList, setArticleList]  = useState<Article[]>();
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [pageSize, setPageSize]       = useState<number>(10);
-  const [totalItems, setTotalItems]   = useState<number>();
+  const [articleList, setArticleList]     = useState<Article[]>();
+  const [currentPage, setCurrentPage]     = useState<number>(1);
+  const [pageSize, setPageSize]           = useState<number>(10);
+  const [totalItems, setTotalItems]       = useState<number>();
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
-  const history                       = useHistory();
+  const history                           = useHistory();
 
   const {
     isLoading, data, refetch, remove,
@@ -39,7 +39,7 @@ const ArticleList: FC = () => {
     {
       staleTime: 5000,
       onError: (err) => {
-        message.error(String(err));
+        notification['error']({ message: String(err) });
       },
     },
   );
@@ -99,14 +99,14 @@ const ArticleList: FC = () => {
               setDeleteLoading(true);
               deleteArticle(article.id)
                 .then(() => {
-                  message.success('文章删除成功');
+                  notification['success']({ message: '文章删除成功' });
                   remove();
                   refetch({
                     throwOnError: true,
                     cancelRefetch: false,
                   });
                 }).catch(() => {
-                  message.error('文章删除失败');
+                  notification['error']({ message: '文章删除失败' });
                 }).finally(() => {
                   setDeleteLoading(false);
                 });

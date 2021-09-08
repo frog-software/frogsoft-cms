@@ -11,24 +11,24 @@
 //--------------------------------------------------------------------------
 
 import React, { FC, useEffect, useState } from 'react';
-import Block                       from 'components/Block';
-import { deleteUser, getUserList } from 'services/user';
-import { User }                    from 'types/user';
+import Block                              from 'components/Block';
+import { deleteUser, getUserList }        from 'services/user';
+import { User }                           from 'types/user';
 import { useQuery }                       from 'react-query';
 import {
-  Button, Col, message, Popconfirm, Row, Space, Table,
+  Button, Col, notification, Popconfirm, Row, Space, Table,
 }                                         from 'antd';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { useHistory }                     from 'react-router';
 import Search                             from 'antd/es/input/Search';
 
 const UserList: FC = () => {
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [pageSize, setPageSize]       = useState<number>(10);
-  const [userList, setUserList]       = useState<User[]>();
-  const [totalItems, setTotalItems]   = useState<number>();
+  const [currentPage, setCurrentPage]     = useState<number>(1);
+  const [pageSize, setPageSize]           = useState<number>(10);
+  const [userList, setUserList]           = useState<User[]>();
+  const [totalItems, setTotalItems]       = useState<number>();
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
-  const history                       = useHistory();
+  const history                           = useHistory();
 
   const {
     isLoading, data, refetch, remove,
@@ -38,7 +38,7 @@ const UserList: FC = () => {
     {
       staleTime: 5000,
       onError: (err) => {
-        message.error(String(err));
+        notification['error']({ message: String(err) });
       },
     },
   );
@@ -65,7 +65,9 @@ const UserList: FC = () => {
       render: (user) => (
         <Space>
           <Button
-            onClick={() => { history.push(`/users/${user.username}`); }}
+            onClick={() => {
+              history.push(`/users/${user.username}`);
+            }}
             type="text"
           >
             查看详情
@@ -78,14 +80,14 @@ const UserList: FC = () => {
               setDeleteLoading(true);
               deleteUser(user.username)
                 .then(() => {
-                  message.success('用户删除成功');
+                  notification['success']({ message: '用户删除成功' });
                   remove();
                   refetch({
                     throwOnError: true,
                     cancelRefetch: false,
                   });
                 }).catch(() => {
-                  message.error('用户删除失败');
+                  notification['error']({ message: '用户删除失败' });
                 }).finally(() => {
                   setDeleteLoading(false);
                 });
@@ -112,7 +114,7 @@ const UserList: FC = () => {
           <Col span={4} offset={20}>
             <Search
               placeholder="输入文章搜索关键字"
-              onSearch={() => (console.log('搜索文章'))}
+              onSearch={() => (console.log('搜索用户'))}
               enterButton
               style={{ marginBottom: '16px' }}
             />
