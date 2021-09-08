@@ -15,6 +15,6 @@ public class FileDto {
   private String fullName;
   private String type;
   private Long size;
-  private String url;
+  private String uri;
   private LocalDateTime publishDate;
 }

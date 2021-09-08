@@ -3,6 +3,7 @@ package com.frogsoft.frogsoftcms.model.history;
 import com.frogsoft.frogsoftcms.model.article.Article;
 import com.frogsoft.frogsoftcms.model.user.User;
 import java.time.LocalDateTime;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -31,7 +32,7 @@ public class History {
   @JoinColumn(referencedColumnName = "id")
   private User user;
 
-  @ManyToOne
+  @ManyToOne(cascade = CascadeType.DETACH)
   @JoinColumn(referencedColumnName = "id")
   private Article article;
 

@@ -97,7 +97,7 @@ public class ArticleServiceImpl implements ArticleService {
     Article article = articleRepository.findById(id)
         .orElseThrow(() -> new ArticleNotFoundException(id));
     if (!authenticateUser.getRoles().contains(Roles.ROLE_ADMIN.getRole())) {
-      if (!authenticateUser.equals(article.getAuthor())) {
+      if (!authenticateUser.getUsername().equals(article.getAuthor().getUsername())) {
         throw new ForbiddenException("无权限删除该文章");
       }
     }
