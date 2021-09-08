@@ -44,8 +44,7 @@ const Configuration: FC = () => {
 
   useEffect(() => {
     (async () => {
-      const data = await http.get<ConfigurationType>('http://127.0.0.1:4523/mock/419258/v1/global/config');
-
+      const data = await http.get<ConfigurationType>('v1/global/config');
       setConfiguration(data);
     })();
   }, [render]);
@@ -104,11 +103,11 @@ const Configuration: FC = () => {
         loading={loading}
         description={(
           <Space>
-            <Button onClick={editable ? () => form.submit() : () => setEditable(true)}>
+            <Button type={editable ? 'primary' : 'ghost'} onClick={editable ? () => form.submit() : () => setEditable(true)}>
               {editable ? '保存' : '编辑'}
             </Button>
             {editable ? (
-              <Button onClick={() => setEditable(false)}>取消</Button>
+              <Button type="ghost" onClick={() => setEditable(false)}>取消</Button>
             ) : ''}
           </Space>
         )}
@@ -337,7 +336,7 @@ const Configuration: FC = () => {
             {
               !editable ? (
                 <Col span={12}>
-                  <Descriptions bordered column={1} title="验证邮箱设置">
+                  <Descriptions column={1} title="验证邮箱设置">
                     <Descriptions.Item label="邮箱账号">{configuration?.email?.account || '暂未设置'}</Descriptions.Item>
                     <Descriptions.Item label="邮箱密码">{configuration?.email?.password || '暂未设置'}</Descriptions.Item>
                     <Descriptions.Item label="邮件服务器主机">{configuration?.email?.host || '暂未设置'}</Descriptions.Item>
@@ -360,52 +359,52 @@ const Configuration: FC = () => {
                       <Form.Item
                         name="account"
                         label="邮箱账号"
-                        initialValue={configuration?.email?.account || '暂未设置'}
+                        initialValue={configuration?.email?.account}
                         rules={[{ required: true }]}
                       >
-                        <Input />
+                        <Input placeholder="请输入邮箱账号" />
                       </Form.Item>
                       <Form.Item
                         name="password"
                         label="邮箱密码"
-                        initialValue={configuration?.email?.password || '暂未设置'}
+                        initialValue={configuration?.email?.password}
                         rules={[{ required: true }]}
                       >
-                        <Input />
+                        <Input placeholder="请输入邮箱密码" />
                       </Form.Item>
                       <Form.Item
                         name="host"
                         label="邮件服务器主机"
-                        initialValue={configuration?.email?.host || '暂未设置'}
+                        initialValue={configuration?.email?.host}
                         rules={[{ required: true }]}
                       >
-                        <Input />
+                        <Input placeholder="请输入邮件服务器主机" />
                       </Form.Item>
                       <Form.Item
                         name="port"
                         label="邮件服务器端口"
-                        initialValue={configuration?.email?.port || '暂未设置'}
+                        initialValue={configuration?.email?.port}
                         rules={[{ required: true }]}
                       >
-                        <Input />
+                        <Input placeholder="请输入邮件服务器端口" />
                       </Form.Item>
                       <Form.Item
                         name="emailTitle"
                         label="邮件标题"
-                        initialValue={configuration?.email?.title || '暂未设置'}
+                        initialValue={configuration?.email?.title}
                         rules={[{ required: true }]}
                       >
-                        <Input />
+                        <Input placeholder="请输入邮件标题" />
                       </Form.Item>
                     </Col>
                     <Col span={20}>
                       <Form.Item
                         name="body"
                         label="邮件内容"
-                        initialValue={configuration?.email?.body || '暂未设置'}
+                        initialValue={configuration?.email?.body}
                         rules={[{ required: true }]}
                       >
-                        <TextArea autoSize={{ minRows: 3 }} />
+                        <TextArea autoSize={{ minRows: 3 }} placeholder="请输入邮件内容" />
                       </Form.Item>
                     </Col>
                   </Form>
@@ -431,10 +430,10 @@ const Configuration: FC = () => {
                     <>
                       <Descriptions style={{ marginTop: '20px', marginBottom: '20px' }} column={1}>
                         <Descriptions.Item label="页头LOGO">
-                          {configuration?.header?.logo}
+                          {configuration?.header?.logo || '暂未设置'}
                         </Descriptions.Item>
                         <Descriptions.Item label="页脚LOGO">
-                          {configuration?.footer?.logo}
+                          {configuration?.footer?.logo || '暂未设置'}
                         </Descriptions.Item>
                       </Descriptions>
                     </>
@@ -450,19 +449,19 @@ const Configuration: FC = () => {
                       <Form.Item
                         name="headerLogo"
                         label="页头LOGO"
-                        initialValue={configuration?.header?.logo || '暂未设置'}
+                        initialValue={configuration?.header?.logo}
                         rules={[{ required: true }]}
                       >
-                        <Input />
+                        <Input placeholder="请输入页头LOGO" />
                       </Form.Item>
 
                       <Form.Item
                         name="footerLogo"
                         label="页脚LOGO"
-                        initialValue={configuration?.footer?.logo || '暂未设置'}
+                        initialValue={configuration?.footer?.logo}
                         rules={[{ required: true }]}
                       >
-                        <Input />
+                        <Input placeholder="请输入页脚LOGO" />
                       </Form.Item>
                     </Form>
                   )
@@ -479,7 +478,7 @@ const Configuration: FC = () => {
                         <Image
                           height={80}
                           width={100}
-                          src={configuration?.header?.logo}
+                          src={configuration?.header?.logo || 'https://dummyimage.com/100x80'}
                           style={{ marginTop: '20px' }}
                           preview={false}
                         />
@@ -492,10 +491,10 @@ const Configuration: FC = () => {
                           fontStyle: 'oblique',
                           fontWeight: 'bolder',
                           fontSize: 'xx-large',
-                          marginTop: '22px',
+                          marginTop: '24px',
                         }}
                       >
-                        {configuration?.email.account}
+                        {configuration?.email?.account || 'Test Page Title'}
                       </Col>
                     </Row>
                   </Header>
@@ -505,14 +504,14 @@ const Configuration: FC = () => {
                         style={{
                           backgroundColor: '#fafafa',
                           height: '240px',
-                          marginLeft: '30px',
+                          marginLeft: '36px',
                           marginTop: '18px',
                           fontStyle: 'oblique',
                           fontWeight: 'bolder',
                           fontSize: 'xx-large',
                         }}
                       >
-                        <Descriptions title={configuration?.email?.body} />
+                        <Descriptions title={configuration?.email?.body || 'Test Page Content'} />
                       </Content>
                     </Col>
                   </Content>
@@ -522,7 +521,7 @@ const Configuration: FC = () => {
                         <Image
                           height={50}
                           width={100}
-                          src={configuration?.footer?.logo}
+                          src={configuration?.footer?.logo || 'https://dummyimage.com/100x50'}
                           style={{ marginTop: '20px' }}
                           preview={false}
                         />

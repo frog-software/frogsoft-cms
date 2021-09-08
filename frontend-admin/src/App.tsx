@@ -11,12 +11,13 @@ import UserNavBar                     from 'components/UserNavBar';
 import { queryClient }                from './store';
 import './customAntd.less';
 
-const Home             = React.lazy(() => import('./pages/Home'));
-const UserPage         = React.lazy(() => import('./pages/User'));
-const ArticlePage      = React.lazy(() => import('./pages/Article'));
-const ConfiguationPage = React.lazy(() => import('./pages/Configuration'));
-const About            = React.lazy(() => import('./pages/About'));
-const Auth             = React.lazy(() => import('./pages/Auth'));
+const Home              = React.lazy(() => import('./pages/Home'));
+const UserPage          = React.lazy(() => import('./pages/User'));
+const ArticlePage       = React.lazy(() => import('./pages/Article'));
+const ConfigurationPage = React.lazy(() => import('./pages/Configuration'));
+const About             = React.lazy(() => import('./pages/About'));
+const Auth              = React.lazy(() => import('./pages/Auth'));
+const Announcement      = React.lazy(() => import('./pages/Announcement'));
 
 function App() {
   const history                    = useHistory();
@@ -67,10 +68,11 @@ function App() {
                   <Suspense fallback={<Preview />}>
                     <Route path="/home" component={Home} />
                     <Route path="/users" component={UserPage} />
-                    <Route path="/configuration" component={ConfiguationPage} />
+                    <Route path="/configuration" component={ConfigurationPage} />
                     <Route path="/articles" component={ArticlePage} />
                     <Route path="/about" component={About} />
                     <Route path="/auth" component={Auth} />
+                    <Route path="/announcement" component={Announcement} />
                   </Suspense>
                 ) : (
                   <Preview />

@@ -221,13 +221,17 @@ const ArticleInfo: FC = () => {
                   });
               }}
             >
-              <Button danger>删除文章</Button>
+              <Button danger type="primary">删除文章</Button>
             </Popconfirm>
-            <Button htmlType="submit" onClick={editDetail ? () => articleDetail.submit() : () => setEditDetail(true)}>
+            <Button
+              htmlType="submit"
+              type={editDetail ? 'primary' : 'ghost'}
+              onClick={editDetail ? () => articleDetail.submit() : () => setEditDetail(true)}
+            >
               {editDetail ? '保存' : '编辑'}
             </Button>
             {editDetail ? (
-              <Button onClick={() => setEditDetail(false)}>取消</Button>
+              <Button type="ghost" onClick={() => setEditDetail(false)}>取消</Button>
             ) : ''}
           </Space>
         )}
@@ -244,7 +248,7 @@ const ArticleInfo: FC = () => {
                   />
                 </Col>
                 <Col span={20}>
-                  <Descriptions title={articleInfo?.title ?? '文章标题未定义'} bordered style={{ color: 'red' }}>
+                  <Descriptions title={articleInfo?.title ?? '文章标题未定义'} style={{ color: 'red' }}>
                     <DescriptionsItem label="文章ID">{articleInfo?.id ?? '未定义'}</DescriptionsItem>
                     <DescriptionsItem label="文章发表时间">{articleInfo?.publishDate ?? '未定义'}</DescriptionsItem>
                     <br />
@@ -342,12 +346,13 @@ const ArticleInfo: FC = () => {
           <Space>
             <Button
               htmlType="submit"
+              type={editContent ? 'primary' : 'ghost'}
               onClick={editContent ? () => articleContent.submit() : () => setEditContent(true)}
             >
               {editContent ? '保存' : '编辑'}
             </Button>
             {editContent ? (
-              <Button onClick={() => setEditContent(false)}>取消</Button>
+              <Button type="ghost" onClick={() => setEditContent(false)}>取消</Button>
             ) : ''}
           </Space>
         )}
