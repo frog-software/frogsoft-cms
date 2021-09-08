@@ -36,6 +36,7 @@ export default {
   name: 'ArticleList',
   props: {
     pageSize: Number,
+    searchContent: String,
   },
   data() {
     return {
@@ -57,21 +58,28 @@ export default {
       };
     },
     queryParmas() {
-      return {
+      let result = {
         page: this.currentPage - 1,
         size: this.pageSize
       }
+      if (this.searchContent) result.search = this.searchContent
+      return result
     }
   },
   created() {
     this.getCurrentPageData(1)
+  },
+  watch: {
+    searchContent() {
+      this.getCurrentPageData(1)
+    }
   },
   methods: {
     getCurrentPageData(page) {
       this.currentPage = page
       this.loading     = true;
       axios.get('/v1/articles', {params: this.queryParmas}).then((res) => {
-        this.listSource    = res.data._embedded.articleDtoList;
+        this.listSource    = res.data._embedded?.articleDtoList || [];
         this.totalElements = res.data.page.totalElements
       }).finally(
           () => {
