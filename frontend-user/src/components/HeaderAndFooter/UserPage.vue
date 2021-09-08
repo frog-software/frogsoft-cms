@@ -1,7 +1,7 @@
 <script setup>
-import store              from '../../store';
-import ArticleList        from '../Articles/ArticleList.vue';
-import ArticleListCreated from "../Articles/ArticleListCreated.vue";
+import store                from '../../store';
+import ArticleListFavorited from '../Articles/ArticleListFavorited.vue';
+import ArticleListCreated   from "../Articles/ArticleListCreated.vue";
 </script>
 <template>
   <a-spin :spinning="drawerLoading">
@@ -29,6 +29,18 @@ import ArticleListCreated from "../Articles/ArticleListCreated.vue";
       <a-descriptions-item label="权限">
         {{ user.is_admin ? "管理员" : "普通用户" }}
       </a-descriptions-item>
+      <a-descriptions-item label="文章发布量">
+        {{ statistics.publishArticlesNum }}
+      </a-descriptions-item>
+      <a-descriptions-item label="文章总被阅读量">
+        {{ statistics.viewsNum }}
+      </a-descriptions-item>
+      <a-descriptions-item label="文章总被点赞量">
+        {{ statistics.likesNum }}
+      </a-descriptions-item>
+      <a-descriptions-item label="文章总被收藏量">
+        {{ statistics.favoritesNum }}
+      </a-descriptions-item>
     </a-descriptions>
 
     <a-tabs>
@@ -37,6 +49,7 @@ import ArticleListCreated from "../Articles/ArticleListCreated.vue";
           tab="我创作的文章"
       >
         <ArticleListCreated
+            :username="store.getters.user.username"
             :page-size="4"
         />
       </a-tab-pane>
@@ -44,7 +57,8 @@ import ArticleListCreated from "../Articles/ArticleListCreated.vue";
           key="2"
           tab="收藏列表"
       >
-        <ArticleList
+        <ArticleListFavorited
+            :username="store.getters.user.username"
             :page-size="4"
         />
       </a-tab-pane>
@@ -73,6 +87,7 @@ export default {
   computed: {
     ...mapGetters({
       user: 'user',
+      statistics: 'statistics',
       publishArticles: 'publishArticles',
       favoriteArticles: 'favoriteArticles',
       drawerLoading: 'drawerLoading',

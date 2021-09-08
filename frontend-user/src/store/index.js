@@ -8,19 +8,20 @@ const defaultUser   = {
   id: 0,
   username: null,
   email: 'email@frogsoft.com',
-  avatar: '/public/avatar.png',
+  avatar: '/avatar.png',
+  roles: [],
   is_admin: false,
 };
 const defaultConfig = {
-  "favicon": "http://dummyimage.com/100x100",
-  "title": "Frogsoft CMS",
-  "logo": "/public/frogsoft.svg",
-  "headerDto": {
-    "logo": "http://dummyimage.com/400x200"
+  favicon: '/frogsoft.svg',
+  title: 'Frogsoft CMS',
+  logo: '/frogsoft.svg',
+  headerDto: {
+    logo: '/frogsoft.svg',
   },
-  "footerDto": {
-    "logo": "http://dummyimage.com/400x200"
-  }
+  footerDto: {
+    logo: '/avatar.png',
+  },
 };
 const store         = createStore({
   state: {
@@ -30,7 +31,12 @@ const store         = createStore({
     user: Object.create(defaultUser),
     publishArticles: [],
     favoriteArticles: [],
-    music: 6,
+    statistics: {
+      publishArticlesNum: 0,
+      viewsNum: 0,
+      likesNum: 0,
+      favoritesNum: 0,
+    },
     replyTo: 0,
     commentsLoading: false,
     comments: [
@@ -46,7 +52,7 @@ const store         = createStore({
         parent: 123,
       },
     ],
-    config: Object.assign({}, defaultConfig)
+    config: {...defaultConfig},
   },
   getters: {
     /**
@@ -91,6 +97,9 @@ const store         = createStore({
     },
     config(state) {
       return state.config;
+    },
+    statistics(state) {
+      return state.statistics
     }
   },
   mutations: {
@@ -108,14 +117,14 @@ const store         = createStore({
     },
     userLogin(state, username) {
       if (state.user.username === username) return;
-      state.user.username = username.toString()
+      state.user.username = username.toString();
       localStorage.setItem('username', username);
       this.commit('userUpdate');
     },
     userLogout(state) {
       localStorage.removeItem('username');
       localStorage.removeItem('token');
-      state.user             = {...defaultUser}
+      state.user             = {...defaultUser};
       state.publishArticles  = [];
       state.favoriteArticles = [];
       state.drawerVisibility = false;
@@ -124,10 +133,13 @@ const store         = createStore({
       state.drawerLoading = true;
       axios.get(`/v1/users/${state.user.username}`).then((res) => {
         state.user.email       = res.data.email;
-        state.user.avatar      = res.data.avatar || defaultUser.avatar
-        state.user.is_admin    = res.data.roles.includes("ROLE_ADMIN");
-        state.publishArticles  = res.data.publishArticles
-        state.favoriteArticles = res.data.favoriteArticles
+        state.user.avatar      = res.data.avatar || defaultUser.avatar;
+        state.user.is_admin    = res.data.roles.includes('ROLE_ADMIN');
+        state.publishArticles  = res.data.publishArticles;
+        state.favoriteArticles = res.data.favoriteArticles;
+        state.statistics       = res.data.statistics;
+      }).catch(() => {
+        this.commit('userLogout');
       }).finally(() => {
         state.drawerLoading = false;
       });
@@ -149,24 +161,21 @@ const store         = createStore({
         state.commentsLoading = false;
       });
     },
-    updateConfig(state, id) {
-      return axios.get('/v1/global/config/frontend-user').then(res => {
-        state.config = Object.assign({}, defaultConfig)
-        Object(res.data)?.keys?.forEach(item => {
-          if (typeof (res.data[item]) === 'object')
-            Object(res.data[item])?.keys?.forEach(jtem => {
-              state.config[item][jtem] = res.data[item][jtem]
-            })
-          else {
-            if (res.data[item])
-              state.config[item] = res.data[item]
-          }
-        })
+    updateConfig(state) {
+      return axios.get('/v1/global/config/frontend-user').then((res) => {
+        state.config = {...defaultConfig};
+        Object(res.data)?.keys?.forEach((item) => {
+          if (typeof (res.data[item]) === 'object') {
+            Object(res.data[item])?.keys?.forEach((jtem) => {
+              state.config[item][jtem] = res.data[item][jtem];
+            });
+          } else if (res.data[item]) state.config[item] = res.data[item];
+        });
       }).finally(() => {
-        document.title                      = state.config.title
-        document.getElementById('qwq').href = state.config.favicon
-      })
-    }
+        document.title                      = state.config.title;
+        document.getElementById('qwq').href = state.config.favicon;
+      });
+    },
   },
   actions: {},
   modules: {},
