@@ -5,7 +5,6 @@ import com.frogsoft.frogsoftcms.controller.v1.request.comment.CommentRequest;
 import com.frogsoft.frogsoftcms.model.user.User;
 import com.frogsoft.frogsoftcms.service.article.ArticleService;
 import com.frogsoft.frogsoftcms.service.comment.CommentService;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
@@ -38,26 +37,27 @@ public class ArticleController {
       @RequestParam(defaultValue = "10") int size,
       @RequestParam(defaultValue = "") String author) {
     String role;
-    if (authenticatedUser.getRoles().contains("ROLE_ADMIN")) {
-      role = "admin";
-    } else {
+    if (authenticatedUser == null) {
       role = "user";
+    } else {
+      if (authenticatedUser.getRoles().contains("ROLE_ADMIN")) {
+        role = "admin";
+      } else {
+        role = "user";
+      }
     }
     if (search.equals("") && author.equals("")) {
       return ResponseEntity.ok()
-          .body(articleService.findAll(sortBy, order, role, PageRequest.of(page, size)));
+          .body(articleService.findAll(role, sortBy, order, PageRequest.of(page, size)));
     } else if (search.equals("")) {
-      System.out.println(author);
       return ResponseEntity.ok()
           .body(articleService
               .findByAuthor(author, role, sortBy, order, PageRequest.of(page, size)));
     } else if (author.equals("")) {
-      System.out.println("search");
       return ResponseEntity.ok()
           .body(articleService
               .findBySearch(search, role, sortBy, order, PageRequest.of(page, size)));
     } else {
-      System.out.println("search and author");
       return ResponseEntity.ok()
           .body(articleService
               .findBySearchAndAuthor(search, author, role, sortBy, order,
@@ -88,13 +88,20 @@ public class ArticleController {
   @GetMapping("/{id}")
   public ResponseEntity<?> getOneArticle(@PathVariable(value = "id") Long id,
       @AuthenticationPrincipal User authenticatedUser) {
-
-    List<String> roles = authenticatedUser.getRoles();
-    Long userId = authenticatedUser.getId();
-    String role = "user";
-    if (roles.contains("ROLE_ADMIN")) {
-      role = "admin";
+    String role;
+    Long userId;
+    if (authenticatedUser == null) {
+      role = "user";
+      userId = (long) -1;
+    } else {
+      if (authenticatedUser.getRoles().contains("ROLE_ADMIN")) {
+        role = "admin";
+      } else {
+        role = "user";
+      }
+      userId = authenticatedUser.getId();
     }
+
     return ResponseEntity.status(201).body(articleService.getOneArticle(id, role, userId));
   }
 

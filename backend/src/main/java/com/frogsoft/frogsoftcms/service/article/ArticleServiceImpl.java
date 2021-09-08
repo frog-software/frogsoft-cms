@@ -4,10 +4,10 @@ import com.frogsoft.frogsoftcms.controller.v1.request.article.ArticleRequest;
 import com.frogsoft.frogsoftcms.dto.assembler.article.ArticleModelAssembler;
 import com.frogsoft.frogsoftcms.dto.mapper.article.ArticleMapper;
 import com.frogsoft.frogsoftcms.dto.model.article.ArticleDto;
+import com.frogsoft.frogsoftcms.dto.model.article.ArticleMeDto;
 import com.frogsoft.frogsoftcms.exception.article.ArticleNotFoundException;
 import com.frogsoft.frogsoftcms.exception.basic.conflict.ConflictException;
 import com.frogsoft.frogsoftcms.exception.basic.forbidden.ForbiddenException;
-import com.frogsoft.frogsoftcms.exception.user.UserNotFoundException;
 import com.frogsoft.frogsoftcms.model.article.Article;
 import com.frogsoft.frogsoftcms.model.article.Status;
 import com.frogsoft.frogsoftcms.model.history.History;
@@ -55,7 +55,7 @@ public class ArticleServiceImpl implements ArticleService {
   }
 
   @Override
-  public EntityModel<ArticleDto> getOneArticle(Long id, String role, Long userId) {
+  public EntityModel<ArticleMeDto> getOneArticle(Long id, String role, Long userId) {
     Article article;
     if (role.equals("admin")) {
       article = articleRepository.findById(id)
@@ -69,10 +69,11 @@ public class ArticleServiceImpl implements ArticleService {
     history.setArticle(article)
         .setTime(LocalDateTime.now())
         .setUser(userRepository.findById(userId)
-            .orElseThrow(() -> new UserNotFoundException(userId)));
+            .orElse(null));
     historyRepository.save(history);
     Article newArticle = articleRepository.save(article);
-    return articleModelAssembler.toModel(articleMapper.toArticleDto(newArticle));
+    User user = userRepository.findById(userId).orElse(null);
+    return articleModelAssembler.toMeModel(articleMapper.toArticleMeDto(newArticle, user));
   }
 
   @Override
