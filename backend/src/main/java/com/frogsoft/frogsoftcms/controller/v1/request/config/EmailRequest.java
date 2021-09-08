@@ -8,7 +8,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class EmailRequest implements Serializable {
 
-  private static final long serialVersionUID = 32974805623333756L;
+  private static final long serialVersionUID = 32974805625333756L;
   private String password;
   private String account;
   private String body;

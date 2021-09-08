@@ -41,28 +41,28 @@ public class ConfigServiceImpl implements ConfigService {
         .setConfigValue(configRequest.getLogo())));
     configList.add(new Config()
         .setConfigKey("email_password")
-        .setConfigValue(configRequest.getEmail().getPassword()));
+        .setConfigValue(configRequest.getEmailDto().getPassword()));
     configList.add(new Config()
         .setConfigKey("email_account")
-        .setConfigValue(configRequest.getEmail().getAccount()));
+        .setConfigValue(configRequest.getEmailDto().getAccount()));
     configList.add(new Config()
         .setConfigKey("email_body")
-        .setConfigValue(configRequest.getEmail().getBody()));
+        .setConfigValue(configRequest.getEmailDto().getBody()));
     configList.add(new Config()
         .setConfigKey("email_title")
-        .setConfigValue(configRequest.getEmail().getTitle()));
+        .setConfigValue(configRequest.getEmailDto().getTitle()));
     configList.add(new Config()
         .setConfigKey("email_host")
-        .setConfigValue(configRequest.getEmail().getHost()));
+        .setConfigValue(configRequest.getEmailDto().getHost()));
     configList.add(new Config()
         .setConfigKey("email_port")
-        .setConfigValue(configRequest.getEmail().getPort()));
+        .setConfigValue(configRequest.getEmailDto().getPort()));
     configList.add(new Config()
         .setConfigKey("header_logo")
-        .setConfigValue(configRequest.getHeader().getLogo()));
+        .setConfigValue(configRequest.getHeaderDto().getLogo()));
     configList.add(new Config()
         .setConfigKey("footer_logo")
-        .setConfigValue(configRequest.getFooter().getLogo()));
+        .setConfigValue(configRequest.getFooterDto().getLogo()));
     List<Config> configs = configRepository.saveAll(configList);
     return configModelAssembler.toModel(configMapper.toConfigDto(configs));
   }

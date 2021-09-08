@@ -61,7 +61,7 @@ public class Initialize {
       Config configEmpty = configRepository.findByConfigKey("favicon");
       if (configEmpty == null) {
         configService.putConfig((new ConfigRequest())
-            .setEmail(
+            .setEmailDto(
                 (new EmailRequest())
                     .setAccount("example_account")
                     .setTitle("验证码")
@@ -71,11 +71,11 @@ public class Initialize {
                     .setPort("465")
             )
             .setFavicon("")
-            .setFooter(
+            .setFooterDto(
                 (new FooterRequest())
                     .setLogo("")
             )
-            .setHeader(
+            .setHeaderDto(
                 (new HeaderRequest())
                     .setLogo("")
             )

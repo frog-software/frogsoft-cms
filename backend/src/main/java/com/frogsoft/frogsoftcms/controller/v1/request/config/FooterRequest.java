@@ -8,6 +8,6 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class FooterRequest implements Serializable {
 
-  private static final long serialVersionUID = 32974805623333756L;
+  private static final long serialVersionUID = 32974805623333724L;
   private String logo;
 }
