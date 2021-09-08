@@ -2,7 +2,7 @@ import React, { FC, ReactNode }                                       from 'reac
 import { Link }                                                       from 'react-router-dom';
 import { Avatar, Menu, Row }                                         from 'antd';
 import {
-  BarsOutlined, SettingOutlined, TeamOutlined, UserOutlined,
+  BarsOutlined, NotificationOutlined, SettingOutlined, TeamOutlined, UserOutlined,
 } from '@ant-design/icons';
 import './index.css';
 
@@ -29,12 +29,18 @@ const entryTree: EntryTree[] = [
   },
   {
     key: '2',
+    title: '本站公告',
+    icon: <NotificationOutlined />,
+    link: '/announcement',
+  },
+  {
+    key: '3',
     title: '个性配置',
     icon: <SettingOutlined />,
     link: '/configuration',
   },
   {
-    key: '3',
+    key: '4',
     title: '关于我们',
     icon: <TeamOutlined />,
     link: '/about',
