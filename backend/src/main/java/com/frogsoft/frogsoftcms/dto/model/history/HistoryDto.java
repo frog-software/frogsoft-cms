@@ -7,6 +7,7 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(chain = true)
 public class HistoryDto {
+
   private Long id;
   private LocalDateTime time;
   private Long articleId;
