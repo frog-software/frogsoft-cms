@@ -133,7 +133,7 @@ const Configuration: FC = () => {
                   <>
                     <Descriptions style={{ marginBottom: '20px' }}>
                       <Descriptions.Item label="站点名称">
-                        {configuration?.title}
+                        {configuration?.title || '暂未设置'}
                       </Descriptions.Item>
                     </Descriptions>
                     <Descriptions>
@@ -181,7 +181,7 @@ const Configuration: FC = () => {
                     </Descriptions>
                     <Descriptions style={{ marginBottom: '20px' }}>
                       <Descriptions.Item label="站点图标">
-                        {configuration?.favicon}
+                        {configuration?.favicon || '暂未设置'}
                       </Descriptions.Item>
                     </Descriptions>
                     <Descriptions>
@@ -229,7 +229,7 @@ const Configuration: FC = () => {
                     </Descriptions>
                     <Descriptions>
                       <Descriptions.Item label="LOGO图标">
-                        {configuration?.logo}
+                        {configuration?.logo || '暂未设置'}
                       </Descriptions.Item>
                     </Descriptions>
                   </>
@@ -244,7 +244,7 @@ const Configuration: FC = () => {
                     <Form.Item
                       name="title"
                       label="站点名称"
-                      initialValue={configuration?.title}
+                      initialValue={configuration?.title || '暂未设置'}
                       rules={[{ required: true }]}
                     >
                       <Input />
@@ -291,7 +291,7 @@ const Configuration: FC = () => {
                     <Form.Item
                       name="favicon"
                       label="站点图标"
-                      initialValue={configuration?.favicon}
+                      initialValue={configuration?.favicon || '暂未设置'}
                       style={{ marginTop: '20px' }}
                       rules={[{ required: true }]}
                     >
@@ -314,7 +314,7 @@ const Configuration: FC = () => {
                     <Form.Item
                       name="logo"
                       label="LOGO图标"
-                      initialValue={configuration?.logo}
+                      initialValue={configuration?.logo || '暂未设置'}
                       style={{ marginTop: '20px' }}
                       rules={[{ required: true }]}
                     >
@@ -338,12 +338,12 @@ const Configuration: FC = () => {
               !editable ? (
                 <Col span={12}>
                   <Descriptions bordered column={1} title="验证邮箱设置">
-                    <Descriptions.Item label="邮箱账号">{configuration?.email?.account}</Descriptions.Item>
-                    <Descriptions.Item label="邮箱密码">{configuration?.email?.password}</Descriptions.Item>
-                    <Descriptions.Item label="邮件服务器主机">{configuration?.email?.host}</Descriptions.Item>
-                    <Descriptions.Item label="邮件服务器端口">{configuration?.email?.port}</Descriptions.Item>
-                    <Descriptions.Item label="邮件标题">{configuration?.email?.title}</Descriptions.Item>
-                    <Descriptions.Item label="邮件内容">{configuration?.email?.body}</Descriptions.Item>
+                    <Descriptions.Item label="邮箱账号">{configuration?.email?.account || '暂未设置'}</Descriptions.Item>
+                    <Descriptions.Item label="邮箱密码">{configuration?.email?.password || '暂未设置'}</Descriptions.Item>
+                    <Descriptions.Item label="邮件服务器主机">{configuration?.email?.host || '暂未设置'}</Descriptions.Item>
+                    <Descriptions.Item label="邮件服务器端口">{configuration?.email?.port || '暂未设置'}</Descriptions.Item>
+                    <Descriptions.Item label="邮件标题">{configuration?.email?.title || '暂未设置'}</Descriptions.Item>
+                    <Descriptions.Item label="邮件内容">{configuration?.email?.body || '暂未设置'}</Descriptions.Item>
                   </Descriptions>
                 </Col>
               ) : (
@@ -360,7 +360,7 @@ const Configuration: FC = () => {
                       <Form.Item
                         name="account"
                         label="邮箱账号"
-                        initialValue={configuration?.email?.account}
+                        initialValue={configuration?.email?.account || '暂未设置'}
                         rules={[{ required: true }]}
                       >
                         <Input />
@@ -368,7 +368,7 @@ const Configuration: FC = () => {
                       <Form.Item
                         name="password"
                         label="邮箱密码"
-                        initialValue={configuration?.email?.password}
+                        initialValue={configuration?.email?.password || '暂未设置'}
                         rules={[{ required: true }]}
                       >
                         <Input />
@@ -376,7 +376,7 @@ const Configuration: FC = () => {
                       <Form.Item
                         name="host"
                         label="邮件服务器主机"
-                        initialValue={configuration?.email?.host}
+                        initialValue={configuration?.email?.host || '暂未设置'}
                         rules={[{ required: true }]}
                       >
                         <Input />
@@ -384,7 +384,7 @@ const Configuration: FC = () => {
                       <Form.Item
                         name="port"
                         label="邮件服务器端口"
-                        initialValue={configuration?.email?.port}
+                        initialValue={configuration?.email?.port || '暂未设置'}
                         rules={[{ required: true }]}
                       >
                         <Input />
@@ -392,7 +392,7 @@ const Configuration: FC = () => {
                       <Form.Item
                         name="emailTitle"
                         label="邮件标题"
-                        initialValue={configuration?.email?.title}
+                        initialValue={configuration?.email?.title || '暂未设置'}
                         rules={[{ required: true }]}
                       >
                         <Input />
@@ -402,7 +402,7 @@ const Configuration: FC = () => {
                       <Form.Item
                         name="body"
                         label="邮件内容"
-                        initialValue={configuration?.email?.body}
+                        initialValue={configuration?.email?.body || '暂未设置'}
                         rules={[{ required: true }]}
                       >
                         <TextArea autoSize={{ minRows: 3 }} />
@@ -450,7 +450,7 @@ const Configuration: FC = () => {
                       <Form.Item
                         name="headerLogo"
                         label="页头LOGO"
-                        initialValue={configuration?.header?.logo}
+                        initialValue={configuration?.header?.logo || '暂未设置'}
                         rules={[{ required: true }]}
                       >
                         <Input />
@@ -459,7 +459,7 @@ const Configuration: FC = () => {
                       <Form.Item
                         name="footerLogo"
                         label="页脚LOGO"
-                        initialValue={configuration?.footer?.logo}
+                        initialValue={configuration?.footer?.logo || '暂未设置'}
                         rules={[{ required: true }]}
                       >
                         <Input />
