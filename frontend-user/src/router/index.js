@@ -1,5 +1,5 @@
-import { createRouter, createWebHistory } from 'vue-router';
-import store from '../store';
+import {createRouter, createWebHistory} from 'vue-router';
+import store                            from '../store';
 
 const routes = [
   {
@@ -22,7 +22,7 @@ const routes = [
   {
     path: '/search',
     name: 'Search',
-    props: (route) => ({ keyWords: route.query.key }),
+    props: (route) => ({keyWords: route.query.key}),
     component: () => import('../views/SearchResult.vue'),
   },
   // Login区
@@ -77,12 +77,6 @@ const routes = [
     name: 'UserSettings',
     component: () => import('../views/Users/UserSettings.vue'),
 
-  },
-  // Tools区
-  {
-    path: '/tools',
-    name: 'Tools',
-    component: () => import('../views/Tools/Tools.vue'),
   },
   // {
   //   path: '*',
