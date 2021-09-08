@@ -86,8 +86,8 @@ const UserList: FC = () => {
                     throwOnError: true,
                     cancelRefetch: false,
                   });
-                }).catch(() => {
-                  notification['error']({ message: '用户删除失败' });
+                }).catch((error) => {
+                  notification['error']({ message: '用户删除失败', description: String(error) });
                 }).finally(() => {
                   setDeleteLoading(false);
                 });

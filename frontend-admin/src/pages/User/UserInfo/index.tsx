@@ -108,8 +108,8 @@ const UserInfo: FC = () => {
     deleteUser(username).then(() => {
       notification['success']({ message: '用户删除成功' });
       history.goBack();
-    }).catch(() => {
-      notification['error']({ message: '用户删除失败' });
+    }).catch((error) => {
+      notification['error']({ message: '用户删除失败', description: String(error) });
     });
   };
 
@@ -363,7 +363,7 @@ const UserInfo: FC = () => {
                     form={formDetail}
                     name="newUserInfo"
                     onFinish={handleEdit}
-                    onFinishFailed={() => notification['error']({ message: '用户信息更新失败' })}
+                    onFinishFailed={(error) => notification['error']({ message: '用户信息更新失败', description: String(error) })}
                     validateMessages={validateMessages}
                   >
                     <Form.Item

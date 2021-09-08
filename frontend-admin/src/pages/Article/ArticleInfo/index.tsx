@@ -87,8 +87,8 @@ const ArticleInfo: FC = () => {
         notification['success']({ message: '文章信息更新成功' });
         setEditDetail(false);
       })
-      .catch(() => {
-        notification['error']({ message: '文章信息更新失败' });
+      .catch((error) => {
+        notification['error']({ message: '文章信息更新失败', description: String(error) });
       })
       .finally(() => {
         setDetailLoading(false);
@@ -116,8 +116,8 @@ const ArticleInfo: FC = () => {
         notification['success']({ message: '文章正文更新成功' });
         setEditContent(false);
       })
-      .catch(() => {
-        notification['error']({ message: '文章正文更新失败' });
+      .catch((error) => {
+        notification['error']({ message: '文章正文更新失败', description: String(error) });
       })
       .finally(() => {
         setDetailLoading(false);
@@ -140,8 +140,8 @@ const ArticleInfo: FC = () => {
       .then(() => {
         notification['success']({ message: '评论删除成功' });
       })
-      .catch(() => {
-        notification['error']({ message: '评论删除失败' });
+      .catch((error) => {
+        notification['error']({ message: '评论删除失败', description: String(error) });
       })
       .finally(() => {
         setCommentLoading(false);
@@ -218,8 +218,8 @@ const ArticleInfo: FC = () => {
                   .then(() => {
                     notification['success']({ message: '文章删除成功' });
                     history.goBack();
-                  }).catch(() => {
-                    notification['error']({ message: '文章删除失败' });
+                  }).catch((error) => {
+                    notification['error']({ message: '文章删除失败', description: String(error) });
                   });
               }}
             >
@@ -280,7 +280,7 @@ const ArticleInfo: FC = () => {
                     form={articleDetail}
                     name="newArticleDetail"
                     onFinish={handleSubmitDetail}
-                    onFinishFailed={() => notification['error']({ message: '文章信息更新失败' })}
+                    onFinishFailed={(error) => notification['error']({ message: '文章信息更新失败', description: String(error) })}
                     validateMessages={validateMessages}
                   >
                     <Form.Item
@@ -362,7 +362,7 @@ const ArticleInfo: FC = () => {
               form={articleContent}
               name="newArticleContent"
               onFinish={handleSubmitContent}
-              onFinishFailed={() => notification['error']({ message: '文章正文更新失败' })}
+              onFinishFailed={(error) => notification['error']({ message: '文章正文更新失败', description: String(error) })}
               validateMessages={validateMessages}
             >
               <Form.Item
