@@ -13,7 +13,7 @@ public interface ArticleService {
 
   EntityModel<ArticleDto> getOneArticle(Long id, String role, Long userId);
 
-  EntityModel<ArticleDto> editArticle(Long id, Long userId, ArticleRequest articleRequest);
+  EntityModel<ArticleDto> editArticle(Long id, User authenticateUser, ArticleRequest articleRequest);
 
   void deleteArticle(Long id, User authenticateUser);
 

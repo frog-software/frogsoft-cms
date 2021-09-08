@@ -76,21 +76,22 @@ public class ArticleServiceImpl implements ArticleService {
   }
 
   @Override
-  public EntityModel<ArticleDto> editArticle(Long id, Long userId, ArticleRequest articleRequest) {
+  public EntityModel<ArticleDto> editArticle(Long id, User authenticateUser, ArticleRequest articleRequest) {
     Article article = articleRepository.findById(id)
         .orElseThrow(() -> new ArticleNotFoundException(id));
-    if (userId.equals(article.getAuthor().getId())) {
-      Article newArticle = articleRepository.save(article
-          .setTitle(articleRequest.getTitle())
-          .setContent(articleRequest.getContent())
-          .setDescription(articleRequest.getDescription())
-          .setStatus(articleRequest.getStatus())
-          .setCover(articleRequest.getCover())
-          .setUpdateDate(LocalDateTime.now()));
-      return articleModelAssembler.toModel(articleMapper.toArticleDto(newArticle));
-    } else {
-      throw new ForbiddenException("无权限修改");
+    if (!authenticateUser.getRoles().contains(Roles.ROLE_ADMIN.getRole())){
+      if (!authenticateUser.getId().equals(article.getAuthor().getId())){
+        throw new ForbiddenException("无权限修改");
+      }
     }
+    Article newArticle = articleRepository.save(article
+        .setTitle(articleRequest.getTitle())
+        .setContent(articleRequest.getContent())
+        .setDescription(articleRequest.getDescription())
+        .setStatus(articleRequest.getStatus())
+        .setCover(articleRequest.getCover())
+        .setUpdateDate(LocalDateTime.now()));
+    return articleModelAssembler.toModel(articleMapper.toArticleDto(newArticle));
   }
 
   @Override
