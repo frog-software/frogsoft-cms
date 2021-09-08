@@ -35,13 +35,33 @@ public class ArticleController {
       @RequestParam(defaultValue = "publishDate") String sortBy,
       @RequestParam(defaultValue = "DESC") String order,
       @RequestParam(defaultValue = "0") int page,
-      @RequestParam(defaultValue = "10") int size) {
-    if (search.equals("")) {
-      return ResponseEntity.ok()
-          .body(articleService.findAll(sortBy, order, PageRequest.of(page, size)));
+      @RequestParam(defaultValue = "10") int size,
+      @RequestParam(defaultValue = "") String author) {
+    String role;
+    if (authenticatedUser.getRoles().contains("ROLE_ADMIN")) {
+      role = "admin";
     } else {
+      role = "user";
+    }
+    if (search.equals("") && author.equals("")) {
       return ResponseEntity.ok()
-          .body(articleService.findBySearch(search, sortBy, order, PageRequest.of(page, size)));
+          .body(articleService.findAll(sortBy, order, role, PageRequest.of(page, size)));
+    } else if (search.equals("")) {
+      System.out.println(author);
+      return ResponseEntity.ok()
+          .body(articleService
+              .findByAuthor(author, role, sortBy, order, PageRequest.of(page, size)));
+    } else if (author.equals("")) {
+      System.out.println("search");
+      return ResponseEntity.ok()
+          .body(articleService
+              .findBySearch(search, role, sortBy, order, PageRequest.of(page, size)));
+    } else {
+      System.out.println("search and author");
+      return ResponseEntity.ok()
+          .body(articleService
+              .findBySearchAndAuthor(search, author, role, sortBy, order,
+                  PageRequest.of(page, size)));
     }
   }
 
