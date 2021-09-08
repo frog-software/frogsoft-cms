@@ -14,10 +14,6 @@
 
 - 可以通过用户名、权限等属性进行排序
 
-#### US0102 搜索用户
-
-- 可以根据关键字搜索指定用户
-
 ### US02 编辑资料 `/users/:username`
 
 - 可以编辑用户的详细资料
@@ -68,9 +64,34 @@
 
 
 
+## WA 本站公告 *Web Announcement*
+### WA01 修改公告 `/announcement`
+- 可以修改本站的公告
+
+
+
+## GS 全局配置 *Global Configuration*
+
+### GS01 站点属性配置 `/configuration`
+
+- 设置网站的站点名称、站点图标和LOGO
+
+### GS02 验证邮箱配置 `/configuration`
+
+- 设置邮箱账号、密码、服务器主机、服务器端口、邮件标题和正文
+
+### GS03 页面属性配置 `/configuration`
+
+- 设置页头和页脚的LOGO
+
+#### GS0301 页面配置预览
+- 可以预览页面配置的样式
+
+
+
+
 ## AB 关于我们 *About Us*
 
 ### AB01 介绍我们 `/about`
 
 - 介绍关于此项目团队的信息
-
