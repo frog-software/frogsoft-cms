@@ -176,3 +176,7 @@ select {
 .half-transparent-background {
     background: #FFFFFF00;
 }
+
+input[type="text"], input[type="password"], input[type=submit]:focus, input[type="color"], textarea {
+    background-color: #FFFFFF00;
+}
