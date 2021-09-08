@@ -51,6 +51,7 @@ public class UserDetailMapper {
         .setPublishArticlesNum(articleRepository.findByAuthor(user).size());
     return new UserDetailDto()
         .setEmail(user.getEmail())
+        .setAvatar(user.getAvatar())
         .setUsername(user.getUsername())
         .setRoles(user.getRoles())
         .setFavoriteArticles(articleMapper.toArticleDto(user.getFavoriteArticles().subList(0, 9)))

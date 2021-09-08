@@ -19,4 +19,5 @@ public class UserDetailDto {
   private List<ArticleDto> publishArticles;
   private List<CommentDto> publishComment;
   private StatisticsDto statistics;
+  private String avatar;
 }
