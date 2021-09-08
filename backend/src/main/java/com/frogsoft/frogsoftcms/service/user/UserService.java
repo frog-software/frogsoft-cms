@@ -33,9 +33,9 @@ public interface UserService {
 
   void deleteUser(String username, User authenticatedUser);
 
-  PagedModel<EntityModel<HistoryDto>> getUserHistory(String username, Pageable pageable);
+  PagedModel<?> getUserHistory(String username, Pageable pageable);
 
-  PagedModel<EntityModel<ArticleDto>> getUserFavor(String username, Pageable pageable);
+  PagedModel<?> getUserFavor(String username, Pageable pageable);
 
-  PagedModel<EntityModel<CommentDto>> getUserComment(String username, Pageable pageable);
+  PagedModel<?> getUserComment(String username, Pageable pageable);
 }
