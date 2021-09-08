@@ -10,38 +10,26 @@
 //
 //--------------------------------------------------------------------------
 
-import React, { FC, useEffect, useState }             from 'react';
-import { Article }                                    from 'types/article';
-import Block                                          from 'components/Block';
-import { useParams }                                  from 'react-router-dom';
-import http                                           from 'utils/http';
+import React, { FC, useEffect, useState }            from 'react';
+import { Article }                                   from 'types/article';
+import Block                                         from 'components/Block';
+import { useParams }                                 from 'react-router-dom';
+import http                                          from 'utils/http';
 import {
-  Badge,
-  Button,
-  Col,
-  Descriptions,
-  Divider,
-  Form,
-  Image,
-  Input,
-  notification,
-  Popconfirm,
-  Row,
-  Select,
-  Space,
-  Statistic,
-  Table,
-}                                                     from 'antd';
-import DescriptionsItem                               from 'antd/es/descriptions/Item';
+  Badge, Button, Col, Descriptions, Divider, Form,
+  Image, Input, notification, Popconfirm, Row,
+  Select, Space, Statistic, Table,
+}                                                    from 'antd';
+import DescriptionsItem                              from 'antd/es/descriptions/Item';
 import { CloudOutlined, LikeOutlined, StarOutlined } from '@ant-design/icons';
-import { useForm }                                    from 'antd/es/form/Form';
+import { useForm }                                   from 'antd/es/form/Form';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { useHistory }                                 from 'react-router';
-import TextArea                                       from 'antd/es/input/TextArea';
-import { deleteArticle }                              from 'services/article';
-import { Comment }                                    from 'types/comment';
-import { JavaCollectionModel }                        from 'types/common';
-import { collectionModelSimplifier }                  from 'utils/common';
+import { useHistory }                                from 'react-router';
+import TextArea                                      from 'antd/es/input/TextArea';
+import { deleteArticle }                             from 'services/article';
+import { Comment }                                   from 'types/comment';
+import { JavaCollectionModel }                       from 'types/common';
+import { collectionModelSimplifier }                 from 'utils/common';
 
 const ArticleInfo: FC = () => {
   const params: { id: string }              = useParams();

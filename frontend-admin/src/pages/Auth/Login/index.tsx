@@ -57,7 +57,7 @@ const Login: FC = () => {
         justify="center"
         gutter={[0, 12]}
       >
-        <Col style={{ textAlign: 'center', marginTop: 36 }}>
+        <Col style={{ textAlign: 'center', marginTop: 32 }}>
           <img width={120} height={120} src="/logo.svg" alt="logo" />
           <Typography.Text
             style={{

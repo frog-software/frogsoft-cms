@@ -112,14 +112,14 @@ const UserList: FC = () => {
     <>
       <Block title="用户管理">
         <Row>
-          <Col span={4} offset={20}>
-            <Search
-              placeholder="输入文章搜索关键字"
-              onSearch={() => (console.log('搜索用户'))}
-              enterButton
-              style={{ marginBottom: '16px' }}
-            />
-          </Col>
+          {/*<Col span={4} offset={20}>*/}
+          {/*  <Search*/}
+          {/*    placeholder="输入文章搜索关键字"*/}
+          {/*    onSearch={() => (console.log('搜索用户'))}*/}
+          {/*    enterButton*/}
+          {/*    style={{ marginBottom: '16px' }}*/}
+          {/*  />*/}
+          {/*</Col>*/}
           <Col span={24}>
             <Table
               rowKey="username"
