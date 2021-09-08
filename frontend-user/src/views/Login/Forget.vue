@@ -167,9 +167,9 @@ export default {
      * 并向邮箱发送验证码
      * TODO 等待后端更新这个接口
      */
-    sendCode() {
+    async sendCode() {
       let result = 0;
-      axios.post(`/v1/auth/forget`, {}, {
+      await axios.post(`/v1/auth/forget`, {}, {
         params: {
           username: this.username
         }
