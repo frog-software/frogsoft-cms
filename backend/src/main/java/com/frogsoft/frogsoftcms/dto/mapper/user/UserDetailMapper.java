@@ -27,7 +27,18 @@ public class UserDetailMapper {
   private final ArticleMapper articleMapper;
   private final CommentMapper commentMapper;
 
+  private static <T> List<T> getFrontList(List<T> list, int num) {
+    if (list.size() <= num) {
+      return list;
+    } else {
+      return list.subList(0, num);
+    }
+  }
+
   public UserDetailDto toUserDetailDto(User user) {
+
+    int frontListSize = 10;
+
     AtomicReference<Integer> FavoritesNum = new AtomicReference<>(0);
     for (Article article : user.getFavoriteArticles()) {
       FavoritesNum.set(article.getFavoritesNum() + FavoritesNum.get());
@@ -41,7 +52,7 @@ public class UserDetailMapper {
       ViewsNum.set(article.getViews() + ViewsNum.get());
     }
     List<Article> historyList = new ArrayList<>();
-    for (History history:historyRepository.findAllByUser(user)){
+    for (History history : historyRepository.findAllByUser(user)) {
       historyList.add(history.getArticle());
     }
     StatisticsDto statisticsDto = new StatisticsDto()
@@ -53,13 +64,17 @@ public class UserDetailMapper {
         .setEmail(user.getEmail())
         .setUsername(user.getUsername())
         .setRoles(user.getRoles())
-        .setFavoriteArticles(articleMapper.toArticleDto(user.getFavoriteArticles().subList(0, 9)))
-        .setHistoryArticles(articleMapper.toArticleDto(historyList.subList(0, 9)))
-        .setLikeArticles(articleMapper.toArticleDto(user.getLikeArticles().subList(0, 9)))
+        .setFavoriteArticles(
+            articleMapper.toArticleDto(getFrontList(user.getFavoriteArticles(), frontListSize)))
+        .setHistoryArticles(articleMapper.toArticleDto(getFrontList(historyList, frontListSize)))
+        .setLikeArticles(
+            articleMapper.toArticleDto(getFrontList(user.getLikeArticles(), frontListSize)))
         .setStatistics(statisticsDto)
         .setPublishArticles(
-            articleMapper.toArticleDto(articleRepository.findByAuthor(user).subList(0, 9)))
+            articleMapper.toArticleDto(
+                getFrontList(articleRepository.findByAuthor(user), frontListSize)))
         .setPublishComment(
-            commentMapper.toCommentDto(commentRepository.findByAuthor(user).subList(0, 9)));
+            commentMapper.toCommentDto(
+                getFrontList(commentRepository.findByAuthor(user), frontListSize)));
   }
 }
