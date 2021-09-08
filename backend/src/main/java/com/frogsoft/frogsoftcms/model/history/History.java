@@ -15,6 +15,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 
 @Getter
@@ -29,11 +31,13 @@ public class History {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @ManyToOne
+  @ManyToOne(cascade = CascadeType.ALL)
+  @OnDelete(action = OnDeleteAction.CASCADE)
   @JoinColumn(referencedColumnName = "id")
   private User user;
 
-  @ManyToOne(cascade = CascadeType.DETACH)
+  @ManyToOne(cascade = CascadeType.ALL)
+  @OnDelete(action = OnDeleteAction.CASCADE)
   @JoinColumn(referencedColumnName = "id")
   private Article article;
 

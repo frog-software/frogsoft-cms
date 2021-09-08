@@ -7,6 +7,7 @@ import com.frogsoft.frogsoftcms.dto.model.comment.CommentDto;
 import com.frogsoft.frogsoftcms.exception.article.ArticleNotFoundException;
 import com.frogsoft.frogsoftcms.exception.basic.forbidden.ForbiddenException;
 import com.frogsoft.frogsoftcms.exception.comment.CommentNotFoundException;
+import com.frogsoft.frogsoftcms.exception.user.UserNotFoundException;
 import com.frogsoft.frogsoftcms.model.article.Article;
 import com.frogsoft.frogsoftcms.model.commment.Comment;
 import com.frogsoft.frogsoftcms.model.commment.Status;
@@ -35,11 +36,13 @@ public class CommentServiceImpl implements CommentService {
   @Override
   public EntityModel<CommentDto> saveComment(Long articleId, CommentRequest commentRequest,
       User authenticatedUser) {
+    User user = userRepository.findById(authenticatedUser.getId())
+        .orElseThrow(() -> new UserNotFoundException(authenticatedUser.getId()));
     Comment comment = new Comment()
         .setStatus(Status.NORMAL)
         .setArticle(articleRepository.getById(articleId))
         .setContent(commentRequest.getContent())
-        .setAuthor(authenticatedUser)
+        .setAuthor(user)
         .setPublishDate(LocalDateTime.now())
         .setLikes(0);
     if (commentRequest.getParent() != 0L) {
