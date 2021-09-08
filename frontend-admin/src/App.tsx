@@ -19,12 +19,18 @@ const About            = React.lazy(() => import('./pages/About'));
 const Auth             = React.lazy(() => import('./pages/Auth'));
 
 function App() {
-  const history                = useHistory();
+  const history                    = useHistory();
   const { app: { configuration } } = useSelector((state: RootState) => state);
-  const dispatch               = useDispatch<Dispatch>().app;
+  const dispatch                   = useDispatch<Dispatch>().app;
 
   useEffect(() => {
-    dispatch.setConfiguration({});
+    dispatch.setConfiguration({
+      isBackgroundEnabled: !!localStorage.getItem('isBackgroundEnabled'),
+    });
+
+    if (!localStorage.getItem('token')) {
+      history.replace('/auth/login');
+    }
   }, []);
 
   // 特殊路径跳转
@@ -43,28 +49,36 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ConfigProvider locale={zhCN}>
-        <Row className="App">
-          <Col className="g-nav">
-            <NavBar />
-          </Col>
-          <Col className="g-main">
-            <UserNavBar />
-            {
-              configuration ? (
-                <Suspense fallback={<Preview />}>
-                  <Route path="/home" component={Home} />
-                  <Route path="/users" component={UserPage} />
-                  <Route path="/configuration" component={ConfiguationPage} />
-                  <Route path="/articles" component={ArticlePage} />
-                  <Route path="/about" component={About} />
-                  <Route path="/auth" component={Auth} />
-                </Suspense>
-              ) : (
-                <Preview />
-              )
-            }
-          </Col>
-        </Row>
+        <div
+          className={configuration.isBackgroundEnabled ? 'gradient-background' : undefined}
+          style={{
+            width: '100vw',
+            height: '100vh',
+          }}
+        >
+          <Row className="App">
+            <Col className="g-nav">
+              <NavBar />
+            </Col>
+            <Col className="g-main">
+              <UserNavBar />
+              {
+                configuration ? (
+                  <Suspense fallback={<Preview />}>
+                    <Route path="/home" component={Home} />
+                    <Route path="/users" component={UserPage} />
+                    <Route path="/configuration" component={ConfiguationPage} />
+                    <Route path="/articles" component={ArticlePage} />
+                    <Route path="/about" component={About} />
+                    <Route path="/auth" component={Auth} />
+                  </Suspense>
+                ) : (
+                  <Preview />
+                )
+              }
+            </Col>
+          </Row>
+        </div>
       </ConfigProvider>
     </QueryClientProvider>
   );

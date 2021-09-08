@@ -18,7 +18,6 @@ import {
   Button, Col, notification, Popconfirm, Row, Space, Table,
 }                                        from 'antd';
 import { useQuery }                      from 'react-query';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { useHistory }                    from 'react-router';
 import { getArticleList, deleteArticle } from 'services/article';
 import Search                            from 'antd/es/input/Search';
