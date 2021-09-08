@@ -34,11 +34,12 @@ const ArticleList: FC = () => {
   const history                                     = useHistory();
   const [recommendArticleId, setRecommendArticleId] = useState<number>();
   const [render, setRender]                         = useState<boolean>(false);
+  const [search, setSearch] = useState<string>();
 
   const {
     isLoading, data, refetch, remove,
   } = useQuery(
-    ['articleList', currentPage - 1, pageSize],
+    ['articleList', currentPage - 1, pageSize, search],
     getArticleList,
     {
       staleTime: 5000,
@@ -208,15 +209,20 @@ const ArticleList: FC = () => {
 
   return (
     <>
-      <Block title="文章列表">
+      <Block
+        title="文章列表"
+        description={(
+          <Search
+            placeholder="输入文章搜索关键字"
+            onSearch={(value) => setSearch(value)}
+            enterButton
+            style={{ marginTop: '10px' }}
+          />
+        )}
+      >
         <Row>
           {/*<Col span={4} offset={20}>*/}
-          {/*  <Search*/}
-          {/*    placeholder="输入文章搜索关键字"*/}
-          {/*    onSearch={() => (console.log('搜索文章'))}*/}
-          {/*    enterButton*/}
-          {/*    style={{ marginBottom: '16px' }}*/}
-          {/*  />*/}
+          {/*  */}
           {/*</Col>*/}
           <Col span={24}>
             <Table
