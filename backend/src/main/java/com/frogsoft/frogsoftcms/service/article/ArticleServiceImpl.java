@@ -77,11 +77,12 @@ public class ArticleServiceImpl implements ArticleService {
   }
 
   @Override
-  public EntityModel<ArticleDto> editArticle(Long id, User authenticateUser, ArticleRequest articleRequest) {
+  public EntityModel<ArticleDto> editArticle(Long id, User authenticateUser,
+      ArticleRequest articleRequest) {
     Article article = articleRepository.findById(id)
         .orElseThrow(() -> new ArticleNotFoundException(id));
-    if (!authenticateUser.getRoles().contains(Roles.ROLE_ADMIN.getRole())){
-      if (!authenticateUser.getId().equals(article.getAuthor().getId())){
+    if (!authenticateUser.getRoles().contains(Roles.ROLE_ADMIN.getRole())) {
+      if (!authenticateUser.getId().equals(article.getAuthor().getId())) {
         throw new ForbiddenException("无权限修改");
       }
     }

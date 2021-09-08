@@ -103,7 +103,7 @@ public class HomeServiceImpl implements HomeService {
    * changeDailyArticle 设置每日推荐文章（仅限管理员）
    *
    * @param dailyArticleSetRequest 要设置的文章RequestDto
-   * @param authenticatedUser 设置人
+   * @param authenticatedUser      设置人
    * @return EntityModel<ArticleDto> 设置好的推荐文章的数据模型
    */
   @Override

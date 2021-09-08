@@ -14,7 +14,8 @@ public interface ArticleService {
 
   EntityModel<ArticleMeDto> getOneArticle(Long id, String role, Long userId);
 
-  EntityModel<ArticleDto> editArticle(Long id, User authenticateUser, ArticleRequest articleRequest);
+  EntityModel<ArticleDto> editArticle(Long id, User authenticateUser,
+      ArticleRequest articleRequest);
 
   void deleteArticle(Long id, User authenticateUser);
 

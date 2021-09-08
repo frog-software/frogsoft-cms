@@ -48,7 +48,7 @@ public class Article {
   private String title;
   @Column(nullable = false)
   private String description;
-  @Column(nullable = false, columnDefinition="TEXT")
+  @Column(nullable = false, columnDefinition = "TEXT")
   private String content;
   @Column(nullable = false)
   private String cover;
