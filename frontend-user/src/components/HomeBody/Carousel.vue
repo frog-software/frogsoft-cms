@@ -55,14 +55,22 @@ export default {
     this.carousel = []
     axios.get('/v1/home/daily').then((res) => {
       this.carousel.push({id: res.data.id, url: res.data.cover})
+    }).catch((err) => {
+      if (err.response.status === 404) {
+        message.destroy()
+      }
     })
     axios.get('/v1/home/recommendations').then((res) => {
-      res.data._embedded.articleDtoList.forEach(item => {
+      res.data?._embedded?.articleDtoList?.forEach(item => {
         this.carousel.push({
           id: item.id,
           url: item.cover
         })
       })
+    }).catch((err) => {
+      if (err.response.status === 404) {
+        message.destroy()
+      }
     })
   },
 };

@@ -1,6 +1,8 @@
 <script setup>
-import store       from '../../store';
-import ArticleList from '../Articles/ArticleList.vue';</script>
+import store              from '../../store';
+import ArticleList        from '../Articles/ArticleList.vue';
+import ArticleListCreated from "../Articles/ArticleListCreated.vue";
+</script>
 <template>
   <a-spin :spinning="drawerLoading">
     <a-descriptions layout="vertical">
@@ -34,9 +36,8 @@ import ArticleList from '../Articles/ArticleList.vue';</script>
           key="1"
           tab="我创作的文章"
       >
-        <ArticleList
-            :list-data="publish_articles"
-            :page-size="3"
+        <ArticleListCreated
+            :page-size="4"
         />
       </a-tab-pane>
       <a-tab-pane
@@ -44,8 +45,7 @@ import ArticleList from '../Articles/ArticleList.vue';</script>
           tab="收藏列表"
       >
         <ArticleList
-            :list-data="like_articles"
-            :page-size="3"
+            :page-size="4"
         />
       </a-tab-pane>
       <template #tabBarExtraContent>

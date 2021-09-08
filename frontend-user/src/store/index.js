@@ -8,13 +8,13 @@ const defaultUser   = {
   id: 0,
   username: null,
   email: 'email@frogsoft.com',
-  avatar: 'https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png',
+  avatar: '/public/avatar.png',
   is_admin: false,
 };
 const defaultConfig = {
   "favicon": "http://dummyimage.com/100x100",
   "title": "Frogsoft CMS",
-  "logo": "http://dummyimage.com/400x400",
+  "logo": "/public/frogsoft.svg",
   "headerDto": {
     "logo": "http://dummyimage.com/400x200"
   },
@@ -38,7 +38,7 @@ const store         = createStore({
         id: 1234,
         user: {
           id: 0,
-          nickname: 'nickname',
+          username: 'username',
           avatar: 'http://dummyimage.com/100x100',
         },
         content: 'content',
@@ -55,7 +55,7 @@ const store         = createStore({
      * @returns {boolean} 是否已经登录
      */
     loginStatus(state) {
-      return state.user.username;
+      return !!state.user.username;
     },
 
     // getter区
@@ -124,6 +124,7 @@ const store         = createStore({
       state.drawerLoading = true;
       axios.get(`/v1/users/${state.user.username}`).then((res) => {
         state.user.email       = res.data.email;
+        state.user.avatar      = res.data.avatar || defaultUser.avatar
         state.user.is_admin    = res.data.roles.includes("ROLE_ADMIN");
         state.publishArticles  = res.data.publishArticles
         state.favoriteArticles = res.data.favoriteArticles
@@ -140,7 +141,7 @@ const store         = createStore({
     updateComments(state, id) {
       state.commentsLoading = true;
       return axios.get(`/v1/articles/${id}/comments`).then((res) => {
-        state.comments = res.data._embedded.commentDtoList;
+        state.comments = res.data?._embedded?.commentDtoList || [];
         state.comments.forEach((item) => {
           item.time = moment(item.time).fromNow();
         });
@@ -149,8 +150,18 @@ const store         = createStore({
       });
     },
     updateConfig(state, id) {
-      return axios.get('/v1/global/config').then(res => {
-        state.config = Object.assign({}, res.data)
+      return axios.get('/v1/global/config/frontend-user').then(res => {
+        state.config = Object.assign({}, defaultConfig)
+        Object(res.data)?.keys?.forEach(item => {
+          if (typeof (res.data[item]) === 'object')
+            Object(res.data[item])?.keys?.forEach(jtem => {
+              state.config[item][jtem] = res.data[item][jtem]
+            })
+          else {
+            if (res.data[item])
+              state.config[item] = res.data[item]
+          }
+        })
       }).finally(() => {
         document.title                      = state.config.title
         document.getElementById('qwq').href = state.config.favicon

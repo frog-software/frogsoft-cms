@@ -97,6 +97,7 @@ import 'md-editor-v3/lib/style.css';
             </template>
           </a-card-meta>
           <a-button
+              v-if="store.getters.loginStatus"
               :loading="btnLikeLoading"
               type="primary"
               @click="btnLikeClick"
@@ -189,16 +190,15 @@ export default {
     btnLikeClick() {
       this.btnLikeLoading = true;
       if (this.me.liked) {
-        axios.delete(`/v1/articles/${this.id}/like`).finally(() => {
+        axios.delete(`/v1/articles/${this.id}/like`).then(() => {
           this.me.liked = false;
           setTimeout(() => {
             this.btnLikeLoading = false;
           }, 500);
         });
       } else {
-        axios.post(`/v1/articles/${this.id}/like`).finally(() => {
+        axios.post(`/v1/articles/${this.id}/like`).then(() => {
           this.me.liked = true;
-          // this.btnLikeLoading = false
           setTimeout(() => {
             this.btnLikeLoading = false;
           }, 500);

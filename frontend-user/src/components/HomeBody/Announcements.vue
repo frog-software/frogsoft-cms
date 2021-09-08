@@ -24,7 +24,8 @@
 </template>
 
 <script>
-import axios from 'axios';
+import axios     from 'axios';
+import {message} from "ant-design-vue";
 
 export default {
   name: 'Announcements',
@@ -35,7 +36,11 @@ export default {
   },
   created() {
     axios.get('/v1/home/announcements').then((res) => {
-      this.hotArticles = res.data._embedded.articleDtoList;
+      this.hotArticles = res.data?._embedded?.articleDtoList;
+    }).catch((err) => {
+      if (err.response.status === 404) {
+        message.destroy()
+      }
     });
   },
 };
