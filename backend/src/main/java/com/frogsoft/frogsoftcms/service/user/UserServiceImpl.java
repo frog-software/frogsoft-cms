@@ -187,28 +187,28 @@ public class UserServiceImpl implements UserService {
   @Override
   public PagedModel<EntityModel<HistoryDto>> getUserHistory(String username, Pageable pageable) {
     User user = userRepository.findByUsername(username);
-    Page<HistoryDto> historyDtos = historyRepository.findAllByUser(user,pageable).map(
+    Page<HistoryDto> historyDtos = historyRepository.findAllByUser(user, pageable).map(
         historyMapper::toHistoryDto
     );
-    return historyDtoPagedResourcesAssembler.toModel(historyDtos,historyModelAssembler);
+    return historyDtoPagedResourcesAssembler.toModel(historyDtos, historyModelAssembler);
   }
 
   @Override
-  public PagedModel<EntityModel<ArticleDto>> getUserFavor(String username, Pageable pageable){
+  public PagedModel<EntityModel<ArticleDto>> getUserFavor(String username, Pageable pageable) {
     User user = userRepository.findByUsername(username);
-    Page<ArticleDto> articleDtos = articleRepository.findByAuthorASCAdmin(user,"id",pageable).map(
+    Page<ArticleDto> articleDtos = articleRepository.findByAuthorASCAdmin(user, "id", pageable).map(
         articleMapper::toArticleDto
     );
-    return articleDtoPagedResourcesAssembler.toModel(articleDtos,articleModelAssembler);
+    return articleDtoPagedResourcesAssembler.toModel(articleDtos, articleModelAssembler);
   }
 
   @Override
-  public PagedModel<EntityModel<CommentDto>> getUserComment(String username, Pageable pageable){
+  public PagedModel<EntityModel<CommentDto>> getUserComment(String username, Pageable pageable) {
     User user = userRepository.findByUsername(username);
-    Page<CommentDto> commentDtos = commentRepository.findAllByAuthor(user,pageable).map(
+    Page<CommentDto> commentDtos = commentRepository.findAllByAuthor(user, pageable).map(
         commentMapper::toCommentDto
     );
 
-    return commentDtoPagedResourcesAssembler.toModel(commentDtos,commentModelAssembler);
+    return commentDtoPagedResourcesAssembler.toModel(commentDtos, commentModelAssembler);
   }
 }

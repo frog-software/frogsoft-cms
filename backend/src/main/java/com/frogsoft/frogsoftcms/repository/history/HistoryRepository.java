@@ -11,5 +11,5 @@ public interface HistoryRepository extends JpaRepository<History, Long> {
 
   List<History> findAllByUser(User user);
 
-  Page<History> findAllByUser(User user,Pageable pageable);
+  Page<History> findAllByUser(User user, Pageable pageable);
 }
