@@ -4,6 +4,7 @@ package com.frogsoft.frogsoftcms.model.commment;
 import com.frogsoft.frogsoftcms.model.article.Article;
 import com.frogsoft.frogsoftcms.model.user.User;
 import java.time.LocalDateTime;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -15,6 +16,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Getter
 @Setter
@@ -32,8 +35,8 @@ public class Comment {
   @JoinColumn(referencedColumnName = "id")
   private User author;
 
-  @ManyToOne
-  @JoinColumn(referencedColumnName = "id")
+  @ManyToOne(cascade = CascadeType.ALL)
+  @OnDelete(action = OnDeleteAction.CASCADE)
   private Article article;
 
   private Status status;
