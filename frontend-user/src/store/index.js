@@ -115,7 +115,7 @@ const store         = createStore({
     userLogout(state) {
       localStorage.removeItem('username');
       localStorage.removeItem('token');
-      state.user             = Object.create(defaultUser);
+      state.user             = {...defaultUser}
       state.publish_articles = [];
       state.like_articles    = [];
       state.drawerVisibility = false;
@@ -147,7 +147,7 @@ const store         = createStore({
       });
     },
     updateConfig(state, id) {
-      return axios.get('/v1/global/config/frontend-user').then(res => {
+      return axios.get('/v1/global/config').then(res => {
         state.config = Object.assign({}, res.data)
       }).finally(() => {
         document.title                      = state.config.title

@@ -1,3 +1,5 @@
+<script setup>
+import store from "../../store";</script>
 <template>
   <div class="login">
     <a-row
@@ -8,7 +10,7 @@
       <a-col>
         <img
             :width="300"
-            src="../../assets/logo.png"
+            :src="store.getters.config.logo"
         >
       </a-col>
     </a-row>
@@ -20,16 +22,16 @@
     >
       <a-col>
         <h2 style="color:rgb(23, 7, 66)">
-          莆仙方言在线工具
+          {{ store.getters.config.title }}
         </h2>
       </a-col>
     </a-row>
     <a-row
-        justify="start"
+        justify="center"
         type="flex"
     >
       <a-col>
-        <h3 style="padding-left:350px">
+        <h3>
           用户名
         </h3>
       </a-col>
@@ -39,7 +41,7 @@
         style="padding-bottom:10px"
         type="flex"
     >
-      <a-col span="6">
+      <a-col span="10">
         <a-input
             v-model:value="username"
             :max-length="50"
@@ -48,11 +50,11 @@
       </a-col>
     </a-row>
     <a-row
-        justify="start"
+        justify="center"
         type="flex"
     >
       <a-col>
-        <h3 style="padding-left:350px">
+        <h3>
           密码
         </h3>
       </a-col>
@@ -62,7 +64,7 @@
         style="padding-bottom:10px"
         type="flex"
     >
-      <a-col span="6">
+      <a-col span="10">
         <a-input-password
             v-model:value="password"
             placeholder="输入密码"
@@ -75,7 +77,7 @@
         style="padding-bottom:10px"
         type="flex"
     >
-      <a-col span="6">
+      <a-col span="10">
         <a-input-password
             v-model:value="repeatedPassword"
             placeholder="请再次输入"
@@ -84,11 +86,11 @@
       </a-col>
     </a-row>
     <a-row
-        justify="start"
+        justify="center"
         type="flex"
     >
       <a-col>
-        <h3 style="padding-left:350px">
+        <h3>
           邮箱验证
         </h3>
       </a-col>
@@ -98,26 +100,17 @@
         style="padding-bottom:10px"
         type="flex"
     >
-      <a-col span="4">
+      <a-col span="10">
         <a-input
             v-model:value="email"
             :max-length="50"
             placeholder="输入邮箱"
         />
       </a-col>
-      <a-col span="2">
-        <a-button
-            shape="round"
-            type="primary"
-            :disabled="!email"
-            :loading="btnCodeLoading"
-            @click="sendCode(email)"
-        >
-          发送验证码
-        </a-button>
-      </a-col>
     </a-row>
     <a-row
+
+        :gutter="8"
         justify="center"
         style="padding-bottom:10px"
         type="flex"
@@ -129,19 +122,32 @@
             size="default"
         />
       </a-col>
+
+      <a-col span="4">
+        <a-button
+            type="primary"
+            :disabled="!email"
+            :loading="btnCodeLoading"
+            @click="sendCode(email)"
+            style="width: 100%"
+        >
+          发送验证码
+        </a-button>
+      </a-col>
     </a-row>
     <a-row
         align="middle"
         justify="center"
         type="flex"
+        style="padding-bottom: 8px;padding-top: 16px"
     >
       <a-col span="2">
         <a-button
-            shape="round"
             type="primary"
             :loading="btnRegisterLoading"
             :disabled="!(username&&password&&email&&code)"
             @click="finishRegister"
+            style="width: 100%"
         >
           注册
         </a-button>
@@ -166,7 +172,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import axios     from 'axios';
 import {message} from 'ant-design-vue';
 
 export default {
@@ -189,7 +195,7 @@ export default {
      */
     sendCode(email) {
       this.btnCodeLoading = true;
-      axios.post('/v1/website/email', {email}).then(
+      axios.post('/v1/global/email', null, {params: {email}}).then(
           () => {
             message.success(`验证码已成功发送至${email}`);
           },
@@ -213,27 +219,6 @@ export default {
         }).then(() => {
           message.success('注册成功！');
           this.$router.push({name: 'Login'});
-        }).catch((err) => {
-          switch (err.response.status) {
-            case 401: {
-              message.destroy();
-              message.error('验证码错误！');
-              break;
-            }
-            case 409: {
-              message.destroy();
-              message.error('该用户名已经被注册！');
-              break;
-            }
-            case 500: {
-              message.destroy();
-              message.error(err.response.data.msg);
-              break;
-            }
-            default: {
-              message.error('不应该出现这句话');
-            }
-          }
         });
       }
       this.btnRegisterLoading = false;

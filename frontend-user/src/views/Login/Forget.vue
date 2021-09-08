@@ -54,8 +54,8 @@
 
       <div v-if="current ===2">
         <a-result
-          status="success"
-          title="您已经成功重置密码！"
+            status="success"
+            title="您已经成功重置密码！"
         >
           <template #extra>
             <a-button
@@ -97,7 +97,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import axios     from 'axios';
 import {message} from 'ant-design-vue';
 
 export default {
@@ -165,20 +165,18 @@ export default {
     /**
      * 根据输入的用户名获取邮箱地址存入email中
      * 并向邮箱发送验证码
+     * TODO 等待后端更新这个接口
      */
     sendCode() {
       let result = 0;
-      axios.get('/v1/users', {
-        username: this.username,
+      axios.post(`/v1/auth/forget`, {}, {
+        params: {
+          username: this.username
+        }
       }).then(
           (res) => {
-            if (res.data.users.length === 0) {
-              message.error('用户不存在');
-            } else {
-              this.email = res.data.users[0].email;
-              axios.post('/v1/website/email', {email: this.email}).then();
-              result = 1;
-            }
+            this.email = res.data.email
+            result     = 1
           },
       );
       return result;
@@ -188,13 +186,12 @@ export default {
      */
     resetPassword() {
       let result = 1;
-      axios.put('/v1/login/forget', {
+      axios.put('/v1/auth/forget', {
         username: this.username,
         email: this.email,
-        code: this.code,
-        password: this.password,
-      }).then().catch((err) => {
-        message.error(err.toString());
+        varyficationcode: this.code,
+        newpassword: this.password,
+      }).catch((err) => {
         result = 0;
       });
       return result;
