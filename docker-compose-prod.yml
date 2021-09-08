@@ -23,8 +23,6 @@ services:
       - "traefik.http.routers.traefik.entrypoints=web"
       # - "traefik.http.routers.traefik.tls=true"
       - "traefik.http.routers.traefik.service=api@internal" # points to dashboard
-      - "traefik.http.routers.traefik.middlewares=auth" # enable password auth
-      - "traefik.http.middlewares.auth.basicauth.users=root:$$apr1$$qxlAutEf$$ztoeod7s4TgWQB8I1NAfW/"
       - "traefik.http.routers.traefik.middlewares=traefik-compress"
       - "traefik.http.middlewares.traefik-compress.compress=true"
 
