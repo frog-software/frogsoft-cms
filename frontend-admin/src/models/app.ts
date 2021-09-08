@@ -8,7 +8,7 @@ interface State {
 export const app = createModel({
   state: {
     configuration: {
-      isBackgroundEnabled: true,
+      isBackgroundDisabled: false,
     },
   } as State,
   reducers: {

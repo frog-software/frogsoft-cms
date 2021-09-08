@@ -26,7 +26,7 @@ function App() {
 
   useEffect(() => {
     dispatch.setConfiguration({
-      isBackgroundEnabled: !!localStorage.getItem('isBackgroundEnabled'),
+      isBackgroundDisabled: !!localStorage.getItem('isBackgroundDisabled'),
     });
 
     if (!localStorage.getItem('token')) {
@@ -51,7 +51,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <ConfigProvider locale={zhCN}>
         <div
-          className={configuration.isBackgroundEnabled ? 'gradient-background' : undefined}
+          className={configuration.isBackgroundDisabled ? undefined : 'gradient-background'}
           style={{
             width: '100vw',
             height: '100vh',

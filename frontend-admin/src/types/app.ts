@@ -1,3 +1,3 @@
 export interface Configuration {
-  isBackgroundEnabled?: boolean
+  isBackgroundDisabled?: boolean
 }
