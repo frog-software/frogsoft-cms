@@ -1,4 +1,5 @@
 package com.frogsoft.frogsoftcms.model.article;
+
 import com.frogsoft.frogsoftcms.model.user.User;
 import java.time.LocalDateTime;
 import java.util.List;
