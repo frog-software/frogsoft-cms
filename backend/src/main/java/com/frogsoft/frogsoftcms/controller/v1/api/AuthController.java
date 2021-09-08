@@ -3,6 +3,7 @@ package com.frogsoft.frogsoftcms.controller.v1.api;
 import com.frogsoft.frogsoftcms.controller.v1.request.auth.AuthRequest;
 import com.frogsoft.frogsoftcms.controller.v1.request.auth.ResetRequest;
 import com.frogsoft.frogsoftcms.exception.basic.unauthorized.UnauthorizedException;
+import com.frogsoft.frogsoftcms.model.user.User;
 import com.frogsoft.frogsoftcms.security.jwt.JwtTokenProvider;
 import com.frogsoft.frogsoftcms.service.auth.AuthService;
 import com.frogsoft.frogsoftcms.service.mail.MailService;
@@ -54,8 +55,9 @@ public class AuthController {
   }
 
   @PostMapping("/forget")
-  public ResponseEntity<?> getCode(@RequestParam String email) {
-    mailService.sendCode(email);
+  public ResponseEntity<?> getCode(@RequestParam String username) {
+    User user = authService.findByUsername(username);
+    mailService.sendCode(user.getEmail());
     return ResponseEntity.noContent().build();
   }
 
