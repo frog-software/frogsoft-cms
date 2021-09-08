@@ -19,9 +19,9 @@ import { Article }                              from 'types/article';
 const ARTICLE_V1_URL = '/v1/articles';
 
 export const getArticleList = (queryContext: QueryFunctionContext<any, any>) => {
-  const [, page, size] = queryContext.queryKey;
+  const [, page, size, search] = queryContext.queryKey;
   return new Promise<SimplifiedPagedModel<Article>>((resolve, reject) => {
-    http.get<JavaPagedModel<Article>>(ARTICLE_V1_URL, { page, size })
+    http.get<JavaPagedModel<Article>>(ARTICLE_V1_URL, { page, size, search })
       .then((res) => {
         const simplifiedModel = pagedModelSimplifier(res);
         resolve(simplifiedModel);
