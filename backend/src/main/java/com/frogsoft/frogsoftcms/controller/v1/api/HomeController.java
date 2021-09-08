@@ -32,7 +32,7 @@ public class HomeController {
   @GetMapping("/daily")
   public ResponseEntity<?> getDailyArticle() {
 
-    EntityModel<ArticleDto> dailyArticleDto  = homeService.getDailyArticle();
+    EntityModel<ArticleDto> dailyArticleDto = homeService.getDailyArticle();
     return ResponseEntity.status(200).body(dailyArticleDto);
 
   }
@@ -44,11 +44,10 @@ public class HomeController {
     if (!authenticatedUser.getRoles().contains("ROLE_ADMIN")) {
       throw new ForbiddenException("需要管理员权限");
     }
-    if(dailyArticleSetRequest.getArticleId() == 0L){
+    if (dailyArticleSetRequest.getArticleId() == 0L) {
       homeService.changeDailyArticle(dailyArticleSetRequest, authenticatedUser);
       return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ResponseEntity.EMPTY.getBody());
-    }
-    else{
+    } else {
       return ResponseEntity.status(201)
           .body(homeService.changeDailyArticle(dailyArticleSetRequest, authenticatedUser));
     }

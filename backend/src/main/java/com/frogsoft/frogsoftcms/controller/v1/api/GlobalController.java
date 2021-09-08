@@ -39,9 +39,10 @@ public class GlobalController {
   }
 
   @GetMapping("/config/frontend-user")
-  public ResponseEntity<?> getFrontendConfig(){
+  public ResponseEntity<?> getFrontendConfig() {
     return ResponseEntity.ok().body(configService.getFrontConfig());
   }
+
   @GetMapping("/config")
   public ResponseEntity<EntityModel<ConfigDto>> getConfig(
       @AuthenticationPrincipal User authenticatedUser) {
