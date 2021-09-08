@@ -147,33 +147,122 @@ public class ArticleServiceImpl implements ArticleService {
   }
 
   @Override
-  public PagedModel<EntityModel<ArticleDto>> findAll(String sortBy, String order,
+  public PagedModel<EntityModel<ArticleDto>> findAll(String role, String sortBy, String order,
       Pageable pageable) {
-    if (order.equals("ASC")) {
-      Page<ArticleDto> articles = articleRepository.findAllASC(Status.NORMAL, sortBy, pageable)
-          .map(articleMapper::toArticleDto);
-      return pagedResourcesAssembler.toModel(articles, articleModelAssembler);
+    if (role.equals("admin")) {
+      if (order.equals("ASC")) {
+        Page<ArticleDto> articles = articleRepository.findAllASCAdmin(sortBy, pageable)
+            .map(articleMapper::toArticleDto);
+        return pagedResourcesAssembler.toModel(articles, articleModelAssembler);
+      } else {
+        Page<ArticleDto> articles = articleRepository.findAllDESCAdmin(sortBy, pageable)
+            .map(articleMapper::toArticleDto);
+        return pagedResourcesAssembler.toModel(articles, articleModelAssembler);
+      }
     } else {
-      Page<ArticleDto> articles = articleRepository.findAllDESC(Status.NORMAL, sortBy, pageable)
-          .map(articleMapper::toArticleDto);
-      return pagedResourcesAssembler.toModel(articles, articleModelAssembler);
+      if (order.equals("ASC")) {
+        Page<ArticleDto> articles = articleRepository.findAllASC(Status.NORMAL, sortBy, pageable)
+            .map(articleMapper::toArticleDto);
+        return pagedResourcesAssembler.toModel(articles, articleModelAssembler);
+      } else {
+        Page<ArticleDto> articles = articleRepository.findAllDESC(Status.NORMAL, sortBy, pageable)
+            .map(articleMapper::toArticleDto);
+        return pagedResourcesAssembler.toModel(articles, articleModelAssembler);
+      }
     }
 
   }
 
   @Override
-  public PagedModel<EntityModel<ArticleDto>> findBySearch(String search, String sortBy,
+  public PagedModel<EntityModel<ArticleDto>> findBySearch(String search, String role, String sortBy,
       String order, Pageable pageable) {
-    if (order.equals("ASC")) {
-      Page<ArticleDto> articles = articleRepository
-          .findBySearchASC(search, Status.NORMAL, sortBy, pageable)
-          .map(articleMapper::toArticleDto);
-      return pagedResourcesAssembler.toModel(articles, articleModelAssembler);
+    if (role.equals("admin")) {
+      if (order.equals("ASC")) {
+        Page<ArticleDto> articles = articleRepository
+            .findBySearchASCAdmin(search, sortBy, pageable)
+            .map(articleMapper::toArticleDto);
+        return pagedResourcesAssembler.toModel(articles, articleModelAssembler);
+      } else {
+        Page<ArticleDto> articles = articleRepository
+            .findBySearchDESCAdmin(search, sortBy, pageable)
+            .map(articleMapper::toArticleDto);
+        return pagedResourcesAssembler.toModel(articles, articleModelAssembler);
+      }
+
     } else {
-      Page<ArticleDto> articles = articleRepository
-          .findBySearchDESC(search, Status.NORMAL, sortBy, pageable)
-          .map(articleMapper::toArticleDto);
-      return pagedResourcesAssembler.toModel(articles, articleModelAssembler);
+      if (order.equals("ASC")) {
+        Page<ArticleDto> articles = articleRepository
+            .findBySearchASC(search, Status.NORMAL, sortBy, pageable)
+            .map(articleMapper::toArticleDto);
+        return pagedResourcesAssembler.toModel(articles, articleModelAssembler);
+      } else {
+        Page<ArticleDto> articles = articleRepository
+            .findBySearchDESC(search, Status.NORMAL, sortBy, pageable)
+            .map(articleMapper::toArticleDto);
+        return pagedResourcesAssembler.toModel(articles, articleModelAssembler);
+      }
     }
+  }
+
+  public PagedModel<?> findByAuthor(String authorName, String role, String sortBy, String order,
+      Pageable pageable) {
+    User author = userRepository.findByUsername(authorName);
+    if (role.equals("admin")) {
+      if (order.equals("ASC")) {
+        Page<ArticleDto> articles = articleRepository.findByAuthorASCAdmin(author, sortBy, pageable)
+            .map(articleMapper::toArticleDto);
+        return pagedResourcesAssembler.toModel(articles, articleModelAssembler);
+      } else {
+        Page<ArticleDto> articles = articleRepository
+            .findByAuthorDESCAdmin(author, sortBy, pageable)
+            .map(articleMapper::toArticleDto);
+        return pagedResourcesAssembler.toModel(articles, articleModelAssembler);
+      }
+    } else {
+      if (order.equals("ASC")) {
+
+        Page<ArticleDto> articles = articleRepository
+            .findByAuthorASC(author, Status.NORMAL, sortBy, pageable)
+            .map(articleMapper::toArticleDto);
+        return pagedResourcesAssembler.toModel(articles, articleModelAssembler);
+      } else {
+        Page<ArticleDto> articles = articleRepository
+            .findByAuthorDESC(author, Status.NORMAL, sortBy, pageable)
+            .map(articleMapper::toArticleDto);
+        return pagedResourcesAssembler.toModel(articles, articleModelAssembler);
+      }
+    }
+  }
+
+  public PagedModel<?> findBySearchAndAuthor(String search, String authorName, String role,
+      String sortBy, String order, Pageable pageable) {
+    User author = userRepository.findByUsername(authorName);
+    if (role.equals("admin")) {
+      if (order.equals("ASC")) {
+        Page<ArticleDto> articles = articleRepository
+            .findBySearchAndAuthorASCAdmin(search, author, sortBy, pageable)
+            .map(articleMapper::toArticleDto);
+        return pagedResourcesAssembler.toModel(articles, articleModelAssembler);
+      } else {
+        Page<ArticleDto> articles = articleRepository
+            .findBySearchAndAuthorDESCAdmin(search, author, sortBy, pageable)
+            .map(articleMapper::toArticleDto);
+        return pagedResourcesAssembler.toModel(articles, articleModelAssembler);
+      }
+
+    } else {
+      if (order.equals("ASC")) {
+        Page<ArticleDto> articles = articleRepository
+            .findBySearchAndAuthorASC(search, author, Status.NORMAL, sortBy, pageable)
+            .map(articleMapper::toArticleDto);
+        return pagedResourcesAssembler.toModel(articles, articleModelAssembler);
+      } else {
+        Page<ArticleDto> articles = articleRepository
+            .findBySearchAndAuthorDESC(search, author, Status.NORMAL, sortBy, pageable)
+            .map(articleMapper::toArticleDto);
+        return pagedResourcesAssembler.toModel(articles, articleModelAssembler);
+      }
+    }
+
   }
 }
