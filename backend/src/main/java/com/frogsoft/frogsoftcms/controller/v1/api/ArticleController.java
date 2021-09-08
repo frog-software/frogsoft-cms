@@ -109,7 +109,8 @@ public class ArticleController {
   public ResponseEntity<?> editArticle(@PathVariable(value = "id") Long id,
       @RequestBody ArticleRequest articleRequest,
       @AuthenticationPrincipal User authenticatedUser) {
-    return ResponseEntity.status(201).body(articleService.editArticle(id, authenticatedUser, articleRequest));
+    return ResponseEntity.status(201)
+        .body(articleService.editArticle(id, authenticatedUser, articleRequest));
   }
 
   @DeleteMapping("/{id}")

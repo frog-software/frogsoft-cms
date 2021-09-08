@@ -10,7 +10,8 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Component
 public class HistoryMapper {
-  public HistoryDto toHistoryDto(History history){
+
+  public HistoryDto toHistoryDto(History history) {
     return new HistoryDto()
         .setId(history.getId())
         .setTime(history.getTime())
@@ -18,7 +19,7 @@ public class HistoryMapper {
         .setArticleId(history.getArticle().getId());
   }
 
-  public List<HistoryDto> toHistoryDto(List<History> histories){
+  public List<HistoryDto> toHistoryDto(List<History> histories) {
     List<HistoryDto> historyDtoList = new LinkedList<>();
     for (History history : histories) {
       historyDtoList.add(new HistoryDto()
