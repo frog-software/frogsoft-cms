@@ -90,6 +90,7 @@ public class HomeServiceImpl implements HomeService {
     // 获取每日推荐文章的id
     String dailyPickup = configRepository.findByConfigKey("DailyPickup").getConfigValue();
     Long articlePickupId = Long.parseLong(dailyPickup);
+
     Optional<Article> articlePickup = articleRepository.findById(articlePickupId);
 
     if (articlePickup.isEmpty()) {
@@ -112,6 +113,13 @@ public class HomeServiceImpl implements HomeService {
 
     Long articlePickupId = dailyArticleSetRequest.getArticleId();
     Config dailyPickupConfig = configRepository.findByConfigKey("DailyPickup");
+
+    if(articlePickupId == 0L){
+      configRepository.save(
+          dailyPickupConfig.setConfigValue(articlePickupId.toString())
+      );
+      return null;
+    }
 
     Optional<Article> articlePickupNew = articleRepository.findById(articlePickupId);
     if (articlePickupNew.isEmpty()) {
