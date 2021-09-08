@@ -57,6 +57,16 @@ public class HomeServiceImpl implements HomeService {
    */
   @Override
   public CollectionModel<EntityModel<ArticleDto>> getRecommendations(User authenticatedUser) {
+    return getRecommendations();
+  }
+
+  /**
+   * getRecommendations 返回随机推荐文章列表的CollectionModel
+   *
+   * @return CollectionModel<EntityModel < ArticleDto>>
+   */
+  @Override
+  public CollectionModel<EntityModel<ArticleDto>> getRecommendations() {
     List<ArticleDto> articles = getAllArticleDtos();
     List<ArticleDto> retArticles = new ArrayList<>();
     // 随机获取所有文章列表的子集
@@ -92,8 +102,8 @@ public class HomeServiceImpl implements HomeService {
   /**
    * changeDailyArticle 设置每日推荐文章（仅限管理员）
    *
-   * @param articleId         要设置的文章id
-   * @param authenticatedUser 设置人
+   * @param dailyArticleSetRequest 要设置的文章RequestDto
+   * @param authenticatedUser      设置人
    * @return EntityModel<ArticleDto> 设置好的推荐文章的数据模型
    */
   @Override

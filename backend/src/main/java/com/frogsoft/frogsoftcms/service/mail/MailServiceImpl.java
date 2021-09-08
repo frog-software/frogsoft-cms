@@ -30,11 +30,17 @@ public class MailServiceImpl implements MailService {
 
   private static JavaMailSenderImpl createMailSender(String host, int port, String username,
       String password) {
+    Properties properties = new Properties();
+    properties.setProperty("mail.smtp.auth", "true");//开启认证
+    properties.setProperty("mail.smtp.socketFactory.port", Integer.toString(465));//设置ssl端口
+    properties.setProperty("mail.smtp.socketFactory.fallback", "false");
+    properties.setProperty("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
     JavaMailSenderImpl sender = new JavaMailSenderImpl();
     sender.setHost(host);
     sender.setPort(port);
     sender.setUsername(username);
     sender.setPassword(password);
+    sender.setJavaMailProperties(properties);
     return sender;
   }
 

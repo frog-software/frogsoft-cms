@@ -2,6 +2,7 @@ package com.frogsoft.frogsoftcms.service.article;
 
 import com.frogsoft.frogsoftcms.controller.v1.request.article.ArticleRequest;
 import com.frogsoft.frogsoftcms.dto.model.article.ArticleDto;
+import com.frogsoft.frogsoftcms.dto.model.article.ArticleMeDto;
 import com.frogsoft.frogsoftcms.model.user.User;
 import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.EntityModel;
@@ -11,9 +12,10 @@ public interface ArticleService {
 
   EntityModel<ArticleDto> saveArticles(ArticleRequest articleRequest, User authenticatedUser);
 
-  EntityModel<ArticleDto> getOneArticle(Long id, String role, Long userId);
+  EntityModel<ArticleMeDto> getOneArticle(Long id, String role, Long userId);
 
-  EntityModel<ArticleDto> editArticle(Long id, User authenticateUser, ArticleRequest articleRequest);
+  EntityModel<ArticleDto> editArticle(Long id, User authenticateUser,
+      ArticleRequest articleRequest);
 
   void deleteArticle(Long id, User authenticateUser);
 
