@@ -1,13 +1,9 @@
-import React from 'react';
+import React                       from 'react';
 import {
   Avatar, Col, Menu, Row,
 } from 'antd';
 
 function UserNavBar() {
-  // const { profile, isMini, notifications } = useSelector((state: RootState) => state.app)
-  // const dispatch = useDispatch<Dispatch>().app
-  // const [isNotificationCenterTooltipVisible, setNotificationCenterTooltipVisible] = useState<boolean>(false)
-
   return (
     <Row
       justify="end"
@@ -45,7 +41,7 @@ function UserNavBar() {
               style={{ textAlign: 'center' }}
               onClick={() => {
                 window.localStorage.removeItem('token');
-                // window.location.href = '登录页'
+                window.location.href = '/auth/login';
               }}
             >
               退出登录

@@ -10,18 +10,17 @@
 //
 //--------------------------------------------------------------------------
 
-import React, { FC, useEffect, useState } from 'react';
-import { Article }                        from 'types/article';
-import Block                              from 'components/Block';
+import React, { FC, useEffect, useState }                                   from 'react';
+import { Article }                                                          from 'types/article';
+import Block                                                                from 'components/Block';
 import {
-  Badge,
-  Button, Col, notification, Popconfirm, Row, Space, Table,
-}                                         from 'antd';
-import { useQuery }                       from 'react-query';
+  Badge, Button, Col, notification, Popconfirm, Row, Space, Table,
+} from 'antd';
+import { useQuery }                                                         from 'react-query';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { useHistory }                     from 'react-router';
-import { getArticleList, deleteArticle }  from 'services/article';
-import Search                             from 'antd/es/input/Search';
+import { useHistory }                                                       from 'react-router';
+import { deleteArticle, getArticleList }                                    from 'services/article';
+import Search                                                               from 'antd/es/input/Search';
 
 const ArticleList: FC = () => {
   const [articleList, setArticleList]     = useState<Article[]>();
@@ -88,6 +87,7 @@ const ArticleList: FC = () => {
               history.push(`/articles/${article.id}`);
             }}
             type="text"
+            style={{ color: 'var(--primary-color)' }}
           >
             查看详情
           </Button>

@@ -14,11 +14,11 @@ service.interceptors.request.use((conf) => {
 }, (err) => Promise.reject(err));
 
 service.interceptors.response.use((res) => res,
-  (err) => {
-    switch (err?.response?.status) {
+  ({ response }) => {
+    switch (response?.status) {
       case 401:
-        message.error('你没有权限！');
-        // to login page
+        message.error('你没有权限访问该页面，请登录');
+        window.location.href = '/auth/login';
         break;
       case 403:
         message.error('禁止访问！');
@@ -33,10 +33,10 @@ service.interceptors.response.use((res) => res,
         // to login page
         break;
       default:
-        message.error('未知错误');
+        message.error(response?.data?.message);
         break;
     }
-    return Promise.reject(err);
+    return Promise.reject(response?.data?.message);
   });
 
 export function get<T>(url: string, data: object = {}) {

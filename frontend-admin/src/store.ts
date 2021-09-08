@@ -1,6 +1,6 @@
 import { init, RematchDispatch, RematchRootState } from '@rematch/core';
-import { QueryClient } from 'react-query';
-import * as models from './models';
+import { QueryClient }                             from 'react-query';
+import * as models                                 from './models';
 
 const store = init<typeof models>({ models });
 

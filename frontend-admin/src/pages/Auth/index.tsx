@@ -1,27 +1,24 @@
 //+-------------------------------------------------------------------------
 //
-//  文章
+//  权限认证
 //
 //  File:       index.tsx
 //
-//  Directory:  src/pages/Article
+//  Directory:  src/pages/Auth
 //
-//  History:    9月-03-2021   QQK  Created
+//  History:    Sep-08-2021   Charlie Chiang  Created
 //
 //--------------------------------------------------------------------------
-
 import React, { FC, Suspense } from 'react';
 import Preview                 from 'components/Preview';
 import { Route }               from 'react-router-dom';
 
-const ArticleList = React.lazy(() => import('./ArticleList'));
-const ArticleInfo = React.lazy(() => import('./ArticleInfo'));
+const Login = React.lazy(() => import('./Login'));
 
-const ArticlePage: FC = () => (
+const UserPage: FC = () => (
   <Suspense fallback={<Preview />}>
-    <Route exact path="/articles" component={ArticleList} />
-    <Route exact path="/articles/:id" component={ArticleInfo} />
+    <Route exact path="/auth/login" component={Login} />
   </Suspense>
 );
 
-export default ArticlePage;
+export default UserPage;

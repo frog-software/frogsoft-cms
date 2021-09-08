@@ -1,10 +1,10 @@
 import React, { FC, ReactNode, useCallback } from 'react';
-import { Breadcrumb, Tabs } from 'antd';
-import { BreadcrumbOption, TabOption } from 'types/antd';
-import { useHistory } from 'react-router';
+import { Breadcrumb, Tabs }                  from 'antd';
+import { BreadcrumbOption, TabOption }       from 'types/antd';
+import { useHistory }                        from 'react-router';
 import {
-  Block, Title, Description, Tab,
-} from './style';
+  Block, Description, Tab, Title,
+}   from './style';
 
 interface HeaderProps {
   title: ReactNode,
@@ -18,9 +18,9 @@ interface HeaderProps {
 const Header: FC<HeaderProps> = (props) => {
   const {
     title, description, breadcrumbs, tabs, selectTabKey, onTabClick,
-  } = props;
-  const history = useHistory();
-  const { TabPane } = Tabs;
+  }              = props;
+  const history        = useHistory();
+  const { TabPane }      = Tabs;
   const handleClickTab = useCallback((key) => {
     if (!tabs || !tabs.length) return;
     history.push(tabs.filter((item) => item.key === key)[0].link);

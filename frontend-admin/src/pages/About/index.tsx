@@ -11,7 +11,7 @@
 //--------------------------------------------------------------------------
 
 import React, { FC, useState } from 'react';
-import Block                 from 'components/Block';
+import Block                   from 'components/Block';
 
 const About: FC = () => {
   const [about, setAbout] = useState();

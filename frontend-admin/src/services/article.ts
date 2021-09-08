@@ -13,11 +13,8 @@
 import http                                     from 'utils/http';
 import { pagedModelSimplifier }                 from 'utils/common';
 import { JavaPagedModel, SimplifiedPagedModel } from 'types/common';
-import { User }                                 from 'types/user';
 import { QueryFunctionContext }                 from 'react-query';
-import { Article }        from 'types/article';
-import { Badge, message } from 'antd';
-import React              from 'react';
+import { Article }                              from 'types/article';
 
 const ARTICLE_V1_URL = '/v1/articles';
 

@@ -1,28 +1,27 @@
 import React, { Suspense, useEffect } from 'react';
-import { Route, useHistory } from 'react-router-dom';
-import { QueryClientProvider } from 'react-query';
-import { useDispatch, useSelector } from 'react-redux';
-import {
-  Col, ConfigProvider, Layout, Row,
-}                                   from 'antd';
-import zhCN                         from 'antd/lib/locale/zh_CN';
+import { Route, useHistory }          from 'react-router-dom';
+import { QueryClientProvider }        from 'react-query';
+import { useDispatch, useSelector }   from 'react-redux';
+import { Col, ConfigProvider, Row }   from 'antd';
+import zhCN                           from 'antd/lib/locale/zh_CN';
 import 'moment/dist/locale/zh-cn';
-import NavBar                       from 'components/NavBar';
-import Preview                      from 'components/Preview';
-import UserNavBar                   from 'components/UserNavBar';
-import { queryClient }              from './store';
+import NavBar                         from 'components/NavBar';
+import Preview                        from 'components/Preview';
+import UserNavBar                     from 'components/UserNavBar';
+import { queryClient }                from './store';
 import './customAntd.less';
 
-const Home = React.lazy(() => import('./pages/Home'));
-const UserPage = React.lazy(() => import('./pages/User'));
-const ArticlePage = React.lazy(() => import('./pages/Article'));
+const Home             = React.lazy(() => import('./pages/Home'));
+const UserPage         = React.lazy(() => import('./pages/User'));
+const ArticlePage      = React.lazy(() => import('./pages/Article'));
 const ConfiguationPage = React.lazy(() => import('./pages/Configuration'));
-const About = React.lazy(() => import('./pages/About'));
+const About            = React.lazy(() => import('./pages/About'));
+const Auth             = React.lazy(() => import('./pages/Auth'));
 
 function App() {
-  const history = useHistory();
+  const history                = useHistory();
   const { app: { configuration } } = useSelector((state: RootState) => state);
-  const dispatch = useDispatch<Dispatch>().app;
+  const dispatch               = useDispatch<Dispatch>().app;
 
   useEffect(() => {
     dispatch.setConfiguration({});
@@ -31,6 +30,14 @@ function App() {
   // 特殊路径跳转
   if (window.location.pathname === '/') {
     history.replace('/home');
+  }
+
+  if (window.location.pathname.startsWith('/auth')) {
+    return (
+      <Suspense fallback={<Preview />}>
+        <Auth />
+      </Suspense>
+    );
   }
 
   return (
@@ -50,6 +57,7 @@ function App() {
                   <Route path="/configuration" component={ConfiguationPage} />
                   <Route path="/articles" component={ArticlePage} />
                   <Route path="/about" component={About} />
+                  <Route path="/auth" component={Auth} />
                 </Suspense>
               ) : (
                 <Preview />
