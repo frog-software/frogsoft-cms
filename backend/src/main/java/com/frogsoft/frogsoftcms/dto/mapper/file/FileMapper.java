@@ -18,7 +18,7 @@ public class FileMapper {
         .setPublishDate(material.getPublishDate())
         .setShortName(material.getShortName())
         .setSize(material.getSize())
-        .setUrl(material.getUrl())
+        .setUri(material.getUri())
         .setUser(userMapper.toUserDto(material.getUser()))
         .setType(material.getType());
   }

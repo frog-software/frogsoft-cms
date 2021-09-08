@@ -77,6 +77,7 @@ public class UserServiceImpl implements UserService {
       User user1 = userRepository.save(new User()
           .setEmail(userRegisterRequest.getEmail())
           .setRoles(role)
+          .setAvatar("https://dummyimage.com/100x100")
           .setUsername(userRegisterRequest.getUsername())
           .setPassword(passwordEncoder.encode(userRegisterRequest.getPassword())));
       return userModelAssembler.toModel(userMapper.toUserDto(user1));
@@ -139,6 +140,7 @@ public class UserServiceImpl implements UserService {
       }
     }
     oldUser.setUsername(userRequest.getUsername());
+    oldUser.setAvatar(userRequest.getAvatar());
     User newUser1 = userRepository.save(oldUser);
     return userModelAssembler.toModel(userMapper.toUserDto(newUser1));
   }

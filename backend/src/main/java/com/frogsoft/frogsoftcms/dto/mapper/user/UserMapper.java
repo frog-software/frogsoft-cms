@@ -12,6 +12,7 @@ public class UserMapper {
     return new UserDto()
         .setEmail(user.getEmail())
         .setUsername(user.getUsername())
-        .setRoles(user.getRoles());
+        .setRoles(user.getRoles())
+        .setAvatar(user.getAvatar());
   }
 }

@@ -39,13 +39,14 @@ public class CommentMapper {
           .setArticle(articleMapper.toArticleDto(comment.getArticle()))
           .setAuthor(userMapper.toUserDto(comment.getAuthor()))
           .setId(comment.getId())
+          .setContent(comment.getContent())
+          .setParent(0L)
           .setLikes(comment.getLikes())
           .setStatus(comment.getStatus())
           .setPublishDateTime(comment.getPublishDate());
       if (comment.getParent() != null) {
         commentDto.setParent(comment.getParent().getId());
       }
-      commentDtoList.add(commentDto);
     }
     return commentDtoList;
   }
