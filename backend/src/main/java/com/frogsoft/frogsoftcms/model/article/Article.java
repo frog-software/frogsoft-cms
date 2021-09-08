@@ -25,8 +25,7 @@ import org.hibernate.annotations.OnDeleteAction;
 @Entity
 public class Article {
 
-  @ManyToOne(cascade = CascadeType.ALL)
-  @OnDelete(action = OnDeleteAction.CASCADE)
+  @ManyToOne
   @JoinColumn(referencedColumnName = "id")
   User author;
   @Id
