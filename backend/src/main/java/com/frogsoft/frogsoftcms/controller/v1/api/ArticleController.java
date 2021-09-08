@@ -37,30 +37,33 @@ public class ArticleController {
       @RequestParam(defaultValue = "10") int size,
       @RequestParam(defaultValue = "") String author) {
     String role;
+    Long userId;
     if (authenticatedUser == null) {
       role = "user";
+      userId = (long) -1;
     } else {
       if (authenticatedUser.getRoles().contains("ROLE_ADMIN")) {
         role = "admin";
       } else {
         role = "user";
       }
+      userId = authenticatedUser.getId();
     }
     if (search.equals("") && author.equals("")) {
       return ResponseEntity.ok()
-          .body(articleService.findAll(role, sortBy, order, PageRequest.of(page, size)));
+          .body(articleService.findAll(userId, role, sortBy, order, PageRequest.of(page, size)));
     } else if (search.equals("")) {
       return ResponseEntity.ok()
           .body(articleService
-              .findByAuthor(author, role, sortBy, order, PageRequest.of(page, size)));
+              .findByAuthor(userId, author, role, sortBy, order, PageRequest.of(page, size)));
     } else if (author.equals("")) {
       return ResponseEntity.ok()
           .body(articleService
-              .findBySearch(search, role, sortBy, order, PageRequest.of(page, size)));
+              .findBySearch(userId, search, role, sortBy, order, PageRequest.of(page, size)));
     } else {
       return ResponseEntity.ok()
           .body(articleService
-              .findBySearchAndAuthor(search, author, role, sortBy, order,
+              .findBySearchAndAuthor(userId, search, author, role, sortBy, order,
                   PageRequest.of(page, size)));
     }
   }
