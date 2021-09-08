@@ -1,6 +1,7 @@
 package com.frogsoft.frogsoftcms.service.home;
 
 import com.frogsoft.frogsoftcms.controller.v1.request.home.AnnouncementsSetRequest;
+import com.frogsoft.frogsoftcms.controller.v1.request.home.DailyArticleSetRequest;
 import com.frogsoft.frogsoftcms.dto.assembler.article.ArticleModelAssembler;
 import com.frogsoft.frogsoftcms.dto.mapper.article.ArticleMapper;
 import com.frogsoft.frogsoftcms.dto.model.article.ArticleDto;
@@ -96,8 +97,10 @@ public class HomeServiceImpl implements HomeService {
    * @return EntityModel<ArticleDto> 设置好的推荐文章的数据模型
    */
   @Override
-  public EntityModel<ArticleDto> changeDailyArticle(Integer articleId, User authenticatedUser) {
-    Long articlePickupId = articleId.longValue();
+  public EntityModel<ArticleDto> changeDailyArticle(
+      DailyArticleSetRequest dailyArticleSetRequest, User authenticatedUser) {
+
+    Long articlePickupId = dailyArticleSetRequest.getArticleId();
     Config dailyPickupConfig = configRepository.findByConfigKey("DailyPickup");
 
     Optional<Article> articlePickupNew = articleRepository.findById(articlePickupId);
@@ -106,7 +109,7 @@ public class HomeServiceImpl implements HomeService {
     }
 
     dailyPickupConfig = configRepository.save(
-        dailyPickupConfig.setConfigValue(articleId.toString())
+        dailyPickupConfig.setConfigValue(articlePickupId.toString())
     );
 
     return articleModelAssembler.toModel(articleMapper.toArticleDto(articlePickupNew.get()));
