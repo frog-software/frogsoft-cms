@@ -40,7 +40,7 @@ public class VerificationConfig {
     if (storedCode == null || !storedCode.getCode().equals(code)) {
       return null;
     }
-
+    storage.remove(email);
     return storedCode;
   }
 
