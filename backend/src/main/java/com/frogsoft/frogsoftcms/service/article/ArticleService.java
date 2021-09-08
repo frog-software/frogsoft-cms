@@ -27,16 +27,18 @@ public interface ArticleService {
 
   EntityModel<ArticleDto> deleteFavor(Long id, Long userId);
 
-  PagedModel<EntityModel<ArticleDto>> findAll(String role, String sortBy, String order,
+  PagedModel<EntityModel<ArticleDto>> findAll(Long userId, String role, String sortBy, String order,
       Pageable pageable);
 
-  PagedModel<EntityModel<ArticleDto>> findBySearch(String search, String role, String sortBy,
+  PagedModel<EntityModel<ArticleDto>> findBySearch(Long userId, String search, String role,
+      String sortBy,
       String order,
       Pageable pageable);
 
-  PagedModel<?> findByAuthor(String author, String role, String sortBy, String order,
+  PagedModel<?> findByAuthor(Long userId, String author, String role, String sortBy, String order,
       Pageable pageable);
 
-  PagedModel<?> findBySearchAndAuthor(String search, String author, String role, String sortBy,
+  PagedModel<?> findBySearchAndAuthor(Long userId, String search, String author, String role,
+      String sortBy,
       String order, Pageable pageable);
 }
