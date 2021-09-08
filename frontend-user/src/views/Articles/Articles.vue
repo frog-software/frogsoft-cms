@@ -31,7 +31,7 @@ export default {
   created() {
     this.spinning = true;
     axios.get('/v1/articles').then((res) => {
-      this.listData = res.data.articles;
+      this.listData = res.data._embedded.articleDtoList;
     }).finally(() => {
       this.spinning = false;
     });

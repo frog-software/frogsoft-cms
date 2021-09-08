@@ -140,7 +140,7 @@ const store         = createStore({
     updateComments(state, id) {
       state.commentsLoading = true;
       return axios.get(`/v1/articles/${id}/comments`).then((res) => {
-        state.comments = res.data.comments;
+        state.comments = res.data._embedded.commentDtoList;
         state.comments.forEach((item) => {
           item.time = moment(item.time).fromNow();
         });

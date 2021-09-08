@@ -1,7 +1,6 @@
 <script setup>
 import MdEditor from 'md-editor-v3';
-import 'md-editor-v3/lib/style.css';
-</script>
+import 'md-editor-v3/lib/style.css';</script>
 <template>
   <div
       v-show="isAuthor"
@@ -86,21 +85,47 @@ import 'md-editor-v3/lib/style.css';
         />
       </a-col>
     </a-row>
+    <a-row
+        :gutter="12"
+        align="middle"
+        justify="center"
+        style="padding-top:10px;padding-bottom:60px;"
+        type="flex"
+    >
+      <a-col span="3">
+        <h3> 文章状态</h3>
+      </a-col>
+      <a-col span="3">
 
+        <a-switch v-model:checked="switchChecked"/>
+      </a-col>
+      <a-col span="9">
+        <h3>{{ switchChecked ? '正常显示' : '暂时屏蔽' }}</h3>
+      </a-col>
+    </a-row>
     <!--文章内容-->
     <a-row
         align="middle"
         justify="center"
+        style="padding-top:10px;padding-bottom:60px;"
         type="flex"
     >
       <!--      TODO:图片上传-->
+      <!--      TODO:本地存储-->
       <MdEditor
           v-model="article.content"
           :toolbarsExclude="['htmlPreview', 'github']"
           editorClass="width:100%"
           style="width: 100%"
       />
+    </a-row>
 
+    <a-row
+        align="middle"
+        justify="center"
+        style="padding-top:10px;padding-bottom:10px;"
+        type="flex"
+    >
       <a-button
           :loading="btnArticleLoading"
           type="primary"
@@ -113,9 +138,9 @@ import 'md-editor-v3/lib/style.css';
 </template>
 
 <script>
-import axios from 'axios';
-
+import axios     from 'axios'
 import {message} from 'ant-design-vue';
+import store     from "../../store";
 
 export default {
   name: 'ArticleEdit',
@@ -134,11 +159,12 @@ export default {
         description: '',
         content: '',
         cover: 'http://dummyimage.com/400x300',
+        status: 'NORMAL'
       },
       buttonContent: '创建文章',
       btnArticleLoading: false,
       btnCoverLoading: false,
-      isAuthor: false,
+      isAuthor: false
     };
   },
   computed: {
@@ -149,12 +175,24 @@ export default {
       if (this.$route.name === 'ArticleCreate') return 0;
       return +this.$attrs.id;
     },
+    switchChecked: {
+      get() {
+        return this.article.status === "NORMAL"
+      },
+      set(value) {
+        if (value) {
+          this.article.status = "NORMAL"
+        } else {
+          this.article.status = "BLOCKED"
+        }
+      }
+    }
   },
 
   watch: {
     $router() {
       this.getArticleDetails();
-    },
+    }
   },
 
   created() {
@@ -171,26 +209,6 @@ export default {
       axios.post('/v1/articles', {...this.article}).then((res) => {
         message.success('恭喜你，创建成功！');
         this.$router.push({name: 'ArticleDetails', params: {id: res.data.id.toString()}});
-      }).catch((err) => {
-        message.destroy();
-        switch (err.response.status) {
-          case 401: {
-            message.error('登录状态无效！请重新登录！');
-            break;
-          }
-          case 400: {
-            message.error('请完成所有内容！');
-            break;
-          }
-          case 500: {
-            message.error('服务器错误！请联系管理员！');
-            message.error(`错误内容:${err.response.data.msg}`);
-            break;
-          }
-          default: {
-            message.error('不应该出现这个错误啊！');
-          }
-        }
       }).finally(() => {
         this.btnArticleLoading = false;
       });
@@ -202,26 +220,14 @@ export default {
     updateArticle() {
       this.btnArticleLoading = true;
       axios.put(`/v1/articles/${this.id}`, {
-        article: {
-          title: this.article.title,
-          description: this.article.description,
-          content: this.article.content,
-          cover: this.article.cover,
-        },
+        title: this.article.title,
+        description: this.article.description,
+        content: this.article.content,
+        cover: this.article.cover,
+        status: this.article.status
       }).then(() => {
         message.success('文章更新成功！');
         this.$router.push({name: 'ArticleDetails', params: {id: this.id.toString()}});
-      }).catch((err) => {
-        message.destroy();
-        switch (err.response.status) {
-          case 401: {
-            message.error('登录状态异常！请重新登录后再试！');
-            break;
-          }
-          default: {
-            message.error(err.toString());
-          }
-        }
       }).finally(() => {
         this.btnArticleLoading = false;
       });
@@ -234,12 +240,12 @@ export default {
     getArticleDetails() {
       if (this.id) {
         axios.get(`/v1/articles/${this.id}`).then((res) => {
-          this.isAuthor = res.data.me.is_author;
+          this.isAuthor = res.data.author.username === store.getters.user.username;
           if (this.isAuthor === false) {
             message.error('你没有权限编辑本文！');
             this.$router.push({name: 'Forbidden'});
           }
-          this.article = res.data.article;
+          this.article = res.data;
         });
       }
     },

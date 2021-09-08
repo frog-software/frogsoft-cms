@@ -13,7 +13,7 @@
       <template #content>
         <a-form-item>
           <a-textarea
-              v-model="newCommentValue"
+              v-model:value="newCommentValue"
               :rows="4"
           />
         </a-form-item>
@@ -88,17 +88,18 @@
 </template>
 
 <script>
-import axios from 'axios';
+import axios        from 'axios';
 import {mapGetters} from 'vuex';
-import {message} from 'ant-design-vue';
-import store from '../../store';
+import {message}    from 'ant-design-vue';
+import store        from '../../store';
 
 export default {
+  // TODO 等待后端评论接口修复完成后更新
   name: 'CommentList',
   props: {
     parent: Number,
     pageSize: Number,
-    id: String
+    id: Number
   },
   data() {
     return {
@@ -131,7 +132,7 @@ export default {
      */
     commentSubmit(parent) {
       this.btnCommentSubmitting = true;
-      const data = {
+      const data                = {
         content: this.newCommentValue,
         parent: this.parent,
       };
