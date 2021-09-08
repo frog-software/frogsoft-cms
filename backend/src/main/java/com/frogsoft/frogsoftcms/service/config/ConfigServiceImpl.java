@@ -4,6 +4,7 @@ import com.frogsoft.frogsoftcms.controller.v1.request.config.ConfigRequest;
 import com.frogsoft.frogsoftcms.dto.assembler.config.ConfigModelAssembler;
 import com.frogsoft.frogsoftcms.dto.mapper.config.ConfigMapper;
 import com.frogsoft.frogsoftcms.dto.model.config.ConfigDto;
+import com.frogsoft.frogsoftcms.dto.model.config.FrontConfigDto;
 import com.frogsoft.frogsoftcms.model.config.Config;
 import com.frogsoft.frogsoftcms.repository.config.ConfigRepository;
 import java.util.ArrayList;
@@ -64,5 +65,11 @@ public class ConfigServiceImpl implements ConfigService {
         .setConfigValue(configRequest.getFooter().getLogo()));
     List<Config> configs = configRepository.saveAll(configList);
     return configModelAssembler.toModel(configMapper.toConfigDto(configs));
+  }
+
+  @Override
+  public EntityModel<FrontConfigDto> getFrontConfig() {
+    List<Config> configList = configRepository.findAll();
+    return configModelAssembler.toModel(configMapper.toFrontConfigDto(configList));
   }
 }

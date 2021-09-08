@@ -4,6 +4,7 @@ package com.frogsoft.frogsoftcms.dto.mapper.config;
 import com.frogsoft.frogsoftcms.dto.model.config.ConfigDto;
 import com.frogsoft.frogsoftcms.dto.model.config.EmailDto;
 import com.frogsoft.frogsoftcms.dto.model.config.FooterDto;
+import com.frogsoft.frogsoftcms.dto.model.config.FrontConfigDto;
 import com.frogsoft.frogsoftcms.dto.model.config.HeaderDto;
 import com.frogsoft.frogsoftcms.model.config.Config;
 import com.frogsoft.frogsoftcms.repository.config.ConfigRepository;
@@ -37,5 +38,18 @@ public class ConfigMapper {
     configDto.setHeaderDto(headerDto);
     configDto.setFooterDto(footerDto);
     return configDto;
+  }
+  public FrontConfigDto toFrontConfigDto(List<Config> configList){
+    FrontConfigDto frontConfigDto = new FrontConfigDto();
+    HeaderDto headerDto = new HeaderDto();
+    FooterDto footerDto = new FooterDto();
+    footerDto.setLogo(configRepository.findByConfigKey("footer_logo").getConfigValue());
+    headerDto.setLogo(configRepository.findByConfigKey("header_logo").getConfigValue());
+    frontConfigDto.setLogo(configRepository.findByConfigKey("logo").getConfigValue());
+    frontConfigDto.setTitle(configRepository.findByConfigKey("title").getConfigValue());
+    frontConfigDto.setFavicon(configRepository.findByConfigKey("favicon").getConfigValue());
+    frontConfigDto.setHeaderDto(headerDto);
+    frontConfigDto.setFooterDto(footerDto);
+    return frontConfigDto;
   }
 }
