@@ -23,6 +23,7 @@ import lombok.experimental.Accessors;
 @Entity
 @ToString
 public class History {
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;

@@ -41,7 +41,7 @@ public class UserDetailMapper {
       ViewsNum.set(article.getViews() + ViewsNum.get());
     }
     List<Article> historyList = new ArrayList<>();
-    for (History history:historyRepository.findAllByUser(user)){
+    for (History history : historyRepository.findAllByUser(user)) {
       historyList.add(history.getArticle());
     }
     StatisticsDto statisticsDto = new StatisticsDto()
