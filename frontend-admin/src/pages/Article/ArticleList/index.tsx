@@ -16,20 +16,24 @@ import Block                              from 'components/Block';
 import {
   Badge,
   Button, Col, notification, Popconfirm, Row, Space, Table,
-}                                         from 'antd';
-import { useQuery }                       from 'react-query';
+}                                        from 'antd';
+import { useQuery }                      from 'react-query';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { useHistory }                     from 'react-router';
-import { getArticleList, deleteArticle }  from 'services/article';
-import Search                             from 'antd/es/input/Search';
+import { useHistory }                    from 'react-router';
+import { getArticleList, deleteArticle } from 'services/article';
+import Search                            from 'antd/es/input/Search';
+import http                              from 'utils/http';
+import { StarFilled }                    from '@ant-design/icons';
 
 const ArticleList: FC = () => {
-  const [articleList, setArticleList]     = useState<Article[]>();
-  const [currentPage, setCurrentPage]     = useState<number>(1);
-  const [pageSize, setPageSize]           = useState<number>(10);
-  const [totalItems, setTotalItems]       = useState<number>();
-  const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
-  const history                           = useHistory();
+  const [articleList, setArticleList]               = useState<Article[]>();
+  const [currentPage, setCurrentPage]               = useState<number>(1);
+  const [pageSize, setPageSize]                     = useState<number>(10);
+  const [totalItems, setTotalItems]                 = useState<number>();
+  const [loading, setLoading]           = useState<boolean>(false);
+  const history                                     = useHistory();
+  const [recommendArticleId, setRecommendArticleId] = useState<number>();
+  const [render, setRender]             = useState<boolean>(false);
 
   const {
     isLoading, data, refetch, remove,
@@ -44,6 +48,43 @@ const ArticleList: FC = () => {
     },
   );
 
+  // 编辑每日推荐文章
+  const handleSetRecommend = (articleId: number) => {
+    setLoading(true);
+
+    const tempData = { articleId };
+
+    if (recommendArticleId === articleId) {
+      tempData.articleId = 0;
+      http.put('/v1/home/daily', tempData)
+        .then(() => {
+          notification['success']({ message: '取消每日设置成功' });
+          setRecommendArticleId(tempData.articleId);
+        })
+        .catch((error) => {
+          notification['error']({ message: '取消每日推荐设置失败', description: String(error) });
+        })
+        .finally(() => {
+          setRender(!render);
+          setLoading(false);
+        });
+    } else {
+      http.put('/v1/home/daily', tempData)
+        .then(() => {
+          notification['success']({ message: '每日推荐设置成功' });
+          setRecommendArticleId(tempData.articleId);
+        })
+        .catch((error) => {
+          notification['error']({ message: '每日推荐设置失败', description: String(error) });
+        })
+        .finally(() => {
+          setRender(!render);
+          setLoading(false);
+        });
+    }
+  };
+
+  // 文章列表属性
   const tableColumns = [
     {
       key: 'id',
@@ -53,6 +94,7 @@ const ArticleList: FC = () => {
         compare: (a, b) => a.id - b.id,
         multiple: 2,
       },
+      width: '90px',
     },
     {
       key: 'title',
@@ -77,6 +119,7 @@ const ArticleList: FC = () => {
       key: 'status',
       dataIndex: 'status',
       title: '状态',
+      width: '90px',
     },
     {
       key: 'action',
@@ -91,12 +134,21 @@ const ArticleList: FC = () => {
           >
             查看详情
           </Button>
+          <Button
+            onClick={() => handleSetRecommend(article.id)}
+            type="text"
+          >
+            {
+              article.id === recommendArticleId
+                ? '取消每日推荐' : '设为每日推荐'
+            }
+          </Button>
           <Popconfirm
             title="确定删除该文章吗？删除之后不可恢复！"
             okText="确定"
             cancelText="取消"
             onConfirm={() => {
-              setDeleteLoading(true);
+              setLoading(true);
               deleteArticle(article.id)
                 .then(() => {
                   notification['success']({ message: '文章删除成功' });
@@ -108,7 +160,7 @@ const ArticleList: FC = () => {
                 }).catch((error) => {
                   notification['error']({ message: '文章删除失败', description: String(error) });
                 }).finally(() => {
-                  setDeleteLoading(false);
+                  setLoading(false);
                 });
             }}
           >
@@ -120,20 +172,37 @@ const ArticleList: FC = () => {
   ];
 
   useEffect(() => {
-    if (!data) return;
+    (async () => {
+      const recommendArticle = await http.get<Article>('/v1/home/daily');
+      setRecommendArticleId(recommendArticle?.id);
+    })();
+  }, [render]);
 
-    const tableList = data.list?.map((i) => ({
-      ...i,
-      status: i.status === 'NORMAL' ? (
-        <Badge status="processing" color="green" text="正常" />
-      ) : (
-        <Badge status="default" color="gray" text="屏蔽" />
-      ),
-    }));
+  useEffect(() => {
+    (async () => {
+      if (!data) return;
 
-    setArticleList(tableList as any);
-    setTotalItems(data.page.total);
-  }, [data]);
+      const tableList = data.list?.map((i) => ({
+        ...i,
+        status: i.status === 'NORMAL' ? (
+          <Badge status="processing" color="green" text="正常" />
+        ) : (
+          <Badge status="default" color="gray" text="屏蔽" />
+        ),
+        title: i.id === recommendArticleId ? (
+          <Row>
+            <StarFilled style={{ color: 'gold', marginTop: '4px', marginRight: '4px' }} />
+            <p>{i.title}</p>
+          </Row>
+        ) : (
+          <p>{i.title}</p>
+        ),
+      }));
+
+      setArticleList(tableList as any);
+      setTotalItems(data.page.total);
+    })();
+  }, [data, recommendArticleId]);
 
   return (
     <>
@@ -150,7 +219,7 @@ const ArticleList: FC = () => {
           <Col span={24}>
             <Table
               rowKey="id"
-              loading={isLoading || deleteLoading}
+              loading={isLoading || loading}
               columns={tableColumns}
               dataSource={articleList}
               pagination={{
