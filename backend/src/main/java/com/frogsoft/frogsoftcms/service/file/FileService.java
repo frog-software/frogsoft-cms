@@ -8,7 +8,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface FileService {
 
-  EntityModel<FileDto> putFile(User authenticatedUser, MultipartFile file, HttpServletRequest request);
+  EntityModel<FileDto> putFile(User authenticatedUser, MultipartFile file,
+      HttpServletRequest request);
 
   void deleteFile(User authenticatedUser, Long id);
 }

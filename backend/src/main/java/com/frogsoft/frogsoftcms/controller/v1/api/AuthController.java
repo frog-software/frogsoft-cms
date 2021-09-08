@@ -58,7 +58,10 @@ public class AuthController {
   public ResponseEntity<?> getCode(@RequestParam String username) {
     User user = authService.findByUsername(username);
     mailService.sendCode(user.getEmail());
-    return ResponseEntity.noContent().build();
+    Map<Object, Object> model = new HashMap<>();
+    model.put("email", user.getEmail());
+    model.put("username", user.getUsername());
+    return ResponseEntity.status(201).body(model);
   }
 
   @PutMapping("/forget")
