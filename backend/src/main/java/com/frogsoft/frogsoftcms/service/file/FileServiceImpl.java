@@ -44,7 +44,7 @@ public class FileServiceImpl implements FileService {
 
     int i = fileName.lastIndexOf('.');
     if (i > 0) {
-      extension = fileName.substring(i+1);
+      extension = fileName.substring(i + 1);
     }
     UUID uuid = UUID.randomUUID();
     String newFileName = uuid + extension;
@@ -63,7 +63,8 @@ public class FileServiceImpl implements FileService {
       throw new BadRequestException("上传失败，请重新尝试");
     }
     URI origin = URI.create(request.getRequestURL().toString());
-    String uri = origin.getScheme() + "://" + origin.getAuthority() + "/v1/global/files/" + newFileName;
+    String uri =
+        origin.getScheme() + "://" + origin.getAuthority() + "/v1/global/files/" + newFileName;
     Material material = new Material();
     material.setShortName(fileName);
     material.setFullName(newFileName);
