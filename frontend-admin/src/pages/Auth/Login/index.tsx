@@ -20,11 +20,11 @@ import Typical                        from 'react-typical';
 import './index.less';
 
 const Login: FC = () => {
-  const [isBackgroundOn, setBackgroudOn] = useState<boolean>();
+  const [isBackgroundOff, setBackgroundOff] = useState<boolean>();
   const [isLoading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
-    setBackgroudOn(!!localStorage.getItem('isBackgroundEnabled'));
+    setBackgroundOff(!!localStorage.getItem('isBackgroundDisabled'));
   }, []);
 
   const handleLogin = (formData) => {
@@ -52,7 +52,7 @@ const Login: FC = () => {
   };
 
   return (
-    <div className={`login-root ${isBackgroundOn ? 'gradient-background' : 'login-background'}`}>
+    <div className={`login-root ${!isBackgroundOff ? 'gradient-background' : 'login-background'}`}>
       <Row
         className="login-modal"
         align="middle"
@@ -66,8 +66,8 @@ const Login: FC = () => {
             src="/logo.svg"
             alt="logo"
             onClick={() => {
-              localStorage.setItem('isBackgroundEnabled', !isBackgroundOn ? 'true' : '');
-              setBackgroudOn(!isBackgroundOn);
+              localStorage.setItem('isBackgroundDisabled', !isBackgroundOff ? 'true' : '');
+              setBackgroundOff(!isBackgroundOff);
             }}
           />
           <Typography.Text

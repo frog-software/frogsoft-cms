@@ -53,13 +53,13 @@ function UserNavBar() {
             <Menu.Item
               style={{ textAlign: 'center' }}
               onClick={() => {
-                localStorage.setItem('isBackgroundEnabled', !config.isBackgroundEnabled ? 'true' : '');
+                localStorage.setItem('isBackgroundDisabled', !config.isBackgroundDisabled ? 'true' : '');
                 dispatch.setConfiguration({
-                  isBackgroundEnabled: !config.isBackgroundEnabled,
+                  isBackgroundDisabled: !config.isBackgroundDisabled,
                 });
               }}
             >
-              {`${config.isBackgroundEnabled ? '关闭背景' : '打开背景'}`}
+              {`${config.isBackgroundDisabled ? '打开动画' : '关闭动画'}`}
             </Menu.Item>
           </Menu.SubMenu>
         </Menu>

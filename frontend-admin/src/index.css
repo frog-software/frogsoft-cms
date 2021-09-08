@@ -172,3 +172,7 @@ select {
         background-position: 0% 50%;
     }
 }
+
+.half-transparent-background {
+    background: #FFFFFF00;
+}
