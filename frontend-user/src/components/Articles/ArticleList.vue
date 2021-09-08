@@ -1,7 +1,7 @@
 <template>
   <div>
     <a-list
-        :data-source="listSource || []"
+        :data-source="listSource"
         :pagination="pagination"
         :loading="{spinning: loading, delay: 200}"
         item-layout="vertical"
@@ -35,13 +35,11 @@ import axios from 'axios';
 export default {
   name: 'ArticleList',
   props: {
-    listData: Array,
     pageSize: Number,
   },
   data() {
     return {
-      listSource: null,
-      listDataLock: null,
+      listSource: [],
       loading: false,
       currentPage: 1,
       totalElements: 0,
@@ -65,19 +63,8 @@ export default {
       }
     }
   },
-  watch: {
-    listData() {
-      this.listDataLock = Object.assign([], this.listData);
-      this.currentPage  = 0;
-    },
-    listDataLock() {
-      if (!this.listDataLock) return;
-      if (this.listDataLock.length === 0) return;
-      this.getCurrentPageData(1);
-    },
-  },
   created() {
-    this.listDataLock = Object.assign([], this.listData);
+    this.getCurrentPageData(1)
   },
   methods: {
     getCurrentPageData(page) {

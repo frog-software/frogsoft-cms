@@ -1,6 +1,6 @@
 <script setup>
-
-import ArticleList from '../../components/Articles/ArticleList.vue'; </script>
+import ArticleList from '../../components/Articles/ArticleList.vue';
+</script>
 
 <template>
   <div class="body">
@@ -9,7 +9,6 @@ import ArticleList from '../../components/Articles/ArticleList.vue'; </script>
         :spinning="spinning"
     >
       <ArticleList
-          :list-data="listData"
           :page-size="8"
       />
     </a-spin>
@@ -17,25 +16,13 @@ import ArticleList from '../../components/Articles/ArticleList.vue'; </script>
 </template>
 
 <script>
-// eslint-disable-next-line import/order
-import axios from 'axios';
-
 export default {
   name: 'Articles',
   data() {
     return {
-      listData: [],
       spinning: false,
     };
-  },
-  created() {
-    this.spinning = true;
-    axios.get('/v1/articles').then((res) => {
-      this.listData = res.data._embedded.articleDtoList;
-    }).finally(() => {
-      this.spinning = false;
-    });
-  },
+  }
 };
 </script>
 
