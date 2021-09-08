@@ -60,7 +60,12 @@ const NavBar: FC = () => (
     <Menu
       mode="inline"
       style={{
-        zIndex: 99, width: '100%', fontSize: '90%', alignItems: 'center', marginTop: '20px',
+        zIndex: 99,
+        width: '100%',
+        fontSize: '90%',
+        alignItems: 'center',
+        marginTop: '20px',
+        backgroundColor: '#FFFFFF00',
       }}
     >
       {entryTree.map((entry) => (

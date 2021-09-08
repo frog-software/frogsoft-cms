@@ -10,17 +10,22 @@
 //
 //--------------------------------------------------------------------------
 
-import React, { FC, useState }                                 from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import {
   Button, Col, Form, Input, message, Row, Typography,
-} from 'antd';
-import { LockOutlined, UserOutlined }                          from '@ant-design/icons';
-import http                                                    from 'utils/http';
-import Typical                                                 from 'react-typical';
+}                                         from 'antd';
+import { LockOutlined, UserOutlined } from '@ant-design/icons';
+import http                           from 'utils/http';
+import Typical                        from 'react-typical';
 import './index.less';
 
 const Login: FC = () => {
+  const [isBackgroundOn, setBackgroudOn] = useState<boolean>();
   const [isLoading, setLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    setBackgroudOn(!!localStorage.getItem('isBackgroundEnabled'));
+  }, []);
 
   const handleLogin = (formData) => {
     console.log(formData);
@@ -36,10 +41,7 @@ const Login: FC = () => {
     })
       .then((res) => {
         localStorage.setItem('token', res.token);
-        setTimeout(() => {
-          setLoading(false);
-          window.location.href = '/home';
-        }, 500);
+        window.location.href = '/home';
       })
       .catch((err) => {
         message.error(err);
@@ -50,7 +52,7 @@ const Login: FC = () => {
   };
 
   return (
-    <div className="gradient-background login-root">
+    <div className={`login-root ${isBackgroundOn ? 'gradient-background' : 'login-background'}`}>
       <Row
         className="login-modal"
         align="middle"
@@ -58,7 +60,16 @@ const Login: FC = () => {
         gutter={[0, 12]}
       >
         <Col style={{ textAlign: 'center', marginTop: 32 }}>
-          <img width={120} height={120} src="/logo.svg" alt="logo" />
+          <img
+            width={120}
+            height={120}
+            src="/logo.svg"
+            alt="logo"
+            onClick={() => {
+              localStorage.setItem('isBackgroundEnabled', !isBackgroundOn ? 'true' : '');
+              setBackgroudOn(!isBackgroundOn);
+            }}
+          />
           <Typography.Text
             style={{
               fontSize: 18, color: 'rgba(0,0,0,0.36)', display: 'block', marginTop: 16,

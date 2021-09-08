@@ -188,14 +188,6 @@ const ArticleList: FC = () => {
         ) : (
           <Badge status="default" color="gray" text="屏蔽" />
         ),
-        // title: i.id === recommendArticleId ? (
-        //   <Row>
-        //     <StarOutlined style={{ color: 'gold', marginTop: '4px', marginRight: '4px' }} />
-        //     <p>{i.title}</p>
-        //   </Row>
-        // ) : (
-        //   <p>{i.title}</p>
-        // ),
         star: i.id === recommendArticleId ? (
           <StarFilled
             style={{ color: 'gold', marginTop: '4px', marginRight: '4px' }}

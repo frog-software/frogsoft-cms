@@ -26,6 +26,7 @@ const Block: FC<BlockProps> = (props) => {
     <Body
       style={{
         ...bodyStyle,
+        backgroundColor: '#FFFFFFA0',
         height: stretch ? `calc(100vh - ${stretch}px)` : 'auto',
         paddingBottom: stretch ? 64 : 0,
       }}

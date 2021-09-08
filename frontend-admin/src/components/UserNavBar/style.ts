@@ -3,7 +3,7 @@ import styled from 'styled-components';
 export const Body = styled.div`
   position: relative;
   height: 64px;
-  background: white;
+  background: rgba(255, 255, 255, 0.6);
   display:flex;
   justify-content: space-between;
   box-sizing: border-box;

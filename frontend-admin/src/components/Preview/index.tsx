@@ -4,7 +4,7 @@ import { Skeleton, Typography } from 'antd';
 const Preview: FC = () => (
   <div
     style={{
-      backgroundColor: '#fff',
+      backgroundColor: '#FFFFFFA0',
       margin: 24,
       padding: 24,
       minHeight: '85vh',
