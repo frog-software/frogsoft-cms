@@ -10,20 +10,24 @@
 //
 //--------------------------------------------------------------------------
 
-import React, { FC, useEffect, useState } from 'react';
-import Block                              from 'components/Block';
+import React, { FC, useEffect, useState }                                                         from 'react';
+import Block
+  from 'components/Block';
 import {
-  Button, Col,
-  Form, Image, Input, Row, Space, Tabs,
-  Descriptions, notification, Layout,
-}                                         from 'antd';
+  Button, Col, Descriptions, Form, Image, Input, Layout, notification, Row, Space, Tabs,
+} from 'antd';
 import {
-  AndroidOutlined, AppleOutlined,
-  DesktopOutlined, GithubOutlined, MailOutlined, SkinOutlined, WindowsOutlined,
-}                                         from '@ant-design/icons';
-import http                               from 'utils/http';
-import { ConfigurationType }              from 'types/configuration';
-import { useForm }                        from 'antd/es/form/Form';
+  AndroidOutlined,
+  AppleOutlined,
+  DesktopOutlined,
+  GithubOutlined,
+  MailOutlined,
+  SkinOutlined,
+  WindowsOutlined,
+}                                                                                                 from '@ant-design/icons';
+import http                                                                                       from 'utils/http';
+import { ConfigurationType }                                                                      from 'types/configuration';
+import { useForm }                                                                                from 'antd/es/form/Form';
 
 const { TabPane } = Tabs;
 

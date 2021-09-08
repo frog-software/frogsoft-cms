@@ -1,6 +1,6 @@
-import React, { FC, Fragment } from 'react';
-import Title from 'antd/es/typography/Title';
-import Block from 'components/Block';
+import React, { FC } from 'react';
+import Title         from 'antd/es/typography/Title';
+import Block         from 'components/Block';
 
 const Home: FC = () => (
   <>

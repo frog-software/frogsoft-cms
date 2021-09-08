@@ -1,6 +1,6 @@
-import React, { CSSProperties, FC, ReactNode } from 'react';
-import { Spin } from 'antd';
-import { ArrowLeftOutlined } from '@ant-design/icons';
+import React, { CSSProperties, FC, ReactNode }         from 'react';
+import { Spin }                                        from 'antd';
+import { ArrowLeftOutlined }                           from '@ant-design/icons';
 import {
   Body, Bottom, Header, Loading, Main, Title,
 } from './style';

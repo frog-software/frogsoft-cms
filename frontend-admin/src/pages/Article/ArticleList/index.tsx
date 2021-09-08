@@ -10,9 +10,9 @@
 //
 //--------------------------------------------------------------------------
 
-import React, { FC, useEffect, useState } from 'react';
-import { Article }                        from 'types/article';
-import Block                              from 'components/Block';
+import React, { FC, useEffect, useState }                                   from 'react';
+import { Article }                                                          from 'types/article';
+import Block                                                                from 'components/Block';
 import {
   Badge,
   Button, Col, notification, Popconfirm, Row, Space, Table,
@@ -24,6 +24,7 @@ import { getArticleList, deleteArticle } from 'services/article';
 import Search                            from 'antd/es/input/Search';
 import http                              from 'utils/http';
 import { StarFilled }                    from '@ant-design/icons';
+
 
 const ArticleList: FC = () => {
   const [articleList, setArticleList]               = useState<Article[]>();
@@ -131,6 +132,7 @@ const ArticleList: FC = () => {
               history.push(`/articles/${article.id}`);
             }}
             type="text"
+            style={{ color: 'var(--primary-color)' }}
           >
             查看详情
           </Button>

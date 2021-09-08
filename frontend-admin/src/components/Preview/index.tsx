@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC }            from 'react';
 import { Skeleton, Typography } from 'antd';
 
 const Preview: FC = () => (
