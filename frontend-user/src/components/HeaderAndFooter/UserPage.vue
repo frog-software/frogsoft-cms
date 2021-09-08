@@ -1,5 +1,6 @@
 <script setup>
-</script>
+import store       from '../../store';
+import ArticleList from '../Articles/ArticleList.vue';</script>
 <template>
   <a-spin :spinning="drawerLoading">
     <a-descriptions layout="vertical">
@@ -23,8 +24,8 @@
       <a-descriptions-item label="邮箱">
         {{ user.email }}
       </a-descriptions-item>
-      <a-descriptions-item label="上次登陆时间">
-        {{ user.login_time }}
+      <a-descriptions-item label="权限">
+        {{ user.is_admin ? "管理员" : "普通用户" }}
       </a-descriptions-item>
     </a-descriptions>
 
@@ -66,19 +67,14 @@
 
 <script>
 import {mapGetters} from 'vuex';
-import ArticleList  from '../Articles/ArticleList.vue';
-import store        from '../../store';
 
 export default {
   name: 'UserPage',
-  components: {
-    ArticleList,
-  },
   computed: {
     ...mapGetters({
       user: 'user',
-      publish_articles: 'publish_articles',
-      like_articles: 'like_articles',
+      publishArticles: 'publishArticles',
+      favoriteArticles: 'favoriteArticles',
       drawerLoading: 'drawerLoading',
     }),
   },

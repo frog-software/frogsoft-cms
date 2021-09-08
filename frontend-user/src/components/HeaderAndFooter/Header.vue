@@ -1,6 +1,6 @@
 <script setup>
 import HeaderUser from './HeaderUser.vue';
-import store from '../../store'
+import store      from '../../store'
 </script>
 <template>
   <div class="header">
@@ -13,8 +13,9 @@ import store from '../../store'
         <router-link to="/Home">
           <img
               alt="网站页眉LOGO"
-              :src="store.getters.config.header.logo"
-              width="120"
+              :src="store.getters.config.headerDto.logo"
+              :height="64"
+              style="max-height: 64px;max-width: 200px"
           >
         </router-link>
       </a-col>

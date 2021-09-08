@@ -15,10 +15,10 @@ const defaultConfig = {
   "favicon": "http://dummyimage.com/100x100",
   "title": "Frogsoft CMS",
   "logo": "http://dummyimage.com/400x400",
-  "header": {
+  "headerDto": {
     "logo": "http://dummyimage.com/400x200"
   },
-  "footer": {
+  "footerDto": {
     "logo": "http://dummyimage.com/400x200"
   }
 };
@@ -28,8 +28,8 @@ const store         = createStore({
     drawerVisibility: false,
     drawerLoading: false,
     user: Object.create(defaultUser),
-    publish_articles: [],
-    like_articles: [],
+    publishArticles: [],
+    favoriteArticles: [],
     music: 6,
     replyTo: 0,
     commentsLoading: false,
@@ -71,11 +71,11 @@ const store         = createStore({
     user(state) {
       return state.user;
     },
-    publish_articles(state) {
-      return state.publish_articles;
+    publishArticles(state) {
+      return state.publishArticles;
     },
-    like_articles(state) {
-      return state.like_articles;
+    favoriteArticles(state) {
+      return state.favoriteArticles;
     },
     music(state) {
       return state.music;
@@ -116,15 +116,17 @@ const store         = createStore({
       localStorage.removeItem('username');
       localStorage.removeItem('token');
       state.user             = {...defaultUser}
-      state.publish_articles = [];
-      state.like_articles    = [];
+      state.publishArticles  = [];
+      state.favoriteArticles = [];
       state.drawerVisibility = false;
     },
     userUpdate(state) {
       state.drawerLoading = true;
       axios.get(`/v1/users/${state.user.username}`).then((res) => {
-        state.user.email    = res.data.email;
-        state.user.is_admin = res.data.roles.includes("ROLE_ADMIN");
+        state.user.email       = res.data.email;
+        state.user.is_admin    = res.data.roles.includes("ROLE_ADMIN");
+        state.publishArticles  = res.data.publishArticles
+        state.favoriteArticles = res.data.favoriteArticles
       }).finally(() => {
         state.drawerLoading = false;
       });

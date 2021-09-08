@@ -10,7 +10,7 @@ import store from "../../store";</script>
       <a-col span="3">
         <img
             alt="网站页脚Footer"
-            :src="store.getters.config.footer.logo"
+            :src="store.getters.config.footerDto.logo"
             width="240"
         >
       </a-col>
