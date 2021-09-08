@@ -10,30 +10,30 @@
 //
 //--------------------------------------------------------------------------
 
-import React, { FC, useEffect, useState }                                   from 'react';
-import { Article }                                                          from 'types/article';
-import Block                                                                from 'components/Block';
+import React, { FC, useEffect, useState } from 'react';
+import { Article }                        from 'types/article';
+import Block                              from 'components/Block';
 import {
   Badge,
   Button, Col, notification, Popconfirm, Row, Space, Table,
-}                                        from 'antd';
-import { useQuery }                      from 'react-query';
+}                                         from 'antd';
+import { useQuery }                       from 'react-query';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { useHistory }                    from 'react-router';
-import { getArticleList, deleteArticle } from 'services/article';
-import Search                            from 'antd/es/input/Search';
-import http                              from 'utils/http';
-import { StarFilled }                    from '@ant-design/icons';
+import { useHistory }                     from 'react-router';
+import { getArticleList, deleteArticle }  from 'services/article';
+import Search                             from 'antd/es/input/Search';
+import http                               from 'utils/http';
+import { StarFilled, StarOutlined }       from '@ant-design/icons';
 
 const ArticleList: FC = () => {
   const [articleList, setArticleList]               = useState<Article[]>();
   const [currentPage, setCurrentPage]               = useState<number>(1);
   const [pageSize, setPageSize]                     = useState<number>(10);
   const [totalItems, setTotalItems]                 = useState<number>();
-  const [loading, setLoading]           = useState<boolean>(false);
+  const [loading, setLoading]                       = useState<boolean>(false);
   const history                                     = useHistory();
   const [recommendArticleId, setRecommendArticleId] = useState<number>();
-  const [render, setRender]             = useState<boolean>(false);
+  const [render, setRender]                         = useState<boolean>(false);
 
   const {
     isLoading, data, refetch, remove,
@@ -94,7 +94,7 @@ const ArticleList: FC = () => {
         compare: (a, b) => a.id - b.id,
         multiple: 2,
       },
-      width: '90px',
+      minWidth: '90px',
     },
     {
       key: 'title',
@@ -119,7 +119,12 @@ const ArticleList: FC = () => {
       key: 'status',
       dataIndex: 'status',
       title: '状态',
-      width: '90px',
+      minWidth: '90px',
+    },
+    {
+      key: 'star',
+      dataIndex: 'star',
+      title: '每日推荐',
     },
     {
       key: 'action',
@@ -135,15 +140,6 @@ const ArticleList: FC = () => {
           >
             查看详情
           </Button>
-          <Button
-            onClick={() => handleSetRecommend(article.id)}
-            type="text"
-          >
-            {
-              article.id === recommendArticleId
-                ? '取消每日推荐' : '设为每日推荐'
-            }
-          </Button>
           <Popconfirm
             title="确定删除该文章吗？删除之后不可恢复！"
             okText="确定"
@@ -158,9 +154,11 @@ const ArticleList: FC = () => {
                     throwOnError: true,
                     cancelRefetch: false,
                   });
-                }).catch((error) => {
+                })
+                .catch((error) => {
                   notification['error']({ message: '文章删除失败', description: String(error) });
-                }).finally(() => {
+                })
+                .finally(() => {
                   setLoading(false);
                 });
             }}
@@ -183,20 +181,31 @@ const ArticleList: FC = () => {
     (async () => {
       if (!data) return;
 
-      const tableList = data.list?.map((i) => ({
+      const tableList = data?.list?.map((i) => ({
         ...i,
         status: i.status === 'NORMAL' ? (
           <Badge status="processing" color="green" text="正常" />
         ) : (
           <Badge status="default" color="gray" text="屏蔽" />
         ),
-        title: i.id === recommendArticleId ? (
-          <Row>
-            <StarFilled style={{ color: 'gold', marginTop: '4px', marginRight: '4px' }} />
-            <p>{i.title}</p>
-          </Row>
+        // title: i.id === recommendArticleId ? (
+        //   <Row>
+        //     <StarOutlined style={{ color: 'gold', marginTop: '4px', marginRight: '4px' }} />
+        //     <p>{i.title}</p>
+        //   </Row>
+        // ) : (
+        //   <p>{i.title}</p>
+        // ),
+        star: i.id === recommendArticleId ? (
+          <StarFilled
+            style={{ color: 'gold', marginTop: '4px', marginRight: '4px' }}
+            onClick={() => handleSetRecommend(i.id)}
+          />
         ) : (
-          <p>{i.title}</p>
+          <StarOutlined
+            style={{ color: 'gold', marginTop: '4px', marginRight: '4px' }}
+            onClick={() => handleSetRecommend(i.id)}
+          />
         ),
       }));
 
