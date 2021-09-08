@@ -17,8 +17,8 @@ service.interceptors.response.use((res) => res,
   ({ response }) => {
     switch (response?.status) {
       case 401:
-        message.error('你没有权限！');
-        // to login page
+        message.error('你没有权限访问该页面，请登录');
+        window.location.href = '/auth/login';
         break;
       case 403:
         message.error('禁止访问！');

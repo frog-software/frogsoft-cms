@@ -1,13 +1,9 @@
-import React, { FC, ReactNode } from 'react';
-import { Link }                 from 'react-router-dom';
+import React, { FC, ReactNode }                                       from 'react';
+import { Link }                                                       from 'react-router-dom';
+import { Avatar, Menu, Row }                                         from 'antd';
 import {
-  Avatar, Menu, Row,
-}                               from 'antd';
-import {
-  TeamOutlined,
-  BarsOutlined,
-  UserOutlined, SettingOutlined,
-}                               from '@ant-design/icons';
+  BarsOutlined, SettingOutlined, TeamOutlined, UserOutlined,
+} from '@ant-design/icons';
 import './index.css';
 
 interface EntryTree {

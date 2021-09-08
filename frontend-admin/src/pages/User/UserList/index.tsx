@@ -10,17 +10,17 @@
 //
 //--------------------------------------------------------------------------
 
-import React, { FC, useEffect, useState } from 'react';
-import Block                              from 'components/Block';
-import { deleteUser, getUserList }        from 'services/user';
-import { User }                           from 'types/user';
-import { useQuery }                       from 'react-query';
+import React, { FC, useEffect, useState }                            from 'react';
+import Block                                                         from 'components/Block';
+import { deleteUser, getUserList }                                   from 'services/user';
+import { User }                                                      from 'types/user';
+import { useQuery }                                                  from 'react-query';
 import {
   Button, Col, notification, Popconfirm, Row, Space, Table,
-}                                         from 'antd';
+} from 'antd';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { useHistory }                     from 'react-router';
-import Search                             from 'antd/es/input/Search';
+import { useHistory }                                                from 'react-router';
+import Search                                                        from 'antd/es/input/Search';
 
 const UserList: FC = () => {
   const [currentPage, setCurrentPage]     = useState<number>(1);
@@ -69,6 +69,7 @@ const UserList: FC = () => {
               history.push(`/users/${user.username}`);
             }}
             type="text"
+            style={{ color: 'var(--primary-color)' }}
           >
             查看详情
           </Button>

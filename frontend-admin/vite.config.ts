@@ -21,7 +21,7 @@ export default defineConfig({
     }
   },
   server: {
-    port: 8187,
+    port: 3500,
     open: true
   },
   plugins: [

@@ -10,15 +10,25 @@
 //
 //--------------------------------------------------------------------------
 
-import React, {
-  FC, useEffect, useState,
-}                                                    from 'react';
+import React, { FC, useEffect, useState }           from 'react';
 import { User }                                      from 'types/user';
 import { useParams }                                 from 'react-router-dom';
 import Block                                         from 'components/Block';
 import {
-  Avatar, Badge, Button, Col, Descriptions, Form,
-  Input, notification, Popconfirm, Row, Space, Switch, Table, Tabs,
+  Avatar,
+  Badge,
+  Button,
+  Col,
+  Descriptions,
+  Form,
+  Input,
+  notification,
+  Popconfirm,
+  Row,
+  Space,
+  Switch,
+  Table,
+  Tabs,
 }                                                    from 'antd';
 import http                                          from 'utils/http';
 import DescriptionsItem                              from 'antd/es/descriptions/Item';

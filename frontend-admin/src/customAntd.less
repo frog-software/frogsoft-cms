@@ -10,8 +10,8 @@
   overflow-y: hidden;
 }
 
-.root {
-  --primary-color: #d07b26;
+:root {
+  --primary-color: @primary-color;
 }
 
 .App {
@@ -52,7 +52,7 @@
 
 .custom-scrollbar .ant-drawer-body::-webkit-scrollbar-thumb {
   background-color: #CECECE;
-  border-radius:8px;
+  border-radius: 8px;
 }
 
 .custom-scrollbar .ant-table-content::-webkit-scrollbar {
@@ -80,7 +80,7 @@
 }
 
 .ant-picker-content th {
-font-weight: bold !important;
+  font-weight: bold !important;
 }
 
 .ant-tooltip {

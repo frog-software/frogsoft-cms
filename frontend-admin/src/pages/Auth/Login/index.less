@@ -1,0 +1,42 @@
+@backgroundColor: #FFFFFF70;
+
+.login-root {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  text-align: center;
+}
+
+.login-modal {
+  width: 50vw;
+  height: 600px;
+  flex-direction: column;
+  background: @backgroundColor;
+  margin: 0 auto;
+  border-radius: 30px;
+}
+
+.login-input {
+  background: @backgroundColor;
+  border-radius: 8px;
+
+  input[type="text"], input[type="password"], input[type=submit]:focus, input[type="color"], textarea {
+    background-color: #FFFFFF00;
+  }
+;
+
+  input:-webkit-autofill {
+    background-color: transparent;
+  }
+;
+}
+
+.login-button {
+  border-radius: 8px;
+  height: 40px;
+  font-size: 16px;
+}
+
+
+
