@@ -12,6 +12,7 @@ import com.frogsoft.frogsoftcms.service.user.UserService;
 import javax.annotation.security.RolesAllowed;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
@@ -123,5 +124,38 @@ public class UserController {
     userService.deleteUser(username, authenticatedUser);
 
     return ResponseEntity.ok(201);
+  }
+
+  @GetMapping("/{username}/history")
+  public ResponseEntity<?> getUserHistory(
+      @PathVariable String username,
+      @AuthenticationPrincipal User authenticatedUser,
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size
+  ) {
+    return ResponseEntity.ok()
+        .body(userService.getUserHistory(username, PageRequest.of(page, size)));
+  }
+
+  @GetMapping("/{username}/favors")
+  public ResponseEntity<?> getUserFavors(
+      @PathVariable String username,
+      @AuthenticationPrincipal User authenticatedUser,
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size
+  ) {
+    return ResponseEntity.ok()
+        .body(userService.getUserFavor(username, PageRequest.of(page, size)));
+  }
+
+  @GetMapping("/{username}/comments")
+  public ResponseEntity<?> getUserComments(
+      @PathVariable String username,
+      @AuthenticationPrincipal User authenticatedUser,
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size
+  ) {
+    return ResponseEntity.ok()
+        .body(userService.getUserComment(username, PageRequest.of(page, size)));
   }
 }
