@@ -2,6 +2,7 @@ package com.frogsoft.frogsoftcms.dto.mapper.user;
 
 import com.frogsoft.frogsoftcms.dto.mapper.article.ArticleMapper;
 import com.frogsoft.frogsoftcms.dto.mapper.comment.CommentMapper;
+import com.frogsoft.frogsoftcms.dto.mapper.history.HistoryMapper;
 import com.frogsoft.frogsoftcms.dto.model.user.StatisticsDto;
 import com.frogsoft.frogsoftcms.dto.model.user.UserDetailDto;
 import com.frogsoft.frogsoftcms.model.article.Article;
@@ -10,7 +11,6 @@ import com.frogsoft.frogsoftcms.model.user.User;
 import com.frogsoft.frogsoftcms.repository.article.ArticleRepository;
 import com.frogsoft.frogsoftcms.repository.comment.CommentRepository;
 import com.frogsoft.frogsoftcms.repository.history.HistoryRepository;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +26,7 @@ public class UserDetailMapper {
   private final HistoryRepository historyRepository;
   private final ArticleMapper articleMapper;
   private final CommentMapper commentMapper;
+  private final HistoryMapper historyMapper;
 
   private static <T> List<T> getFrontList(List<T> list, int num) {
     if (list.size() <= num) {
@@ -51,10 +52,9 @@ public class UserDetailMapper {
     for (Article article : articleRepository.findByAuthor(user)) {
       ViewsNum.set(article.getViews() + ViewsNum.get());
     }
-    List<Article> historyList = new ArrayList<>();
-    for (History history : historyRepository.findAllByUser(user)) {
-      historyList.add(history.getArticle());
-    }
+
+    List<History> historyList = historyRepository.findAllByUser(user);
+
     StatisticsDto statisticsDto = new StatisticsDto()
         .setFavoritesNum(FavoritesNum.get())
         .setLikesNum(LikesNum.get())
@@ -66,7 +66,7 @@ public class UserDetailMapper {
         .setRoles(user.getRoles())
         .setFavoriteArticles(
             articleMapper.toArticleDto(getFrontList(user.getFavoriteArticles(), frontListSize)))
-        .setHistoryArticles(articleMapper.toArticleDto(getFrontList(historyList, frontListSize)))
+        .setHistoryArticles(historyMapper.toHistoryDto(getFrontList(historyList, frontListSize)))
         .setLikeArticles(
             articleMapper.toArticleDto(getFrontList(user.getLikeArticles(), frontListSize)))
         .setStatistics(statisticsDto)
