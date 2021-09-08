@@ -38,7 +38,7 @@ public class Material {
 
   private Long size;
 
-  private String url;
+  private String uri;
 
   private LocalDateTime publishDate;
 }

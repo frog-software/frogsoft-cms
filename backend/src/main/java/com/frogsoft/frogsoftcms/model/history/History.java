@@ -1,5 +1,4 @@
-package com.frogsoft.frogsoftcms.model.commment;
-
+package com.frogsoft.frogsoftcms.model.history;
 
 import com.frogsoft.frogsoftcms.model.article.Article;
 import com.frogsoft.frogsoftcms.model.user.User;
@@ -16,8 +15,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
+
 
 @Getter
 @Setter
@@ -25,7 +23,7 @@ import org.hibernate.annotations.OnDeleteAction;
 @Accessors(chain = true)
 @Entity
 @ToString
-public class Comment {
+public class History {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,22 +31,11 @@ public class Comment {
 
   @ManyToOne
   @JoinColumn(referencedColumnName = "id")
-  private User author;
+  private User user;
 
-  @ManyToOne(cascade = CascadeType.ALL)
-  @OnDelete(action = OnDeleteAction.CASCADE)
+  @ManyToOne(cascade = CascadeType.DETACH)
+  @JoinColumn(referencedColumnName = "id")
   private Article article;
 
-  private Status status;
-
-  private String content;
-
-  private LocalDateTime publishDate;
-
-  private Integer likes;
-
-  @ManyToOne
-  @JoinColumn(referencedColumnName = "id")
-  private Comment parent;
-
+  private LocalDateTime time;
 }

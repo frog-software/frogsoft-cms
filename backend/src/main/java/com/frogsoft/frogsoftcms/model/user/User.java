@@ -47,8 +47,7 @@ public class User implements UserDetails {
   @ManyToMany
   private List<Article> likeArticles;
 
-  @ManyToMany
-  private List<Article> historyArticles;
+  private String avatar;
 
   @ElementCollection(fetch = FetchType.EAGER)
   private List<String> roles = new ArrayList<>();

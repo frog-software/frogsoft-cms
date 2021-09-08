@@ -1,6 +1,7 @@
 package com.frogsoft.frogsoftcms.controller.v1.api;
 
 import com.frogsoft.frogsoftcms.controller.v1.request.home.AnnouncementsSetRequest;
+import com.frogsoft.frogsoftcms.controller.v1.request.home.DailyArticleSetRequest;
 import com.frogsoft.frogsoftcms.exception.basic.forbidden.ForbiddenException;
 import com.frogsoft.frogsoftcms.model.user.User;
 import com.frogsoft.frogsoftcms.service.home.HomeService;
@@ -11,7 +12,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
@@ -33,13 +33,13 @@ public class HomeController {
 
   @PutMapping("/daily")
   public ResponseEntity<?> putDailyArticle(
-      @RequestParam Integer articleId,
+      @RequestBody DailyArticleSetRequest dailyArticleSetRequest,
       @AuthenticationPrincipal User authenticatedUser) {
     if (!authenticatedUser.getRoles().contains("ROLE_ADMIN")) {
       throw new ForbiddenException("需要管理员权限");
     }
     return ResponseEntity.status(201)
-        .body(homeService.changeDailyArticle(articleId, authenticatedUser));
+        .body(homeService.changeDailyArticle(dailyArticleSetRequest, authenticatedUser));
   }
 
   @GetMapping("/hot-articles")

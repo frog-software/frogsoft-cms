@@ -1,6 +1,7 @@
 package com.frogsoft.frogsoftcms.service.home;
 
 import com.frogsoft.frogsoftcms.controller.v1.request.home.AnnouncementsSetRequest;
+import com.frogsoft.frogsoftcms.controller.v1.request.home.DailyArticleSetRequest;
 import com.frogsoft.frogsoftcms.dto.assembler.article.ArticleModelAssembler;
 import com.frogsoft.frogsoftcms.dto.mapper.article.ArticleMapper;
 import com.frogsoft.frogsoftcms.dto.model.article.ArticleDto;
@@ -56,6 +57,16 @@ public class HomeServiceImpl implements HomeService {
    */
   @Override
   public CollectionModel<EntityModel<ArticleDto>> getRecommendations(User authenticatedUser) {
+    return getRecommendations();
+  }
+
+  /**
+   * getRecommendations 返回随机推荐文章列表的CollectionModel
+   *
+   * @return CollectionModel<EntityModel < ArticleDto>>
+   */
+  @Override
+  public CollectionModel<EntityModel<ArticleDto>> getRecommendations() {
     List<ArticleDto> articles = getAllArticleDtos();
     List<ArticleDto> retArticles = new ArrayList<>();
     // 随机获取所有文章列表的子集
@@ -91,13 +102,15 @@ public class HomeServiceImpl implements HomeService {
   /**
    * changeDailyArticle 设置每日推荐文章（仅限管理员）
    *
-   * @param articleId         要设置的文章id
-   * @param authenticatedUser 设置人
+   * @param dailyArticleSetRequest 要设置的文章RequestDto
+   * @param authenticatedUser      设置人
    * @return EntityModel<ArticleDto> 设置好的推荐文章的数据模型
    */
   @Override
-  public EntityModel<ArticleDto> changeDailyArticle(Integer articleId, User authenticatedUser) {
-    Long articlePickupId = articleId.longValue();
+  public EntityModel<ArticleDto> changeDailyArticle(
+      DailyArticleSetRequest dailyArticleSetRequest, User authenticatedUser) {
+
+    Long articlePickupId = dailyArticleSetRequest.getArticleId();
     Config dailyPickupConfig = configRepository.findByConfigKey("DailyPickup");
 
     Optional<Article> articlePickupNew = articleRepository.findById(articlePickupId);
@@ -106,7 +119,7 @@ public class HomeServiceImpl implements HomeService {
     }
 
     dailyPickupConfig = configRepository.save(
-        dailyPickupConfig.setConfigValue(articleId.toString())
+        dailyPickupConfig.setConfigValue(articlePickupId.toString())
     );
 
     return articleModelAssembler.toModel(articleMapper.toArticleDto(articlePickupNew.get()));

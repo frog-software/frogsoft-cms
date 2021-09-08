@@ -3,6 +3,9 @@ package com.frogsoft.frogsoftcms.service.user;
 import com.frogsoft.frogsoftcms.controller.v1.request.User.UserChangePasswordRequest;
 import com.frogsoft.frogsoftcms.controller.v1.request.User.UserRegisterRequest;
 import com.frogsoft.frogsoftcms.controller.v1.request.User.UserRequest;
+import com.frogsoft.frogsoftcms.dto.model.article.ArticleDto;
+import com.frogsoft.frogsoftcms.dto.model.comment.CommentDto;
+import com.frogsoft.frogsoftcms.dto.model.history.HistoryDto;
 import com.frogsoft.frogsoftcms.dto.model.user.UserDetailDto;
 import com.frogsoft.frogsoftcms.dto.model.user.UserDto;
 import com.frogsoft.frogsoftcms.model.user.User;
@@ -30,4 +33,9 @@ public interface UserService {
 
   void deleteUser(String username, User authenticatedUser);
 
+  PagedModel<EntityModel<HistoryDto>> getUserHistory(String username, Pageable pageable);
+
+  PagedModel<EntityModel<ArticleDto>> getUserFavor(String username, Pageable pageable);
+
+  PagedModel<EntityModel<CommentDto>> getUserComment(String username, Pageable pageable);
 }

@@ -5,7 +5,6 @@ import com.frogsoft.frogsoftcms.controller.v1.request.comment.CommentRequest;
 import com.frogsoft.frogsoftcms.model.user.User;
 import com.frogsoft.frogsoftcms.service.article.ArticleService;
 import com.frogsoft.frogsoftcms.service.comment.CommentService;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
@@ -35,13 +34,34 @@ public class ArticleController {
       @RequestParam(defaultValue = "publishDate") String sortBy,
       @RequestParam(defaultValue = "DESC") String order,
       @RequestParam(defaultValue = "0") int page,
-      @RequestParam(defaultValue = "10") int size) {
-    if (search.equals("")) {
+      @RequestParam(defaultValue = "10") int size,
+      @RequestParam(defaultValue = "") String author) {
+    String role;
+    if (authenticatedUser == null) {
+      role = "user";
+    } else {
+      if (authenticatedUser.getRoles().contains("ROLE_ADMIN")) {
+        role = "admin";
+      } else {
+        role = "user";
+      }
+    }
+    if (search.equals("") && author.equals("")) {
       return ResponseEntity.ok()
-          .body(articleService.findAll(sortBy, order, PageRequest.of(page, size)));
+          .body(articleService.findAll(role, sortBy, order, PageRequest.of(page, size)));
+    } else if (search.equals("")) {
+      return ResponseEntity.ok()
+          .body(articleService
+              .findByAuthor(author, role, sortBy, order, PageRequest.of(page, size)));
+    } else if (author.equals("")) {
+      return ResponseEntity.ok()
+          .body(articleService
+              .findBySearch(search, role, sortBy, order, PageRequest.of(page, size)));
     } else {
       return ResponseEntity.ok()
-          .body(articleService.findBySearch(search, sortBy, order, PageRequest.of(page, size)));
+          .body(articleService
+              .findBySearchAndAuthor(search, author, role, sortBy, order,
+                  PageRequest.of(page, size)));
     }
   }
 
@@ -68,13 +88,20 @@ public class ArticleController {
   @GetMapping("/{id}")
   public ResponseEntity<?> getOneArticle(@PathVariable(value = "id") Long id,
       @AuthenticationPrincipal User authenticatedUser) {
-
-    List<String> roles = authenticatedUser.getRoles();
-    Long userId = authenticatedUser.getId();
-    String role = "user";
-    if (roles.contains("ROLE_ADMIN")) {
-      role = "admin";
+    String role;
+    Long userId;
+    if (authenticatedUser == null) {
+      role = "user";
+      userId = (long) -1;
+    } else {
+      if (authenticatedUser.getRoles().contains("ROLE_ADMIN")) {
+        role = "admin";
+      } else {
+        role = "user";
+      }
+      userId = authenticatedUser.getId();
     }
+
     return ResponseEntity.status(201).body(articleService.getOneArticle(id, role, userId));
   }
 
@@ -82,8 +109,8 @@ public class ArticleController {
   public ResponseEntity<?> editArticle(@PathVariable(value = "id") Long id,
       @RequestBody ArticleRequest articleRequest,
       @AuthenticationPrincipal User authenticatedUser) {
-    Long userId = authenticatedUser.getId();
-    return ResponseEntity.status(201).body(articleService.editArticle(id, userId, articleRequest));
+    return ResponseEntity.status(201)
+        .body(articleService.editArticle(id, authenticatedUser, articleRequest));
   }
 
   @DeleteMapping("/{id}")

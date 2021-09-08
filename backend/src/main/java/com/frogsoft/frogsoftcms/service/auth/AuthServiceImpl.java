@@ -37,5 +37,13 @@ public class AuthServiceImpl implements AuthService {
     }
   }
 
+  public User findByUsername(String username) {
+    User user = userRepository.findByUsername(username);
+    if (user == null) {
+      throw new UserNotFoundException(username);
+    }
+    return user;
+  }
+
 
 }

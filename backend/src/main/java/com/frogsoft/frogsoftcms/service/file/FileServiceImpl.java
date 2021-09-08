@@ -37,7 +37,6 @@ public class FileServiceImpl implements FileService {
     UUID uuid = UUID.randomUUID();
     String newFileName = uuid + suffixName;
 
-    System.out.println(FILE_UPLOAD_DIR + path);
     File fileDirectory = new File(FILE_UPLOAD_DIR + path);
     File destFile = new File(FILE_UPLOAD_DIR + path + newFileName);
     if (!fileDirectory.exists()) {
@@ -51,10 +50,11 @@ public class FileServiceImpl implements FileService {
       e.printStackTrace();
       throw new BadRequestException("上传失败，请重新尝试");
     }
+    String uri = "/file/" + newFileName;
     Material material = new Material();
     material.setShortName(fileName);
     material.setFullName(newFileName);
-    material.setUrl(destFile.getAbsolutePath());
+    material.setUri(uri);
     material.setSize(file.getSize());
     material.setType(file.getContentType());
     material.setPublishDate(LocalDateTime.now());
@@ -71,7 +71,7 @@ public class FileServiceImpl implements FileService {
         throw new UnauthorizedException("无权限");
       }
     }
-    File file = new File(material.getUrl());
+    File file = new File(material.getUri());
     if (file.exists()) {
       file.delete();
     } else {

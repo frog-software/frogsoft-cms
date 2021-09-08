@@ -1,8 +1,8 @@
 package com.frogsoft.frogsoftcms.model.article;
-
 import com.frogsoft.frogsoftcms.model.user.User;
 import java.time.LocalDateTime;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -15,6 +15,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Getter
 @Setter
@@ -23,7 +25,8 @@ import lombok.experimental.Accessors;
 @Entity
 public class Article {
 
-  @ManyToOne
+  @ManyToOne(cascade = CascadeType.ALL)
+  @OnDelete(action = OnDeleteAction.CASCADE)
   @JoinColumn(referencedColumnName = "id")
   User author;
   @Id
@@ -44,14 +47,11 @@ public class Article {
   @ManyToMany
   private List<User> likes;
 
-  @ManyToMany
-  private List<User> histories;
-
   @Column(nullable = false)
   private String title;
   @Column(nullable = false)
   private String description;
-  @Column(nullable = false)
+  @Column(nullable = false, columnDefinition = "TEXT")
   private String content;
   @Column(nullable = false)
   private String cover;

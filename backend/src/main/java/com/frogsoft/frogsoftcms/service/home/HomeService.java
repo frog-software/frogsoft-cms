@@ -1,6 +1,7 @@
 package com.frogsoft.frogsoftcms.service.home;
 
 import com.frogsoft.frogsoftcms.controller.v1.request.home.AnnouncementsSetRequest;
+import com.frogsoft.frogsoftcms.controller.v1.request.home.DailyArticleSetRequest;
 import com.frogsoft.frogsoftcms.dto.model.article.ArticleDto;
 import com.frogsoft.frogsoftcms.model.user.User;
 import org.springframework.hateoas.CollectionModel;
@@ -10,11 +11,14 @@ public interface HomeService {
 
   CollectionModel<EntityModel<ArticleDto>> getRecommendations(User authenticatedUser);
 
+  CollectionModel<EntityModel<ArticleDto>> getRecommendations();
+
   CollectionModel<EntityModel<ArticleDto>> getRankList();
 
   EntityModel<ArticleDto> getDailyArticle();
 
-  EntityModel<ArticleDto> changeDailyArticle(Integer articleId, User authenticatedUser);
+  EntityModel<ArticleDto> changeDailyArticle(
+      DailyArticleSetRequest dailyArticleSetRequest, User authenticatedUser);
 
   CollectionModel<EntityModel<ArticleDto>> getAnnouncements();
 

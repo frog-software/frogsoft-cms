@@ -4,14 +4,17 @@ import com.frogsoft.frogsoftcms.controller.v1.request.article.ArticleRequest;
 import com.frogsoft.frogsoftcms.dto.assembler.article.ArticleModelAssembler;
 import com.frogsoft.frogsoftcms.dto.mapper.article.ArticleMapper;
 import com.frogsoft.frogsoftcms.dto.model.article.ArticleDto;
+import com.frogsoft.frogsoftcms.dto.model.article.ArticleMeDto;
 import com.frogsoft.frogsoftcms.exception.article.ArticleNotFoundException;
+import com.frogsoft.frogsoftcms.exception.basic.conflict.ConflictException;
 import com.frogsoft.frogsoftcms.exception.basic.forbidden.ForbiddenException;
-import com.frogsoft.frogsoftcms.exception.user.UserNotFoundException;
 import com.frogsoft.frogsoftcms.model.article.Article;
 import com.frogsoft.frogsoftcms.model.article.Status;
+import com.frogsoft.frogsoftcms.model.history.History;
 import com.frogsoft.frogsoftcms.model.user.Roles;
 import com.frogsoft.frogsoftcms.model.user.User;
 import com.frogsoft.frogsoftcms.repository.article.ArticleRepository;
+import com.frogsoft.frogsoftcms.repository.history.HistoryRepository;
 import com.frogsoft.frogsoftcms.repository.user.UserRepository;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +33,7 @@ public class ArticleServiceImpl implements ArticleService {
   private final ArticleModelAssembler articleModelAssembler;
   private final ArticleMapper articleMapper;
   private final UserRepository userRepository;
+  private final HistoryRepository historyRepository;
   private final PagedResourcesAssembler<ArticleDto> pagedResourcesAssembler;
 
   @Override
@@ -51,7 +55,7 @@ public class ArticleServiceImpl implements ArticleService {
   }
 
   @Override
-  public EntityModel<ArticleDto> getOneArticle(Long id, String role, Long userId) {
+  public EntityModel<ArticleMeDto> getOneArticle(Long id, String role, Long userId) {
     Article article;
     if (role.equals("admin")) {
       article = articleRepository.findById(id)
@@ -61,29 +65,35 @@ public class ArticleServiceImpl implements ArticleService {
           .orElseThrow(() -> new ArticleNotFoundException(id));
     }
     article.setViews(article.getViews() + 1);
-    article.getHistories().add(userRepository
-        .findById(userId)
-        .orElseThrow(() -> new UserNotFoundException(userId)));
+    History history = new History();
+    history.setArticle(article)
+        .setTime(LocalDateTime.now())
+        .setUser(userRepository.findById(userId)
+            .orElse(null));
+    historyRepository.save(history);
     Article newArticle = articleRepository.save(article);
-    return articleModelAssembler.toModel(articleMapper.toArticleDto(newArticle));
+    User user = userRepository.findById(userId).orElse(null);
+    return articleModelAssembler.toMeModel(articleMapper.toArticleMeDto(newArticle, user));
   }
 
   @Override
-  public EntityModel<ArticleDto> editArticle(Long id, Long userId, ArticleRequest articleRequest) {
+  public EntityModel<ArticleDto> editArticle(Long id, User authenticateUser,
+      ArticleRequest articleRequest) {
     Article article = articleRepository.findById(id)
         .orElseThrow(() -> new ArticleNotFoundException(id));
-    if (userId.equals(article.getAuthor().getId())) {
-      Article newArticle = articleRepository.save(article
-          .setTitle(articleRequest.getTitle())
-          .setContent(articleRequest.getContent())
-          .setDescription(articleRequest.getDescription())
-          .setStatus(articleRequest.getStatus())
-          .setCover(articleRequest.getCover())
-          .setUpdateDate(LocalDateTime.now()));
-      return articleModelAssembler.toModel(articleMapper.toArticleDto(newArticle));
-    } else {
-      throw new ForbiddenException("无权限修改");
+    if (!authenticateUser.getRoles().contains(Roles.ROLE_ADMIN.getRole())) {
+      if (!authenticateUser.getId().equals(article.getAuthor().getId())) {
+        throw new ForbiddenException("无权限修改");
+      }
     }
+    Article newArticle = articleRepository.save(article
+        .setTitle(articleRequest.getTitle())
+        .setContent(articleRequest.getContent())
+        .setDescription(articleRequest.getDescription())
+        .setStatus(articleRequest.getStatus())
+        .setCover(articleRequest.getCover())
+        .setUpdateDate(LocalDateTime.now()));
+    return articleModelAssembler.toModel(articleMapper.toArticleDto(newArticle));
   }
 
   @Override
@@ -91,7 +101,7 @@ public class ArticleServiceImpl implements ArticleService {
     Article article = articleRepository.findById(id)
         .orElseThrow(() -> new ArticleNotFoundException(id));
     if (!authenticateUser.getRoles().contains(Roles.ROLE_ADMIN.getRole())) {
-      if (!authenticateUser.equals(article.getAuthor())) {
+      if (!authenticateUser.getUsername().equals(article.getAuthor().getUsername())) {
         throw new ForbiddenException("无权限删除该文章");
       }
     }
@@ -102,9 +112,13 @@ public class ArticleServiceImpl implements ArticleService {
   public EntityModel<ArticleDto> likeArticle(Long id, Long userId) {
     Article article = articleRepository.findById(id)
         .orElseThrow(() -> new ArticleNotFoundException(id));
-    article.getLikes().add(userRepository
+    User likedUser = userRepository
         .findById(userId)
-        .orElseThrow(() -> new ArticleNotFoundException(userId)));
+        .orElseThrow(() -> new ArticleNotFoundException(userId));
+    if (article.getLikes().contains(likedUser)) {
+      throw new ConflictException("该用户已点赞");
+    }
+    article.getLikes().add(likedUser);
     article.setLikesNum(article.getLikesNum() + 1);
     Article newArticle = articleRepository.save(article);
     return articleModelAssembler.toModel(articleMapper.toArticleDto(newArticle));
@@ -114,9 +128,13 @@ public class ArticleServiceImpl implements ArticleService {
   public EntityModel<ArticleDto> deleteLike(Long id, Long userId) {
     Article article = articleRepository.findById(id)
         .orElseThrow(() -> new ArticleNotFoundException(id));
-    article.getLikes().remove(userRepository
+    User unlikedUser = userRepository
         .findById(userId)
-        .orElseThrow(() -> new ArticleNotFoundException(userId)));
+        .orElseThrow(() -> new ArticleNotFoundException(userId));
+    if (!article.getLikes().contains(unlikedUser)) {
+      throw new ConflictException("该用户未点赞，无法取消");
+    }
+    article.getLikes().remove(unlikedUser);
     article.setLikesNum(article.getLikesNum() - 1);
     Article newArticle = articleRepository.save(article);
     return articleModelAssembler.toModel(articleMapper.toArticleDto(newArticle));
@@ -126,9 +144,13 @@ public class ArticleServiceImpl implements ArticleService {
   public EntityModel<ArticleDto> favorArticle(Long id, Long userId) {
     Article article = articleRepository.findById(id)
         .orElseThrow(() -> new ArticleNotFoundException(id));
-    article.getFavorites().add(userRepository
+    User favoredUser = userRepository
         .findById(userId)
-        .orElseThrow(() -> new ArticleNotFoundException(userId)));
+        .orElseThrow(() -> new ArticleNotFoundException(userId));
+    if (article.getFavorites().contains(favoredUser)) {
+      throw new ConflictException("该用户已收藏本文章");
+    }
+    article.getFavorites().add(favoredUser);
     article.setFavoritesNum(article.getFavoritesNum() + 1);
     Article newArticle = articleRepository.save(article);
     return articleModelAssembler.toModel(articleMapper.toArticleDto(newArticle));
@@ -138,42 +160,135 @@ public class ArticleServiceImpl implements ArticleService {
   public EntityModel<ArticleDto> deleteFavor(Long id, Long userId) {
     Article article = articleRepository.findById(id)
         .orElseThrow(() -> new ArticleNotFoundException(id));
-    article.getFavorites().remove(userRepository
+    User unfavoredUser = userRepository
         .findById(userId)
-        .orElseThrow(() -> new ArticleNotFoundException(userId)));
+        .orElseThrow(() -> new ArticleNotFoundException(userId));
+    if (!article.getFavorites().contains(unfavoredUser)) {
+      throw new ConflictException("该用户未收藏本文章，无法取消");
+    }
+    article.getFavorites().remove(unfavoredUser);
     article.setFavoritesNum(article.getFavoritesNum() - 1);
     Article newArticle = articleRepository.save(article);
     return articleModelAssembler.toModel(articleMapper.toArticleDto(newArticle));
   }
 
   @Override
-  public PagedModel<EntityModel<ArticleDto>> findAll(String sortBy, String order,
+  public PagedModel<EntityModel<ArticleDto>> findAll(String role, String sortBy, String order,
       Pageable pageable) {
-    if (order.equals("ASC")) {
-      Page<ArticleDto> articles = articleRepository.findAllASC(Status.NORMAL, sortBy, pageable)
-          .map(articleMapper::toArticleDto);
-      return pagedResourcesAssembler.toModel(articles, articleModelAssembler);
+    if (role.equals("admin")) {
+      if (order.equals("ASC")) {
+        Page<ArticleDto> articles = articleRepository.findAllASCAdmin(sortBy, pageable)
+            .map(articleMapper::toArticleDto);
+        return pagedResourcesAssembler.toModel(articles, articleModelAssembler);
+      } else {
+        Page<ArticleDto> articles = articleRepository.findAllDESCAdmin(sortBy, pageable)
+            .map(articleMapper::toArticleDto);
+        return pagedResourcesAssembler.toModel(articles, articleModelAssembler);
+      }
     } else {
-      Page<ArticleDto> articles = articleRepository.findAllDESC(Status.NORMAL, sortBy, pageable)
-          .map(articleMapper::toArticleDto);
-      return pagedResourcesAssembler.toModel(articles, articleModelAssembler);
+      if (order.equals("ASC")) {
+        Page<ArticleDto> articles = articleRepository.findAllASC(Status.NORMAL, sortBy, pageable)
+            .map(articleMapper::toArticleDto);
+        return pagedResourcesAssembler.toModel(articles, articleModelAssembler);
+      } else {
+        Page<ArticleDto> articles = articleRepository.findAllDESC(Status.NORMAL, sortBy, pageable)
+            .map(articleMapper::toArticleDto);
+        return pagedResourcesAssembler.toModel(articles, articleModelAssembler);
+      }
     }
 
   }
 
   @Override
-  public PagedModel<EntityModel<ArticleDto>> findBySearch(String search, String sortBy,
+  public PagedModel<EntityModel<ArticleDto>> findBySearch(String search, String role, String sortBy,
       String order, Pageable pageable) {
-    if (order.equals("ASC")) {
-      Page<ArticleDto> articles = articleRepository
-          .findBySearchASC(search, Status.NORMAL, sortBy, pageable)
-          .map(articleMapper::toArticleDto);
-      return pagedResourcesAssembler.toModel(articles, articleModelAssembler);
+    if (role.equals("admin")) {
+      if (order.equals("ASC")) {
+        Page<ArticleDto> articles = articleRepository
+            .findBySearchASCAdmin(search, sortBy, pageable)
+            .map(articleMapper::toArticleDto);
+        return pagedResourcesAssembler.toModel(articles, articleModelAssembler);
+      } else {
+        Page<ArticleDto> articles = articleRepository
+            .findBySearchDESCAdmin(search, sortBy, pageable)
+            .map(articleMapper::toArticleDto);
+        return pagedResourcesAssembler.toModel(articles, articleModelAssembler);
+      }
+
     } else {
-      Page<ArticleDto> articles = articleRepository
-          .findBySearchDESC(search, Status.NORMAL, sortBy, pageable)
-          .map(articleMapper::toArticleDto);
-      return pagedResourcesAssembler.toModel(articles, articleModelAssembler);
+      if (order.equals("ASC")) {
+        Page<ArticleDto> articles = articleRepository
+            .findBySearchASC(search, Status.NORMAL, sortBy, pageable)
+            .map(articleMapper::toArticleDto);
+        return pagedResourcesAssembler.toModel(articles, articleModelAssembler);
+      } else {
+        Page<ArticleDto> articles = articleRepository
+            .findBySearchDESC(search, Status.NORMAL, sortBy, pageable)
+            .map(articleMapper::toArticleDto);
+        return pagedResourcesAssembler.toModel(articles, articleModelAssembler);
+      }
     }
+  }
+
+  public PagedModel<?> findByAuthor(String authorName, String role, String sortBy, String order,
+      Pageable pageable) {
+    User author = userRepository.findByUsername(authorName);
+    if (role.equals("admin")) {
+      if (order.equals("ASC")) {
+        Page<ArticleDto> articles = articleRepository.findByAuthorASCAdmin(author, sortBy, pageable)
+            .map(articleMapper::toArticleDto);
+        return pagedResourcesAssembler.toModel(articles, articleModelAssembler);
+      } else {
+        Page<ArticleDto> articles = articleRepository
+            .findByAuthorDESCAdmin(author, sortBy, pageable)
+            .map(articleMapper::toArticleDto);
+        return pagedResourcesAssembler.toModel(articles, articleModelAssembler);
+      }
+    } else {
+      if (order.equals("ASC")) {
+
+        Page<ArticleDto> articles = articleRepository
+            .findByAuthorASC(author, Status.NORMAL, sortBy, pageable)
+            .map(articleMapper::toArticleDto);
+        return pagedResourcesAssembler.toModel(articles, articleModelAssembler);
+      } else {
+        Page<ArticleDto> articles = articleRepository
+            .findByAuthorDESC(author, Status.NORMAL, sortBy, pageable)
+            .map(articleMapper::toArticleDto);
+        return pagedResourcesAssembler.toModel(articles, articleModelAssembler);
+      }
+    }
+  }
+
+  public PagedModel<?> findBySearchAndAuthor(String search, String authorName, String role,
+      String sortBy, String order, Pageable pageable) {
+    User author = userRepository.findByUsername(authorName);
+    if (role.equals("admin")) {
+      if (order.equals("ASC")) {
+        Page<ArticleDto> articles = articleRepository
+            .findBySearchAndAuthorASCAdmin(search, author, sortBy, pageable)
+            .map(articleMapper::toArticleDto);
+        return pagedResourcesAssembler.toModel(articles, articleModelAssembler);
+      } else {
+        Page<ArticleDto> articles = articleRepository
+            .findBySearchAndAuthorDESCAdmin(search, author, sortBy, pageable)
+            .map(articleMapper::toArticleDto);
+        return pagedResourcesAssembler.toModel(articles, articleModelAssembler);
+      }
+
+    } else {
+      if (order.equals("ASC")) {
+        Page<ArticleDto> articles = articleRepository
+            .findBySearchAndAuthorASC(search, author, Status.NORMAL, sortBy, pageable)
+            .map(articleMapper::toArticleDto);
+        return pagedResourcesAssembler.toModel(articles, articleModelAssembler);
+      } else {
+        Page<ArticleDto> articles = articleRepository
+            .findBySearchAndAuthorDESC(search, author, Status.NORMAL, sortBy, pageable)
+            .map(articleMapper::toArticleDto);
+        return pagedResourcesAssembler.toModel(articles, articleModelAssembler);
+      }
+    }
+
   }
 }

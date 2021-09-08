@@ -20,11 +20,51 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
   @Query("select A from Article A where A.status=?1 order by ?2 ASC")
   Page<Article> findAllASC(Status status, String sortBy, Pageable pageable);
 
+  @Query("select A from Article A order by ?1 DESC")
+  Page<Article> findAllDESCAdmin(String sortBy, Pageable pageable);
+
+  @Query("select A from Article A order by ?1 ASC")
+  Page<Article> findAllASCAdmin(String sortBy, Pageable pageable);
+
   @Query("select A from Article A where (A.content like %?1% or A.title like %?1% or A.description like %?1%) and A.status=?2 order by ?3 DESC")
   Page<Article> findBySearchDESC(String search, Status status, String sortBy, Pageable pageable);
 
   @Query("select A from Article A where (A.content like %?1% or A.title like %?1% or A.description like %?1%) and A.status=?2 order by ?3 ASC")
   Page<Article> findBySearchASC(String search, Status status, String sortBy, Pageable pageable);
+
+  @Query("select A from Article A where (A.content like %?1% or A.title like %?1% or A.description like %?1%) and A.author=?2 and A.status=?3 order by ?3 DESC")
+  Page<Article> findBySearchAndAuthorDESC(String search, User author, Status status,
+      String sortBy, Pageable pageable);
+
+  @Query("select A from Article A where (A.content like %?1% or A.title like %?1% or A.description like %?1%) and A.author=?2 and A.status=?3 order by ?3 ASC")
+  Page<Article> findBySearchAndAuthorASC(String search, User author, Status status, String sortBy,
+      Pageable pageable);
+
+  @Query("select A from Article A where A.author=?1 and A.status=?2 order by ?3 DESC")
+  Page<Article> findByAuthorDESC(User author, Status status, String sortBy, Pageable pageable);
+
+  @Query("select A from Article A where A.author=?1 and A.status=?2 order by ?3 ASC")
+  Page<Article> findByAuthorASC(User author, Status status, String sortBy, Pageable pageable);
+
+  @Query("select A from Article A where A.content like %?1% or A.title like %?1% or A.description like %?1% order by ?2 DESC")
+  Page<Article> findBySearchDESCAdmin(String search, String sortBy, Pageable pageable);
+
+  @Query("select A from Article A where A.content like %?1% or A.title like %?1% or A.description like %?1% order by ?2 ASC")
+  Page<Article> findBySearchASCAdmin(String search, String sortBy, Pageable pageable);
+
+  @Query("select A from Article A where A.author=?1 order by ?2 DESC")
+  Page<Article> findByAuthorDESCAdmin(User author, String sortBy, Pageable pageable);
+
+  @Query("select A from Article A where A.author=?1 order by ?2 ASC")
+  Page<Article> findByAuthorASCAdmin(User author, String sortBy, Pageable pageable);
+
+  @Query("select A from Article A where (A.content like %?1% or A.title like %?1% or A.description like %?1%)and A.author=?2 order by ?3 DESC")
+  Page<Article> findBySearchAndAuthorDESCAdmin(String search, User author, String sortBy,
+      Pageable pageable);
+
+  @Query("select A from Article A where (A.content like %?1% or A.title like %?1% or A.description like %?1%)and A.author=?2 order by ?3 ASC")
+  Page<Article> findBySearchAndAuthorASCAdmin(String search, User author, String sortBy,
+      Pageable pageable);
 
   List<Article> findByAuthor(User user);
 }
