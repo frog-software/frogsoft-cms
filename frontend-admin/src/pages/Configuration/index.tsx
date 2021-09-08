@@ -336,7 +336,7 @@ const Configuration: FC = () => {
             {
               !editable ? (
                 <Col span={12}>
-                  <Descriptions bordered column={1} title="验证邮箱设置">
+                  <Descriptions column={1} title="验证邮箱设置">
                     <Descriptions.Item label="邮箱账号">{configuration?.email?.account || '暂未设置'}</Descriptions.Item>
                     <Descriptions.Item label="邮箱密码">{configuration?.email?.password || '暂未设置'}</Descriptions.Item>
                     <Descriptions.Item label="邮件服务器主机">{configuration?.email?.host || '暂未设置'}</Descriptions.Item>

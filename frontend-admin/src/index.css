@@ -172,3 +172,8 @@ select {
         background-position: 0% 50%;
     }
 }
+
+
+input[type="text"], input[type="password"], input[type=submit]:focus, input[type="color"], textarea {
+    background-color: #FFFFFF00;
+}

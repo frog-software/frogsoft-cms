@@ -244,7 +244,7 @@ const ArticleInfo: FC = () => {
                   />
                 </Col>
                 <Col span={20}>
-                  <Descriptions title={articleInfo?.title ?? '文章标题未定义'} bordered style={{ color: 'red' }}>
+                  <Descriptions title={articleInfo?.title ?? '文章标题未定义'} style={{ color: 'red' }}>
                     <DescriptionsItem label="文章ID">{articleInfo?.id ?? '未定义'}</DescriptionsItem>
                     <DescriptionsItem label="文章发表时间">{articleInfo?.publishDate ?? '未定义'}</DescriptionsItem>
                     <br />
