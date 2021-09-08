@@ -9,10 +9,13 @@ import com.frogsoft.frogsoftcms.exception.basic.unauthorized.UnauthorizedExcepti
 import com.frogsoft.frogsoftcms.model.file.Material;
 import com.frogsoft.frogsoftcms.model.user.User;
 import com.frogsoft.frogsoftcms.repository.file.FileRepository;
+import com.frogsoft.frogsoftcms.repository.user.UserRepository;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.UUID;
+import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.hateoas.EntityModel;
@@ -24,21 +27,30 @@ import org.springframework.web.multipart.MultipartFile;
 public class FileServiceImpl implements FileService {
 
   private final FileRepository fileRepository;
+  private final UserRepository userRepository;
   private final FileModelAssemble fileModelAssemble;
   private final FileMapper fileMapper;
   @Value("${file.upload.dir}")
   private String FILE_UPLOAD_DIR;
 
   @Override
-  public EntityModel<FileDto> putFile(User authenticatedUser, MultipartFile file) {
-    String path = authenticatedUser.getUsername() + "/";
+  public EntityModel<FileDto> putFile(
+      User authenticatedUser,
+      MultipartFile file,
+      HttpServletRequest request
+  ) {
     String fileName = file.getOriginalFilename();
-    String suffixName = fileName.substring(fileName.lastIndexOf("."));
-    UUID uuid = UUID.randomUUID();
-    String newFileName = uuid + suffixName;
+    String extension = "";
 
-    File fileDirectory = new File(FILE_UPLOAD_DIR + path);
-    File destFile = new File(FILE_UPLOAD_DIR + path + newFileName);
+    int i = fileName.lastIndexOf('.');
+    if (i > 0) {
+      extension = fileName.substring(i+1);
+    }
+    UUID uuid = UUID.randomUUID();
+    String newFileName = uuid + extension;
+
+    File fileDirectory = new File(FILE_UPLOAD_DIR);
+    File destFile = new File(FILE_UPLOAD_DIR + "/" + newFileName);
     if (!fileDirectory.exists()) {
       if (!fileDirectory.mkdir()) {
         throw new ForbiddenException("创建文件夹失败");
@@ -50,15 +62,17 @@ public class FileServiceImpl implements FileService {
       e.printStackTrace();
       throw new BadRequestException("上传失败，请重新尝试");
     }
-    String uri = "/file/" + newFileName;
+    URI origin = URI.create(request.getRequestURL().toString());
+    String uri = origin.getScheme() + "://" + origin.getAuthority() + "/v1/global/files/" + newFileName;
     Material material = new Material();
     material.setShortName(fileName);
     material.setFullName(newFileName);
     material.setUri(uri);
+    material.setLocalPath(destFile.getAbsoluteFile().getAbsolutePath());
     material.setSize(file.getSize());
     material.setType(file.getContentType());
     material.setPublishDate(LocalDateTime.now());
-    material.setUser(authenticatedUser);
+    material.setUser(userRepository.findByUsername(authenticatedUser.getUsername()));
     return fileModelAssemble.toModel(fileMapper.toFileDto(fileRepository.save(material)));
   }
 

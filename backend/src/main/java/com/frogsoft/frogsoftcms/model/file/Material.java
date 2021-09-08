@@ -36,6 +36,8 @@ public class Material {
 
   private String shortName;
 
+  private String localPath;
+
   private String fullName;
 
   private String type;

@@ -60,6 +60,7 @@ public class SecurityConfig {
             .antMatchers(HttpMethod.GET, "/v1/articles/**").permitAll()
             .antMatchers(HttpMethod.GET, "/v1/home/recommendations").permitAll()
             .antMatchers(HttpMethod.GET, "/v1/global/config/frontend-user").permitAll()
+            .antMatchers(HttpMethod.GET, "/v1/global/files/**").permitAll()
             .anyRequest().authenticated()
         )
         .addFilterBefore(
