@@ -14,12 +14,12 @@ export interface ConfigurationType {
   favicon: string,
   title: string,
   logo: string,
-  email: Email,
-  header: Header,
-  footer: Footer,
+  emailDto: EmailDto,
+  headerDto: HeaderDto,
+  footerDto: FooterDto,
 }
 
-export interface Email {
+export interface EmailDto {
   password: string,
   account: string,
   body: string,
@@ -28,10 +28,10 @@ export interface Email {
   port: string,
 }
 
-export interface Header {
+export interface HeaderDto {
   logo: string,
 }
 
-export interface Footer {
+export interface FooterDto {
   logo: string,
 }

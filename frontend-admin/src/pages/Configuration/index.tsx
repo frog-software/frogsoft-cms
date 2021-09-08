@@ -10,12 +10,12 @@
 //
 //--------------------------------------------------------------------------
 
-import React, { FC, useEffect, useState }                                                         from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import Block
   from 'components/Block';
 import {
-  Button, Col, Descriptions, Form, Image, Input, Layout, notification, Row, Space, Tabs,
-} from 'antd';
+  Button, Col, Descriptions, Form, Image, Input, Layout, notification, Row, Space, Tabs, Tooltip,
+}                                         from 'antd';
 import {
   AndroidOutlined,
   AppleOutlined,
@@ -24,10 +24,10 @@ import {
   MailOutlined,
   SkinOutlined,
   WindowsOutlined,
-}                                                                                                 from '@ant-design/icons';
-import http                                                                                       from 'utils/http';
-import { ConfigurationType }                                                                      from 'types/configuration';
-import { useForm }                                                                                from 'antd/es/form/Form';
+}                                         from '@ant-design/icons';
+import http                               from 'utils/http';
+import { ConfigurationType }              from 'types/configuration';
+import { useForm }                        from 'antd/es/form/Form';
 
 const { TabPane } = Tabs;
 
@@ -38,18 +38,22 @@ const Configuration: FC = () => {
   const [render, setRender]               = useState<boolean>(false);
   const [loading, setLoading]             = useState<boolean>(false);
   const { TextArea }                        = Input;
-  const {
-    Header, Footer, Sider, Content,
-  }                                 = Layout;
+  const { Header, Footer, Content }         = Layout;
 
   useEffect(() => {
-    (async () => {
-      const data = await http.get<ConfigurationType>('v1/global/config');
-      setConfiguration(data);
-    })();
-  }, [render]);
+    setLoading(true);
 
-  const testImg: string = 'http://pic.soutu123.cn/element_origin_min_pic/16/08/31/1457c67986055d6.jpg';
+    http.get<ConfigurationType>('v1/global/config')
+      .then((data) => {
+        setConfiguration(data);
+      })
+      .catch((error) => {
+        notification['error']({ message: '获取个性配置失败', description: String(error) });
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [render]);
 
   // 输入内容规范
   const validateMessages = {
@@ -62,37 +66,47 @@ const Configuration: FC = () => {
     setLoading(true);
 
     const tempData = {
-      favicon: data?.favicon || configuration?.favicon,
-      title: data?.title || configuration?.title,
-      logo: data?.logo || configuration?.logo,
-      email: {
-        password: data?.password || configuration?.email?.password,
-        account: data?.account || configuration?.email?.account,
-        body: data?.body || configuration?.email?.body,
-        title: data?.emailTitle || configuration?.email?.title,
-        host: data?.host || configuration?.email?.host,
-        port: data?.port || configuration?.email?.port,
+      favicon: data?.favicon,
+      title: data?.title,
+      logo: data?.logo,
+      emailDto: {
+        password: data?.password,
+        account: data?.account,
+        body: data?.body,
+        title: data?.emailTitle,
+        host: data?.host,
+        port: data?.port,
       },
-      header: {
-        logo: data?.headerLogo || configuration?.header?.logo,
+      headerDto: {
+        logo: data?.headerLogo,
       },
-      footer: {
-        logo: data?.footerLogo || configuration?.footer?.logo,
+      footerDto: {
+        logo: data?.footerLogo,
       },
     };
 
-    http.put('/v1/global/config', tempData)
-      .then(() => {
-        notification['success']({ message: '站点属性编辑成功' });
-        setRender(!render);
-        setEditable(false);
-      })
-      .catch(() => {
-        notification['error']({ message: '站点属性编辑失败' });
-      })
-      .finally(() => {
-        setLoading(false);
+    // eslint-disable-next-line no-template-curly-in-string
+    if (tempData.emailDto.body.includes('[[${verifyCode}]]')) {
+      http.put('/v1/global/config', tempData)
+        .then(() => {
+          notification['success']({ message: '站点属性编辑成功' });
+          setRender(!render);
+          setEditable(false);
+        })
+        .catch(() => {
+          notification['error']({ message: '站点属性编辑失败' });
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    } else {
+      notification['error']({
+        message: '邮件内容编辑失败',
+        // eslint-disable-next-line no-template-curly-in-string
+        description: '请检查邮箱内容中是否正确包括了字符串[[${verifyCode}]]',
       });
+      setLoading(false);
+    }
   };
 
   return (
@@ -103,7 +117,10 @@ const Configuration: FC = () => {
         loading={loading}
         description={(
           <Space>
-            <Button type={editable ? 'primary' : 'ghost'} onClick={editable ? () => form.submit() : () => setEditable(true)}>
+            <Button
+              type={editable ? 'primary' : 'ghost'}
+              onClick={editable ? () => form.submit() : () => setEditable(true)}
+            >
               {editable ? '保存' : '编辑'}
             </Button>
             {editable ? (
@@ -146,7 +163,7 @@ const Configuration: FC = () => {
                             <Image
                               height={184}
                               width={184}
-                              src={testImg}
+                              src={configuration?.favicon}
                             />
                             <p>184*184</p>
                           </Space>
@@ -159,7 +176,7 @@ const Configuration: FC = () => {
                               height={64}
                               width={64}
                               preview={false}
-                              src={testImg}
+                              src={configuration?.favicon}
                             />
                             <p>64*64</p>
                           </Space>
@@ -171,7 +188,7 @@ const Configuration: FC = () => {
                               height={32}
                               width={32}
                               preview={false}
-                              src={testImg}
+                              src={configuration?.favicon}
                             />
                             <p>32*32</p>
                           </Space>
@@ -194,7 +211,7 @@ const Configuration: FC = () => {
                             <Image
                               height={184}
                               width={184}
-                              src={testImg}
+                              src={configuration?.favicon}
                             />
                             <p>184*184</p>
                           </Space>
@@ -207,7 +224,7 @@ const Configuration: FC = () => {
                               height={64}
                               width={64}
                               preview={false}
-                              src={testImg}
+                              src={configuration?.favicon}
                             />
                             <p>64*64</p>
                           </Space>
@@ -219,7 +236,7 @@ const Configuration: FC = () => {
                               height={32}
                               width={32}
                               preview={false}
-                              src={testImg}
+                              src={configuration?.favicon}
                             />
                             <p>32*32</p>
                           </Space>
@@ -337,12 +354,12 @@ const Configuration: FC = () => {
               !editable ? (
                 <Col span={12}>
                   <Descriptions column={1} title="验证邮箱设置">
-                    <Descriptions.Item label="邮箱账号">{configuration?.email?.account || '暂未设置'}</Descriptions.Item>
-                    <Descriptions.Item label="邮箱密码">{configuration?.email?.password || '暂未设置'}</Descriptions.Item>
-                    <Descriptions.Item label="邮件服务器主机">{configuration?.email?.host || '暂未设置'}</Descriptions.Item>
-                    <Descriptions.Item label="邮件服务器端口">{configuration?.email?.port || '暂未设置'}</Descriptions.Item>
-                    <Descriptions.Item label="邮件标题">{configuration?.email?.title || '暂未设置'}</Descriptions.Item>
-                    <Descriptions.Item label="邮件内容">{configuration?.email?.body || '暂未设置'}</Descriptions.Item>
+                    <Descriptions.Item label="邮箱账号">{configuration?.emailDto?.account || '暂未设置'}</Descriptions.Item>
+                    <Descriptions.Item label="邮箱密码">{configuration?.emailDto?.password || '暂未设置'}</Descriptions.Item>
+                    <Descriptions.Item label="邮件服务器主机">{configuration?.emailDto?.host || '暂未设置'}</Descriptions.Item>
+                    <Descriptions.Item label="邮件服务器端口">{configuration?.emailDto?.port || '暂未设置'}</Descriptions.Item>
+                    <Descriptions.Item label="邮件标题">{configuration?.emailDto?.title || '暂未设置'}</Descriptions.Item>
+                    <Descriptions.Item label="邮件内容">{configuration?.emailDto?.body || '暂未设置'}</Descriptions.Item>
                   </Descriptions>
                 </Col>
               ) : (
@@ -359,7 +376,7 @@ const Configuration: FC = () => {
                       <Form.Item
                         name="account"
                         label="邮箱账号"
-                        initialValue={configuration?.email?.account}
+                        initialValue={configuration?.emailDto?.account}
                         rules={[{ required: true }]}
                       >
                         <Input placeholder="请输入邮箱账号" />
@@ -367,7 +384,7 @@ const Configuration: FC = () => {
                       <Form.Item
                         name="password"
                         label="邮箱密码"
-                        initialValue={configuration?.email?.password}
+                        initialValue={configuration?.emailDto?.password}
                         rules={[{ required: true }]}
                       >
                         <Input placeholder="请输入邮箱密码" />
@@ -375,7 +392,7 @@ const Configuration: FC = () => {
                       <Form.Item
                         name="host"
                         label="邮件服务器主机"
-                        initialValue={configuration?.email?.host}
+                        initialValue={configuration?.emailDto?.host}
                         rules={[{ required: true }]}
                       >
                         <Input placeholder="请输入邮件服务器主机" />
@@ -383,7 +400,7 @@ const Configuration: FC = () => {
                       <Form.Item
                         name="port"
                         label="邮件服务器端口"
-                        initialValue={configuration?.email?.port}
+                        initialValue={configuration?.emailDto?.port}
                         rules={[{ required: true }]}
                       >
                         <Input placeholder="请输入邮件服务器端口" />
@@ -391,21 +408,26 @@ const Configuration: FC = () => {
                       <Form.Item
                         name="emailTitle"
                         label="邮件标题"
-                        initialValue={configuration?.email?.title}
+                        initialValue={configuration?.emailDto?.title}
                         rules={[{ required: true }]}
                       >
                         <Input placeholder="请输入邮件标题" />
                       </Form.Item>
                     </Col>
                     <Col span={20}>
-                      <Form.Item
-                        name="body"
-                        label="邮件内容"
-                        initialValue={configuration?.email?.body}
-                        rules={[{ required: true }]}
+                      <Tooltip
+                        placement="bottom"
+                        title="邮件内容中字符串[[${verifyCode}]]表示验证码出现的位置，请务必在合适的位置填写"
                       >
-                        <TextArea autoSize={{ minRows: 3 }} placeholder="请输入邮件内容" />
-                      </Form.Item>
+                        <Form.Item
+                          name="body"
+                          label="邮件内容"
+                          initialValue={configuration?.emailDto?.body}
+                          rules={[{ required: true }]}
+                        >
+                          <TextArea autoSize={{ minRows: 3 }} placeholder="请输入邮件内容" />
+                        </Form.Item>
+                      </Tooltip>
                     </Col>
                   </Form>
                 </>
@@ -430,10 +452,10 @@ const Configuration: FC = () => {
                     <>
                       <Descriptions style={{ marginTop: '20px', marginBottom: '20px' }} column={1}>
                         <Descriptions.Item label="页头LOGO">
-                          {configuration?.header?.logo || '暂未设置'}
+                          {configuration?.headerDto?.logo || '暂未设置'}
                         </Descriptions.Item>
                         <Descriptions.Item label="页脚LOGO">
-                          {configuration?.footer?.logo || '暂未设置'}
+                          {configuration?.footerDto?.logo || '暂未设置'}
                         </Descriptions.Item>
                       </Descriptions>
                     </>
@@ -449,7 +471,7 @@ const Configuration: FC = () => {
                       <Form.Item
                         name="headerLogo"
                         label="页头LOGO"
-                        initialValue={configuration?.header?.logo}
+                        initialValue={configuration?.headerDto?.logo}
                         rules={[{ required: true }]}
                       >
                         <Input placeholder="请输入页头LOGO" />
@@ -458,7 +480,7 @@ const Configuration: FC = () => {
                       <Form.Item
                         name="footerLogo"
                         label="页脚LOGO"
-                        initialValue={configuration?.footer?.logo}
+                        initialValue={configuration?.footerDto?.logo}
                         rules={[{ required: true }]}
                       >
                         <Input placeholder="请输入页脚LOGO" />
@@ -478,7 +500,7 @@ const Configuration: FC = () => {
                         <Image
                           height={80}
                           width={100}
-                          src={configuration?.header?.logo || 'https://dummyimage.com/100x80'}
+                          src={configuration?.headerDto?.logo || 'https://dummyimage.com/100x80'}
                           style={{ marginTop: '20px' }}
                           preview={false}
                         />
@@ -494,7 +516,7 @@ const Configuration: FC = () => {
                           marginTop: '24px',
                         }}
                       >
-                        {configuration?.email?.account || 'Test Page Title'}
+                        {configuration?.emailDto?.account || 'Test Page Title'}
                       </Col>
                     </Row>
                   </Header>
@@ -511,7 +533,7 @@ const Configuration: FC = () => {
                           fontSize: 'xx-large',
                         }}
                       >
-                        <Descriptions title={configuration?.email?.body || 'Test Page Content'} />
+                        <Descriptions title={configuration?.emailDto?.body || 'Test Page Content'} />
                       </Content>
                     </Col>
                   </Content>
@@ -521,7 +543,7 @@ const Configuration: FC = () => {
                         <Image
                           height={50}
                           width={100}
-                          src={configuration?.footer?.logo || 'https://dummyimage.com/100x50'}
+                          src={configuration?.footerDto?.logo || 'https://dummyimage.com/100x50'}
                           style={{ marginTop: '20px' }}
                           preview={false}
                         />

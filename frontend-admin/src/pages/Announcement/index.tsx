@@ -14,11 +14,12 @@ import React, { FC, useEffect, useState }                 from 'react';
 import Block                                              from 'components/Block';
 import http                                               from 'utils/http';
 import { Article }                                        from 'types/article';
-import { JavaCollectionModel, SimplifiedCollectionModel } from 'types/common';
+import { JavaCollectionModel } from 'types/common';
 import { collectionModelSimplifier }                      from 'utils/common';
 import {
-  Card, Col, Descriptions, Image, Modal, Row, Empty, notification,
+  Card, Col, Descriptions, Image, Modal, Row, Empty,
 }                                                         from 'antd';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { useHistory }                                     from 'react-router';
 import Meta                                               from 'antd/es/card/Meta';
 
@@ -36,10 +37,10 @@ const Announcement: FC = () => {
       .then((data) => {
         const simplifiedData = collectionModelSimplifier(data);
         setAnnouncementList(simplifiedData.list);
-        notification['success']({ message: '获取公告成功' });
+        // notification['success']({ message: '获取公告成功' });
       })
-      .catch((error) => {
-        notification['error']({ message: '获取公告失败', description: String(error) });
+      .catch(() => {
+        // notification['error']({ message: '获取公告失败', description: String(error) });
       })
       .finally(() => {
         setLoading(false);
