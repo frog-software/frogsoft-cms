@@ -1,10 +1,8 @@
 <script setup>
 import {EyeOutlined} from '@ant-design/icons-vue';
-import MdEditor from 'md-editor-v3';
+import CommentList   from "../../components/Articles/CommentList.vue";
+import MdEditor      from 'md-editor-v3';
 import 'md-editor-v3/lib/style.css';
-
-// eslint-disable-next-line import/order
-import CommentList from '../../components/Articles/CommentList.vue';
 </script>
 <template>
   <a-spin
@@ -25,9 +23,8 @@ import CommentList from '../../components/Articles/CommentList.vue';
             <h1> {{ article.title }} </h1>
           </template>
 
-          <template #extra>
+          <template #extra v-if="me.is_author">
             <a-button
-                v-if="me.is_author"
                 :loading="btnDeleteLoading"
                 type="primary"
                 @click="deleteArticle"
@@ -35,20 +32,11 @@ import CommentList from '../../components/Articles/CommentList.vue';
               删除
             </a-button>
             <router-link :to="{name:'ArticleEdit',params:{id: id}}">
-              <a-button
-                  v-if="me.is_author"
-                  type="primary"
-              >
+              <a-button type="primary">
                 编辑
               </a-button>
             </router-link>
-            <a-button
-                :loading="btnLikeLoading"
-                type="primary"
-                @click="btnLikeClick"
-            >
-              {{ me.liked ? "取消" : "" }}收藏
-            </a-button>
+
           </template>
 
           <template #cover>
@@ -69,8 +57,8 @@ import CommentList from '../../components/Articles/CommentList.vue';
           ></MdEditor>
         </a-card>
         <a-card>
-          <h3> 发布时间:&nbsp;&nbsp;{{ article.publish_time }} </h3>
-          <h3> 最近更新:&nbsp;&nbsp;{{ article.update_time }} </h3>
+          <h3> 发布时间:&nbsp;&nbsp;{{ article.publishDate }} </h3>
+          <h3> 最近更新:&nbsp;&nbsp;{{ article.updateDate }} </h3>
           <h3>
             <EyeOutlined/>
             阅读量：{{ article.views }}
@@ -85,6 +73,7 @@ import CommentList from '../../components/Articles/CommentList.vue';
               :delay="500"
               :spinning="commentsLoading"
           >
+            <!--            TODO: CommentList-->
             <CommentList
                 :id="id?+id:1"
                 :page-size="8"
@@ -98,15 +87,23 @@ import CommentList from '../../components/Articles/CommentList.vue';
       <a-col span="7">
         <!-- 文章的附加信息-->
         <a-card>
-          <a-card-meta :title="article.author.nickname">
+          <a-card-meta :title="article.author.username">
             <template #avatar>
               <router-link
-                  :to="{name:'UserDetails',params:{id:article.author.id.toString()}}"
+                  :to="{name:'UserDetails',params:{username: article.author.username}}"
               >
                 <a-avatar :src="article.author.avatar"/>
               </router-link>
             </template>
           </a-card-meta>
+          <a-button
+              v-if="store.getters.loginStatus"
+              :loading="btnLikeLoading"
+              type="primary"
+              @click="btnLikeClick"
+          >
+            {{ me.liked ? "取消" : "" }}点赞
+          </a-button>
         </a-card>
       </a-col>
     </a-row>
@@ -126,15 +123,17 @@ import CommentList from '../../components/Articles/CommentList.vue';
 </template>
 
 <script>
-import axios from 'axios';
+import axios     from 'axios';
 import {message} from 'ant-design-vue';
-import store from '../../store';
+import store     from '../../store';
 
 export default {
   name: 'ArticleDetails',
   beforeRouteEnter(to, from, next) {
-    if (to.params.id % 1 === 0) next();
-    else next({name: 'NotFound'});
+    if (+to.params.id % 1 === 0) {
+      next()
+    } else
+      next({name: 'NotFound'});
   },
   props: {id: String},
   data() {
@@ -146,28 +145,19 @@ export default {
       article: {
         id: 0,
         author: {
-          id: 0,
           username: 'username',
-          nickname: 'nickname',
           email: 'edialect@edialect.top',
-          telephone: '',
-          registration_time: '2000-01-01 00:00:00',
-          login_time: '2000-01-01 00:00:00',
-          birthday: '2000-01-01 00:00:00',
-          avatar: 'http://dummyimage.com/100x100',
-          county: '',
-          town: '',
-          is_admin: false,
+          is_admin: false
         },
         likes: 0,
         views: 0,
-        like_users: [],
-        publish_time: '2000-01-01 00:00:00',
-        update_time: '2000-01-01 00:00:00',
         title: 'title',
         description: 'description',
         content: 'content',
         cover: 'http://dummyimage.com/160x90',
+        status: "NORMAL",
+        publishDate: "2021-09-01 00:00:00",
+        updateDate: "2021-09-01 00:00:00"
       },
       me: {
         liked: false,
@@ -182,11 +172,12 @@ export default {
   },
   created() {
     axios.get(`/v1/articles/${this.id}`).then(async (res) => {
-      this.article = res.data.article;
-      this.me = res.data.me;
+      this.article                 = {...res.data}
+      this.article.author.is_admin = res.data.author.roles.includes("ROLE_ADMIN")
+      this.me.is_author            = res.data.author.username === store.getters.user.username
+      this.me.liked                = res.data.liked || false
       store.commit('updateComments', this.id);
-    }).catch(() => {
-      message.destroy();
+    }).catch((err) => {
       this.$router.replace({name: 'NotFound'});
     }).finally(() => {
       this.spinning = false;
@@ -199,16 +190,15 @@ export default {
     btnLikeClick() {
       this.btnLikeLoading = true;
       if (this.me.liked) {
-        axios.delete(`/v1/articles/${this.id}/like`).finally(() => {
+        axios.delete(`/v1/articles/${this.id}/like`).then(() => {
           this.me.liked = false;
           setTimeout(() => {
             this.btnLikeLoading = false;
           }, 500);
         });
       } else {
-        axios.post(`/v1/articles/${this.id}/like`).finally(() => {
+        axios.post(`/v1/articles/${this.id}/like`).then(() => {
           this.me.liked = true;
-          // this.btnLikeLoading = false
           setTimeout(() => {
             this.btnLikeLoading = false;
           }, 500);
@@ -224,7 +214,7 @@ export default {
         // axios.delete('/v1http://127.0.0.1:4523/mock/404238/articles/' + this.id).finally(() => {
         setTimeout(() => {
           this.btnDeleteLoading = false;
-          this.hasDeleted = true;
+          this.hasDeleted       = true;
         }, 500);
       });
     },

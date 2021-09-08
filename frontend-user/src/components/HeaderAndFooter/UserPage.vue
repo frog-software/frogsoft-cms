@@ -1,4 +1,7 @@
 <script setup>
+import store                from '../../store';
+import ArticleListFavorited from '../Articles/ArticleListFavorited.vue';
+import ArticleListCreated   from "../Articles/ArticleListCreated.vue";
 </script>
 <template>
   <a-spin :spinning="drawerLoading">
@@ -23,8 +26,20 @@
       <a-descriptions-item label="邮箱">
         {{ user.email }}
       </a-descriptions-item>
-      <a-descriptions-item label="上次登陆时间">
-        {{ user.login_time }}
+      <a-descriptions-item label="权限">
+        {{ user.is_admin ? "管理员" : "普通用户" }}
+      </a-descriptions-item>
+      <a-descriptions-item label="文章发布量">
+        {{ statistics.publishArticlesNum }}
+      </a-descriptions-item>
+      <a-descriptions-item label="文章总被阅读量">
+        {{ statistics.viewsNum }}
+      </a-descriptions-item>
+      <a-descriptions-item label="文章总被点赞量">
+        {{ statistics.likesNum }}
+      </a-descriptions-item>
+      <a-descriptions-item label="文章总被收藏量">
+        {{ statistics.favoritesNum }}
       </a-descriptions-item>
     </a-descriptions>
 
@@ -33,18 +48,18 @@
           key="1"
           tab="我创作的文章"
       >
-        <ArticleList
-            :list-data="publish_articles"
-            :page-size="3"
+        <ArticleListCreated
+            :username="store.getters.user.username"
+            :page-size="4"
         />
       </a-tab-pane>
       <a-tab-pane
           key="2"
           tab="收藏列表"
       >
-        <ArticleList
-            :list-data="like_articles"
-            :page-size="3"
+        <ArticleListFavorited
+            :username="store.getters.user.username"
+            :page-size="4"
         />
       </a-tab-pane>
       <template #tabBarExtraContent>
@@ -66,19 +81,15 @@
 
 <script>
 import {mapGetters} from 'vuex';
-import ArticleList  from '../Articles/ArticleList.vue';
-import store        from '../../store';
 
 export default {
   name: 'UserPage',
-  components: {
-    ArticleList,
-  },
   computed: {
     ...mapGetters({
       user: 'user',
-      publish_articles: 'publish_articles',
-      like_articles: 'like_articles',
+      statistics: 'statistics',
+      publishArticles: 'publishArticles',
+      favoriteArticles: 'favoriteArticles',
       drawerLoading: 'drawerLoading',
     }),
   },

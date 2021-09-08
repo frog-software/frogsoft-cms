@@ -13,7 +13,7 @@
       <template #content>
         <a-form-item>
           <a-textarea
-              v-model="newCommentValue"
+              v-model:value="newCommentValue"
               :rows="4"
           />
         </a-form-item>
@@ -88,17 +88,18 @@
 </template>
 
 <script>
-import axios from 'axios';
+import axios        from 'axios';
 import {mapGetters} from 'vuex';
-import {message} from 'ant-design-vue';
-import store from '../../store';
+import {message}    from 'ant-design-vue';
+import store        from '../../store';
 
 export default {
+  // TODO 等待后端评论接口修复完成后更新
   name: 'CommentList',
   props: {
     parent: Number,
     pageSize: Number,
-    id: String
+    id: Number
   },
   data() {
     return {
@@ -115,7 +116,7 @@ export default {
     ]),
     filteredComments() {
       const result = [];
-      this.comments.forEach((item) => {
+      this.comments?.forEach((item) => {
         if (item.parent === this.parent) {
           result.push(item);
         }
@@ -130,8 +131,12 @@ export default {
      * @param parent 回复的评论的id，若无则为0
      */
     commentSubmit(parent) {
+      if (store.getters.loginStatus === false) {
+        message.error('登录后才能发表评论哦~')
+        return
+      }
       this.btnCommentSubmitting = true;
-      const data = {
+      const data                = {
         content: this.newCommentValue,
         parent: this.parent,
       };

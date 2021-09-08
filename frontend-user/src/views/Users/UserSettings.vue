@@ -1,6 +1,7 @@
 <script setup>
-import {DownOutlined, PhoneOutlined, UploadOutlined} from '@ant-design/icons-vue';
-function emailAvailable(email){
+import {DownOutlined, UploadOutlined} from '@ant-design/icons-vue';
+
+function emailAvailable(email) {
   const regex = /^[A-Za-z0-9\u4e00-\u9fa5]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/
   return !regex.test(email)
 }
@@ -46,31 +47,14 @@ function emailAvailable(email){
             </a-row>
           </a-form-item>
 
-          <a-form-item label="昵称">
+          <a-form-item label="未来拓展">
             <a-input
-                v-model:value="user.nickname"
-                :disabled="!editing"
-                placeholder="真的要做空白昵称人嘛？"
+                :disabled="true"
+                placeholder="未来拓展功能更多功能"
             />
           </a-form-item>
 
-          <a-form-item label="生日">
-            <a-date-picker
-                :default-value="moment(user.birthday, 'YYYY-MM-DD')"
-                :disabled="!editing"
-                @change=" (date, dateString)=> {user.birthday = dateString}"
-            />
-          </a-form-item>
 
-          <a-form-item label="电话">
-            <a-input
-                v-model:value="user.telephone"
-                :disabled="!editing"
-                placeholder="输入你的电话号码"
-            >
-              <PhoneOutlined/>
-            </a-input>
-          </a-form-item>
           <a-form-item :wrapper-col="{ span: 24, offset: 5 }">
             <a-button
                 v-if="!editing"
@@ -117,7 +101,7 @@ function emailAvailable(email){
                 placeholder="输入用户名"
             />
             <a-popconfirm
-                :title="'确认将用户名从'+currentUsername+'改为'+user.username+'？'"
+                :title="'确认将用户名从'+currentUsername+'改为'+user.username+'？(该操作需要重新登录)'"
                 cancel-text="取消"
                 ok-text="确认"
                 @cancel="user.username=currentUsername"
@@ -143,7 +127,7 @@ function emailAvailable(email){
                 <DownOutlined/>
               </a>
               <template #overlay>
-                <a-menu>
+                <a-menu style="padding: 10px">
                   <a-form
                       :label-col="labelCol"
                       :wrapper-col="wrapperCol"
@@ -201,12 +185,11 @@ function emailAvailable(email){
                       :label-col="labelCol"
                       :wrapper-col="wrapperCol"
                   >
-                    <a-form-item
-                        :wrapper-col="{ span: 12, offset: 3 }"
-                        label="新邮箱"
-                    >
-                      <a-input v-model:value="newEmail"/>
-                    </a-form-item>
+                    <div style="padding: 10px">
+                      修改安全邮箱时，将会发送验证码到旧邮箱以确保为本人操作。
+                      <br>
+                      暂时不对新邮箱进行验证，若出现问题请联系管理员。
+                    </div>
                     <a-form-item
                         :wrapper-col="{ span: 12, offset: 3 }"
                         label="验证码"
@@ -220,25 +203,24 @@ function emailAvailable(email){
                           <a-input v-model:value="emailCode"/>
                         </a-col>
                         <a-col :span="2">
-<!--                          <a-button-->
-<!--                              :disabled="emailAvailable(newEmail)"-->
-<!--                              :loading="btnCodeLoading"-->
-<!--                              type="primary"-->
-<!--                              @click="sendCode(newEmail)"-->
-<!--                          >-->
-<!--                            发送验证码-->
-<!--                          </a-button>-->
                           <a-button
                               :disabled="emailAvailable(newEmail)"
                               :loading="btnCodeLoading"
                               type="primary"
-                              @click="sendCode(newEmail)"
+                              @click="sendCode(user.email)"
                           >
                             发送验证码
                           </a-button>
                         </a-col>
                       </a-row>
                     </a-form-item>
+                    <a-form-item
+                        :wrapper-col="{ span: 12, offset: 3 }"
+                        label="新邮箱"
+                    >
+                      <a-input v-model:value="newEmail"/>
+                    </a-form-item>
+
                     <a-form-item :wrapper-col="{ span: 12, offset: 7 }">
                       <a-button
                           :disabled="emailCode===''"
@@ -261,11 +243,11 @@ function emailAvailable(email){
 </template>
 
 <script>
-import moment from 'moment';
+import moment    from 'moment';
 import 'moment/locale/zh-cn';
-import axios from 'axios';
+import axios     from 'axios';
 import {message} from 'ant-design-vue';
-import store from '../../store';
+import store     from '../../store';
 
 export default {
   name: 'UserSettings',
@@ -277,15 +259,8 @@ export default {
       user: {
         id: 0,
         username: 'username',
-        nickname: 'nickname',
         email: 'pxm@edialect.top',
-        telephone: '',
-        registration_time: '2001-01-01 00:00:00',
-        login_time: '2001-01-01 00:00:00',
-        birthday: '2001-01-01',
-        avatar: 'https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png',
-        county: '',
-        town: '',
+        avatar: '/avatar.png',
         is_admin: false,
       },
       oldPassword: '', // 用户输入的旧密码
@@ -298,7 +273,7 @@ export default {
       // ui需要用到的变量
       labelCol: {
         xs: {span: 24},
-        sm: {span: 5},
+        sm: {span: 7},
       },
       wrapperCol: {
         xs: {span: 24},
@@ -317,11 +292,6 @@ export default {
      */
     percent() {
       let now = 3.0;
-      if (this.user.nickname !== '') now += 1;
-      if (this.user.birthday !== '') now += 1;
-      if (this.user.telephone !== '') now += 1;
-      if (this.user.county !== '') now += 1;
-      if (this.user.town !== '') now += 1;
       return parseInt((now * 100) / 8, 10);
     },
     currentUsername() {
@@ -344,9 +314,9 @@ export default {
     changePassword() {
       if (this.newPassword === this.confirmPassword) {
         this.btnPasswordLoading = true;
-        axios.put(`/v1${'/users' / +this.user.id}/password`, {
-          oldpassword: this.oldpassword,
-          newpassword: this.newPassword,
+        axios.put(`/v1/users/${this.user.username}/password`, {
+          oldPassword: this.oldPassword,
+          newPassword: this.newPassword,
         }).then(() => {
           message.success('更改密码成功');
         }).catch((err) => {
@@ -371,7 +341,7 @@ export default {
      */
     sendCode(email) {
       this.btnCodeLoading = true;
-      axios.post('/v1/website/email', {email}).then(
+      axios.post('/v1/global/email', null, {params: {email}}).then(
           () => {
             message.success(`验证码已成功发送至${email}`);
           },
@@ -386,9 +356,9 @@ export default {
      */
     changeEmail() {
       this.btnEmailLoading = true;
-      axios.put(`/v1${'/users' / +this.user.id}/email`, {
-        email: this.newEmail,
-        code: this.emailCode,
+      axios.put(`/v1/users/${this.user.username}/email`, {
+        newemail: this.newEmail,
+        varyficationcode: this.emailCode,
       }).then(() => {
         store.commit('userUpdate');
         message.success('修改成功！');
@@ -401,31 +371,11 @@ export default {
      * @return {Promise<void>}
      */
     async updateUser() {
-      return axios.put(`/v1/users/${this.user.id}`, {user: this.user}).then((res) => {
-        localStorage.setItem('token', res.data.token);
-        store.commit('userUpdate');
+      console.log(this.user)
+      return axios.put(`/v1/users/${store.getters.user.username}`, {user: this.user}).then((res) => {
+        store.commit('userLogout');
         message.success('修改成功！');
-      }).catch((err) => {
-        message.destroy();
-        switch (err.response.status) {
-          case 401: {
-            message.error('请检查登录状态！');
-            break;
-          }
-          case 409: {
-            message.error('该用户名存在冲突！');
-            break;
-          }
-          case 400: {
-            message.error('400:格式错误！');
-            break;
-          }
-          default: {
-            message.error('未知错误！请联系管理员！');
-            message.error(`错误内容:${err.response.data.msg}`);
-            break;
-          }
-        }
+        this.$router.push({name: "Login"})
       });
     },
     /**
@@ -433,6 +383,7 @@ export default {
      * @param image 即将上传的文件信息
      */
     imageUpload(image) {
+      // TODO 等待更新
       const data = new FormData();
       data.append('file', image.file);
       axios({

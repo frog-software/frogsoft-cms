@@ -33,10 +33,10 @@
 import axios from 'axios';
 
 export default {
-  name: 'ArticleList',
+  name: 'ArticleListCreated',
   props: {
     pageSize: Number,
-    searchContent: String,
+    username: String
   },
   data() {
     return {
@@ -58,12 +58,11 @@ export default {
       };
     },
     queryParmas() {
-      let result = {
+      return {
         page: this.currentPage - 1,
-        size: this.pageSize
+        size: this.pageSize,
+        author: this.username
       }
-      if (this.searchContent) result.search = this.searchContent
-      return result
     }
   },
   created() {

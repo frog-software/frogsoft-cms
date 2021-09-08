@@ -31,12 +31,13 @@
 </template>
 <script>
 import axios from 'axios';
+import store from "../../store";
 
 export default {
-  name: 'ArticleList',
+  name: 'ArticleListCreated',
   props: {
     pageSize: Number,
-    searchContent: String,
+    username: String
   },
   data() {
     return {
@@ -58,12 +59,10 @@ export default {
       };
     },
     queryParmas() {
-      let result = {
+      return {
         page: this.currentPage - 1,
         size: this.pageSize
       }
-      if (this.searchContent) result.search = this.searchContent
-      return result
     }
   },
   created() {
@@ -78,7 +77,7 @@ export default {
     getCurrentPageData(page) {
       this.currentPage = page
       this.loading     = true;
-      axios.get('/v1/articles', {params: this.queryParmas}).then((res) => {
+      axios.get(`/v1/users/${this.username}/favors`, {params: this.queryParmas}).then((res) => {
         this.listSource    = res.data._embedded?.articleDtoList || [];
         this.totalElements = res.data.page.totalElements
       }).finally(

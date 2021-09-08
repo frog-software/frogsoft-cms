@@ -1,3 +1,6 @@
+<script setup>
+import store from '../../store';
+</script>
 <template>
   <div class="login">
     <a-row
@@ -6,9 +9,9 @@
     >
       <a-col>
         <img
-            alt="E方言 —— Easy Dialect"
-            src="../../assets/logo.png"
-            width="300"
+            alt="网站主LOGO"
+            :src="store.getters.config.logo"
+            style="width: 300px;"
         >
       </a-col>
     </a-row>
@@ -19,7 +22,7 @@
     >
       <a-col>
         <h2 style="color:rgb(23, 7, 66)">
-          莆仙方言在线工具
+          {{ store.getters.config.title }}
         </h2>
       </a-col>
     </a-row>
@@ -92,9 +95,9 @@
 </template>
 
 <script>
-import axios from 'axios';
+import axios     from 'axios';
 import {message} from 'ant-design-vue';
-import store from '../../store';
+
 
 export default {
   name: 'Login',
@@ -106,19 +109,14 @@ export default {
   },
   methods: {
     login() {
-      axios.post('/v1/login', {
+      axios.post('/v1/auth/login', {
         username: this.username,
         password: this.password,
       }).then((res) => {
-        store.commit('userLogin', res.data.id);
+        store.commit('userLogin', res.data.username);
         localStorage.setItem('token', res.data.token);
         message.success('登录成功');
         this.$router.push({name: 'Home'});
-      }).catch((err) => {
-        if (err.response.status === 401) {
-          message.destroy();
-          message.error('用户名或密码错误');
-        }
       });
     },
   },

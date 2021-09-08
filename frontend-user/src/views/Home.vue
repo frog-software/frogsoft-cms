@@ -1,6 +1,7 @@
 <script setup>
-import Carousel from '../components/HomeBody/Carousel.vue';
-import HotArticles from '../components/HomeBody/HotArticles.vue';
+import Carousel    from '../components/HomeBody/Carousel.vue';
+import HotArticles from '../components/HomeBody/Announcements.vue';
+import store       from '../store'
 </script>
 <template>
   <div class="body">
@@ -24,12 +25,12 @@ import HotArticles from '../components/HomeBody/HotArticles.vue';
       <a-col span="24">
         <a-card
             hoverable
-            style="height:300px;text-align: center"
+            style="text-align: center"
         >
           <img
               alt="网站 LOGO"
-              src="../assets/logo.png"
-              style="width: 40%"
+              :src="store.getters.config.logo"
+              style="max-width: 300px;margin: 30px"
           >
           <a-input-search
               v-model:value="searchContent"
@@ -38,11 +39,6 @@ import HotArticles from '../components/HomeBody/HotArticles.vue';
               @search="$router.push({ name: 'Search', query: { key: searchContent } })"
           />
           <div style="text-align: left;font-size: 8px;margin:20px 20px;line-height: 8px">
-            <p>目前支持搜拼音、搜单字、搜词语、搜文章功能。</p>
-            <p>搜拼音：将输入视为拼音，搜索可能对应的汉字</p>
-            <p>搜单字：获取输入中每一个汉字的读音</p>
-            <p>搜词语：检索与输入相关的词语</p>
-            <p>搜文章：检索与输入相关的文章</p>
           </div>
         </a-card>
       </a-col>
@@ -68,32 +64,6 @@ export default {
   data() {
     return {
       searchContent: '',
-      toolList: [
-        {
-          id: 0,
-          img: 'http://dummyimage.com/400x300',
-          name: '条件检字',
-          description: '声韵调检索汉字',
-          routerName: 'Conditions',
-          able: true,
-        },
-        {
-          id: 1,
-          img: 'http://dummyimage.com/400x300',
-          name: '方言词典',
-          description: '提供方言词语查询',
-          routerName: '/tools/wordDict',
-          able: true,
-        },
-        {
-          id: 2,
-          img: 'http://dummyimage.com/400x300',
-          name: '方言语音识别工具',
-          description: '努力研发中',
-          routerName: '/tools/Voice',
-          able: false,
-        },
-      ],
     };
   },
 };

@@ -78,12 +78,6 @@ const routes = [
     component: () => import('../views/Users/UserSettings.vue'),
 
   },
-  // Tools区
-  {
-    path: '/tools',
-    name: 'Tools',
-    component: () => import('../views/Tools/Tools.vue'),
-  },
   // {
   //   path: '*',
   //   component: () => import('../views/NotFound.vue')
