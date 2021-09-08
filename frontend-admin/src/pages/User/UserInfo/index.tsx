@@ -333,16 +333,17 @@ const UserInfo: FC = () => {
                 handleDeleteUser(params.username);
               }}
             >
-              <Button danger>删除用户</Button>
+              <Button danger type="primary">删除用户</Button>
             </Popconfirm>
-            <Button htmlType="submit" onClick={editable ? () => formDetail.submit() : () => setEditable(true)}>
+            <Button
+              htmlType="submit"
+              type={editable ? 'primary' : 'ghost'}
+              onClick={editable ? () => formDetail.submit() : () => setEditable(true)}
+            >
               {editable ? '保存' : '编辑'}
             </Button>
             {editable ? (
-              <Button onClick={() => {
-                setEditable(false);
-              }}
-              >
+              <Button type="ghost" onClick={() => { setEditable(false); }}>
                 取消
               </Button>
             ) : ''}

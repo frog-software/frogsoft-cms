@@ -103,11 +103,11 @@ const Configuration: FC = () => {
         loading={loading}
         description={(
           <Space>
-            <Button onClick={editable ? () => form.submit() : () => setEditable(true)}>
+            <Button type={editable ? 'primary' : 'ghost'} onClick={editable ? () => form.submit() : () => setEditable(true)}>
               {editable ? '保存' : '编辑'}
             </Button>
             {editable ? (
-              <Button onClick={() => setEditable(false)}>取消</Button>
+              <Button type="ghost" onClick={() => setEditable(false)}>取消</Button>
             ) : ''}
           </Space>
         )}
