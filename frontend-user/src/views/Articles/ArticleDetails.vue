@@ -1,8 +1,3 @@
-<script setup>
-import {EyeOutlined, LikeOutlined, StarOutlined} from '@ant-design/icons-vue';
-import CommentList                               from "../../components/Articles/CommentList.vue";
-import MdEditor                                  from 'md-editor-v3';
-import 'md-editor-v3/lib/style.css';</script>
 <template>
   <a-spin
       v-if="hasDeleted===false"
@@ -143,12 +138,20 @@ import 'md-editor-v3/lib/style.css';</script>
 </template>
 
 <script>
-import axios     from 'axios';
-import {message} from 'ant-design-vue';
-import store     from '../../store';
+import axios                                     from 'axios';
+import {message}                                 from 'ant-design-vue';
+import {EyeOutlined, LikeOutlined, StarOutlined} from '@ant-design/icons-vue';
+import CommentList                               from "../../components/Articles/CommentList.vue";
+import MdEditor                                  from 'md-editor-v3';
+import 'md-editor-v3/lib/style.css';
+import store                                     from '../../store';
 
 export default {
   name: 'ArticleDetails',
+  components: {
+    EyeOutlined, LikeOutlined, StarOutlined,
+    CommentList, MdEditor
+  },
   beforeRouteEnter(to, from, next) {
     if (+to.params.id % 1 === 0) {
       next()

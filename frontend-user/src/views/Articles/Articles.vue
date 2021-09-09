@@ -1,7 +1,3 @@
-<script setup>
-import ArticleList from '../../components/Articles/ArticleList.vue';
-</script>
-
 <template>
   <div class="body">
     <a-spin
@@ -16,7 +12,10 @@ import ArticleList from '../../components/Articles/ArticleList.vue';
 </template>
 
 <script>
+import ArticleList from '../../components/Articles/ArticleList.vue';
+
 export default {
+  components: {ArticleList},
   name: 'Articles',
   data() {
     return {

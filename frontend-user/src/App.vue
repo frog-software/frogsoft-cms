@@ -1,7 +1,3 @@
-<script setup>
-import MyHeader from './components/HeaderAndFooter/Header.vue';
-import MyFooter from './components/HeaderAndFooter/Footer.vue';
-</script>
 <template>
   <div>
     <a-layout style="width: 1200px">
@@ -21,13 +17,17 @@ import MyFooter from './components/HeaderAndFooter/Footer.vue';
 </template>
 
 <script>
-
-import store from './store';
+import MyHeader from './components/HeaderAndFooter/Header.vue';
+import MyFooter from './components/HeaderAndFooter/Footer.vue';
+import store    from './store';
 
 export default {
+  components: {
+    MyHeader, MyFooter
+  },
   beforeCreate() {
     document.addEventListener('DOMContentLoaded', () => {
-      const width = document.documentElement.clientWidth;
+      const width              = document.documentElement.clientWidth;
       document.body.style.zoom = `${Number(width / 12).toString()}%`;
     });
   },
@@ -48,7 +48,7 @@ export default {
   methods: {
     onResize() {
       setTimeout(() => {
-        const width = document.documentElement.clientWidth;
+        const width              = document.documentElement.clientWidth;
         document.body.style.zoom = `${Number(width / 12).toString()}%`;
       });
     },

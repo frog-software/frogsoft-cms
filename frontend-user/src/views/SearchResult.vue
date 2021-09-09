@@ -1,6 +1,3 @@
-<script setup>
-import ArticleList from '../components/Articles/ArticleList.vue';
-</script>
 <template>
 
   <a-card>
@@ -21,10 +18,12 @@ import ArticleList from '../components/Articles/ArticleList.vue';
 </template>
 
 <script>
-import axios from 'axios';
+import axios       from 'axios';
+import ArticleList from '../components/Articles/ArticleList.vue';
 
 export default {
   name: 'SearchResult',
+  components: {ArticleList},
   props: {
     keyWords: String,
   },

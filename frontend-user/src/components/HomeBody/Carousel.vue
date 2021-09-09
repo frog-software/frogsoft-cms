@@ -1,5 +1,3 @@
-<script setup>
-import {LeftCircleOutlined, RightCircleOutlined} from '@ant-design/icons-vue';</script>
 <template>
   <div class="my_carousel">
     <a-carousel
@@ -40,11 +38,16 @@ import {LeftCircleOutlined, RightCircleOutlined} from '@ant-design/icons-vue';</
 </template>
 
 <script>
-import axios     from 'axios';
-import {message} from 'ant-design-vue';
+import axios                                     from 'axios';
+import {message}                                 from 'ant-design-vue';
+import {LeftCircleOutlined, RightCircleOutlined} from '@ant-design/icons-vue';
 
 export default {
   name: 'Carousel',
+  components: {
+    LeftCircleOutlined,
+    RightCircleOutlined
+  },
   data() {
     return {
       carousel: [], // 轮播图上的图片以及对应的链接:[{id,url}]

@@ -1,6 +1,3 @@
-<script setup>
-import store from '../../store';
-</script>
 <template>
   <div class="login">
     <a-row
@@ -97,7 +94,7 @@ import store from '../../store';
 <script>
 import axios     from 'axios';
 import {message} from 'ant-design-vue';
-
+import store     from '../../store';
 
 export default {
   name: 'Login',

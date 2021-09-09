@@ -1,6 +1,3 @@
-<script setup>
-import HeaderUser from './HeaderUser.vue';
-import store      from '../../store'</script>
 <template>
   <div class="header">
     <a-row
@@ -53,8 +50,12 @@ import store      from '../../store'</script>
 </template>
 
 <script>
+import HeaderUser from './HeaderUser.vue';
+import store      from '../../store'
+
 export default {
   name: 'Header',
+  components: {HeaderUser},
   data() {
     return {
       searchContent: '',

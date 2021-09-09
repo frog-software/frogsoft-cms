@@ -1,7 +1,3 @@
-<script setup>
-import MdEditor         from 'md-editor-v3';
-import 'md-editor-v3/lib/style.css';
-import {UploadOutlined} from "@ant-design/icons-vue";</script>
 <template>
   <div
       v-show="isAuthor"
@@ -138,13 +134,18 @@ import {UploadOutlined} from "@ant-design/icons-vue";</script>
 </template>
 
 <script>
-import axios     from 'axios'
-import {message} from 'ant-design-vue';
-import store     from "../../store";
+import axios            from 'axios'
+import {message}        from 'ant-design-vue';
+import MdEditor         from 'md-editor-v3';
+import 'md-editor-v3/lib/style.css';
+import {UploadOutlined} from "@ant-design/icons-vue";
+import store            from "../../store";
 
 export default {
   name: 'ArticleEdit',
-
+  components: {
+    MdEditor, UploadOutlined
+  },
   beforeRouteEnter(to, from, next) {
     if (to.name === 'ArticleCreate') next();
     else if (to.params.id % 1 === 0) next();

@@ -1,5 +1,3 @@
-<script setup>
-import store from "../../store";</script>
 <template>
   <div class="footer">
     <a-row
@@ -43,6 +41,8 @@ import store from "../../store";</script>
 </template>
 
 <script>
+import store from "../../store";
+
 export default {
   name: 'Footer',
 };

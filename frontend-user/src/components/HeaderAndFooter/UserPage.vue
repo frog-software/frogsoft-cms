@@ -1,8 +1,3 @@
-<script setup>
-import store                from '../../store';
-import ArticleListFavorited from '../Articles/ArticleListFavorited.vue';
-import ArticleListCreated   from "../Articles/ArticleListCreated.vue";
-</script>
 <template>
   <a-spin :spinning="drawerLoading">
     <a-descriptions layout="vertical">
@@ -80,10 +75,14 @@ import ArticleListCreated   from "../Articles/ArticleListCreated.vue";
 </template>
 
 <script>
-import {mapGetters} from 'vuex';
+import {mapGetters}         from 'vuex';
+import store                from '../../store';
+import ArticleListFavorited from '../Articles/ArticleListFavorited.vue';
+import ArticleListCreated   from "../Articles/ArticleListCreated.vue";
 
 export default {
   name: 'UserPage',
+  components: {ArticleListFavorited, ArticleListCreated},
   computed: {
     ...mapGetters({
       user: 'user',

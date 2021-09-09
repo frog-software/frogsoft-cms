@@ -1,8 +1,3 @@
-<script setup>
-import Carousel    from '../components/HomeBody/Carousel.vue';
-import HotArticles from '../components/HomeBody/Announcements.vue';
-import store       from '../store'
-</script>
 <template>
   <div class="body">
     <a-row
@@ -51,16 +46,20 @@ import store       from '../store'
         type="flex"
     >
       <a-col span="24">
-        <HotArticles/>
+        <Announcements/>
       </a-col>
     </a-row>
   </div>
 </template>
 
 <script>
+import Carousel      from '../components/HomeBody/Carousel.vue';
+import Announcements from '../components/HomeBody/Announcements.vue';
+import store         from '../store'
 
 export default {
   name: 'Home',
+  components: {Carousel, Announcements},
   data() {
     return {
       searchContent: '',

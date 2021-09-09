@@ -1,11 +1,3 @@
-<script setup>
-import {DownOutlined, UploadOutlined} from '@ant-design/icons-vue';
-
-function emailAvailable(email) {
-  const regex = /^[A-Za-z0-9\u4e00-\u9fa5]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/
-  return !regex.test(email)
-}
-</script>
 <template>
   <div class="body">
     <a-tabs>
@@ -243,14 +235,18 @@ function emailAvailable(email) {
 </template>
 
 <script>
-import moment    from 'moment';
+import moment                         from 'moment';
 import 'moment/locale/zh-cn';
-import axios     from 'axios';
-import {message} from 'ant-design-vue';
-import store     from '../../store';
+import axios                          from 'axios';
+import {message}                      from 'ant-design-vue';
+import {DownOutlined, UploadOutlined} from '@ant-design/icons-vue';
+
+import store from '../../store';
+
 
 export default {
   name: 'UserSettings',
+  components: {DownOutlined, UploadOutlined},
   data() {
     return {
       moment, // 字符串转时间object时需要用到的变量
@@ -312,6 +308,10 @@ export default {
     this.user = {...store.getters.user};
   },
   methods: {
+    emailAvailable(email) {
+      const regex = /^[A-Za-z0-9\u4e00-\u9fa5]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/
+      return !regex.test(email)
+    },
     /**
      * 修改密码
      */

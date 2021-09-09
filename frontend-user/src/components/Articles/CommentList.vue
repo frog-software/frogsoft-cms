@@ -1,5 +1,3 @@
-<script setup>
-import store from '../../store'</script>
 <template>
   <div>
     <!--新提交的评论-->
@@ -96,6 +94,7 @@ import store from '../../store'</script>
 import axios        from 'axios';
 import {mapGetters} from 'vuex';
 import {message}    from 'ant-design-vue';
+import store        from '../../store'
 
 export default {
   name: 'CommentList',

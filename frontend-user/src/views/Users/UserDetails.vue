@@ -1,8 +1,3 @@
-<script setup>
-import store                from "../../store";
-import ArticleListCreated   from "../../components/Articles/ArticleListCreated.vue";
-import ArticleListFavorited from "../../components/Articles/ArticleListFavorited.vue";
-</script>
 <template>
   <a-spin
       :spinning="spinning"
@@ -85,13 +80,17 @@ import ArticleListFavorited from "../../components/Articles/ArticleListFavorited
 </template>
 
 <script>
-import axios from 'axios';
+import axios                from 'axios';
+import store                from "../../store";
+import ArticleListCreated   from "../../components/Articles/ArticleListCreated.vue";
+import ArticleListFavorited from "../../components/Articles/ArticleListFavorited.vue";
 
 export default {
   name: 'UserDetails',
   props: {
     username: String,
   },
+  components: {ArticleListFavorited, ArticleListCreated},
   data() {
     return {
       spinning: false,

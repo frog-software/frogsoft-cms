@@ -1,6 +1,3 @@
-<script setup>
-import {CaretUpOutlined, CaretDownOutlined} from "@ant-design/icons-vue";
-</script>
 <template>
   <div>
     <a-row justify="end" align="middle" :gutter="8">
@@ -61,9 +58,11 @@ import {CaretUpOutlined, CaretDownOutlined} from "@ant-design/icons-vue";
   </div>
 </template>
 <script>
-import axios from 'axios';
+import axios                                from 'axios';
+import {CaretUpOutlined, CaretDownOutlined} from "@ant-design/icons-vue";
 
 export default {
+  components: {CaretDownOutlined, CaretUpOutlined},
   name: 'ArticleList',
   props: {
     pageSize: Number,
