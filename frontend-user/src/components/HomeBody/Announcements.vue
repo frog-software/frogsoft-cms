@@ -1,6 +1,6 @@
 <template>
   <div>
-    <a-card title="热门文章">
+    <a-card title="公告文章">
       <div
           v-for="item in hotArticles"
       >
