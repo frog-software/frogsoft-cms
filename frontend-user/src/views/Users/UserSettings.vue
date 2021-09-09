@@ -305,6 +305,10 @@ export default {
     },
   },
   created() {
+    if (!store.getters.loginStatus) {
+      message.error('请先登录')
+      this.$router.push({name: 'Login'})
+    }
     this.user = {...store.getters.user};
   },
   methods: {
@@ -371,11 +375,14 @@ export default {
      * @return {Promise<void>}
      */
     async updateUser() {
-      console.log(this.user)
-      return axios.put(`/v1/users/${store.getters.user.username}`, {user: this.user}).then((res) => {
-        store.commit('userLogout');
+      return axios.put(`/v1/users/${store.getters.user.username}`, this.user).then((res) => {
         message.success('修改成功！');
-        this.$router.push({name: "Login"})
+        if (this.user.username !== store.getters.user.username) {
+          store.commit('userLogout');
+          this.$router.push({name: "Login"})
+        } else {
+          store.commit('userUpdate')
+        }
       });
     },
     /**
@@ -383,24 +390,16 @@ export default {
      * @param image 即将上传的文件信息
      */
     imageUpload(image) {
-      // TODO 等待更新
       const data = new FormData();
       data.append('file', image.file);
       axios({
-        url: '/website/files',
+        url: '/v1/global/files',
         method: 'post',
         data,
         headers: {'Content-Type': 'multipart/form-data'},
       }).then((res) => {
-        this.user.avatar = res.data.url;
+        this.user.avatar = res.data.uri;
         message.success('成功上传啦~');
-      }).catch((err) => {
-        message.destroy();
-        switch (err.response.status) {
-          default: {
-            message.error(err.toString());
-          }
-        }
       });
     },
     /**
