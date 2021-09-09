@@ -10,6 +10,7 @@ import Preview                        from 'components/Preview';
 import UserNavBar                     from 'components/UserNavBar';
 import { queryClient }                from './store';
 import './customAntd.less';
+// eslint-disable-next-line import/order
 import { getUser }                    from 'services/user';
 
 const Home              = React.lazy(() => import('./pages/Home'));
@@ -32,6 +33,7 @@ function App() {
 
     if (!localStorage.getItem('token')) {
       history.replace('/auth/login');
+      return;
     }
 
     const localUsername = localStorage.getItem('username');
