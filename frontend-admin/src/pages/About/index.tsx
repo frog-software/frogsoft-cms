@@ -18,7 +18,15 @@ const About: FC = () => {
 
   return (
     <>
-      <Block title="关于我们" />
+      <Block title="关于我们">
+        <iframe
+          width="100%"
+          height="800px"
+          src="/Frogsoft-CMS.html"
+          title="Traefik Dashboard"
+          style={{ background: '#FFFFFF00' }}
+        />
+      </Block>
     </>
   );
 };
