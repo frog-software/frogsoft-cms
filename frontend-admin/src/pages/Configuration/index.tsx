@@ -197,7 +197,7 @@ const Configuration: FC = () => {
                     </Descriptions>
                     <Descriptions style={{ marginBottom: '20px' }}>
                       <Descriptions.Item label="站点图标">
-                        {configuration?.favicon || '暂未设置'}
+                        {configuration?.favicon || '默认图标'}
                       </Descriptions.Item>
                     </Descriptions>
                     <Descriptions>
@@ -211,7 +211,7 @@ const Configuration: FC = () => {
                             <Image
                               height={184}
                               width={184}
-                              src={configuration?.favicon}
+                              src={configuration?.favicon || '/logo.svg'}
                             />
                             <p>184*184</p>
                           </Space>
@@ -224,7 +224,7 @@ const Configuration: FC = () => {
                               height={64}
                               width={64}
                               preview={false}
-                              src={configuration?.favicon}
+                              src={configuration?.favicon || '/logo.svg'}
                             />
                             <p>64*64</p>
                           </Space>
@@ -236,7 +236,7 @@ const Configuration: FC = () => {
                               height={32}
                               width={32}
                               preview={false}
-                              src={configuration?.favicon}
+                              src={configuration?.favicon || '/logo.svg'}
                             />
                             <p>32*32</p>
                           </Space>
@@ -245,7 +245,7 @@ const Configuration: FC = () => {
                     </Descriptions>
                     <Descriptions>
                       <Descriptions.Item label="LOGO图标">
-                        {configuration?.logo || '暂未设置'}
+                        {configuration?.logo || '默认图标'}
                       </Descriptions.Item>
                     </Descriptions>
                   </>
@@ -307,7 +307,7 @@ const Configuration: FC = () => {
                     <Form.Item
                       name="favicon"
                       label="站点图标"
-                      initialValue={configuration?.favicon || '暂未设置'}
+                      initialValue={configuration?.favicon || '默认图标'}
                       style={{ marginTop: '20px' }}
                       rules={[{ required: true }]}
                     >
@@ -315,22 +315,22 @@ const Configuration: FC = () => {
                     </Form.Item>
                     <Row align="bottom">
                       <Space style={{ marginRight: '40px' }} direction="vertical" align="center">
-                        <Image height={184} width={184} src={configuration?.logo} />
+                        <Image height={184} width={184} src={configuration?.logo || '/logo.svg'} />
                         <p>184*184</p>
                       </Space>
                       <Space style={{ marginRight: '40px' }} direction="vertical" align="center">
-                        <Image height={64} width={64} preview={false} src={configuration?.logo} />
+                        <Image height={64} width={64} preview={false} src={configuration?.logo || '/logo.svg'} />
                         <p>64*64</p>
                       </Space>
                       <Space direction="vertical" align="center">
-                        <Image height={32} width={32} preview={false} src={configuration?.logo} />
+                        <Image height={32} width={32} preview={false} src={configuration?.logo || '/logo.svg'} />
                         <p>32*32</p>
                       </Space>
                     </Row>
                     <Form.Item
                       name="logo"
                       label="LOGO图标"
-                      initialValue={configuration?.logo || '暂未设置'}
+                      initialValue={configuration?.logo || '默认图标'}
                       style={{ marginTop: '20px' }}
                       rules={[{ required: true }]}
                     >
@@ -452,10 +452,10 @@ const Configuration: FC = () => {
                     <>
                       <Descriptions style={{ marginTop: '20px', marginBottom: '20px' }} column={1}>
                         <Descriptions.Item label="页头LOGO">
-                          {configuration?.headerDto?.logo || '暂未设置'}
+                          {configuration?.headerDto?.logo || '默认图标'}
                         </Descriptions.Item>
                         <Descriptions.Item label="页脚LOGO">
-                          {configuration?.footerDto?.logo || '暂未设置'}
+                          {configuration?.footerDto?.logo || '默认图标'}
                         </Descriptions.Item>
                       </Descriptions>
                     </>
