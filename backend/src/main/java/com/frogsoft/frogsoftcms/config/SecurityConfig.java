@@ -55,12 +55,14 @@ public class SecurityConfig {
         .authorizeRequests(c -> c
             .antMatchers("/v1/auth/login").permitAll()
             .antMatchers(HttpMethod.POST, "/v1/auth/forget").permitAll()
+            .antMatchers(HttpMethod.PUT, "/v1/auth/forget").permitAll()
             .antMatchers(HttpMethod.POST, "/v1/users").permitAll()
             .antMatchers(HttpMethod.POST, "/v1/global/email").permitAll()
             .antMatchers(HttpMethod.GET, "/v1/articles/**").permitAll()
             .antMatchers(HttpMethod.GET, "/v1/home/recommendations").permitAll()
             .antMatchers(HttpMethod.GET, "/v1/global/config/frontend-user").permitAll()
             .antMatchers(HttpMethod.GET, "/v1/global/files/**").permitAll()
+            .antMatchers(HttpMethod.GET, "/v1/home/**").permitAll()
             .anyRequest().authenticated()
         )
         .addFilterBefore(

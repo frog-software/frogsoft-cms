@@ -8,6 +8,7 @@ import com.frogsoft.frogsoftcms.dto.model.article.ArticleMeDto;
 import com.frogsoft.frogsoftcms.exception.article.ArticleNotFoundException;
 import com.frogsoft.frogsoftcms.exception.basic.conflict.ConflictException;
 import com.frogsoft.frogsoftcms.exception.basic.forbidden.ForbiddenException;
+import com.frogsoft.frogsoftcms.exception.user.UserNotFoundException;
 import com.frogsoft.frogsoftcms.model.article.Article;
 import com.frogsoft.frogsoftcms.model.article.Status;
 import com.frogsoft.frogsoftcms.model.history.History;
@@ -72,7 +73,6 @@ public class ArticleServiceImpl implements ArticleService {
         .setUser(user);
     historyRepository.save(history);
     Article newArticle = articleRepository.save(article);
-    System.out.println(newArticle);
     return articleModelAssembler.toMeModel(articleMapper.toArticleMeDto(newArticle, user));
   }
 
@@ -105,7 +105,19 @@ public class ArticleServiceImpl implements ArticleService {
         throw new ForbiddenException("无权限删除该文章");
       }
     }
-    articleRepository.delete(article);
+    User user = userRepository.findById(authenticateUser.getId())
+        .orElseThrow(() -> new UserNotFoundException(authenticateUser.getId()));
+    System.out.println(user.getArticles());
+    article.setAuthor(null);
+    for (User userLike : article.getLikes()) {
+      userLike.getLikeArticles().remove(article);
+      userRepository.save(userLike);
+    }
+    for (User userFavor : article.getFavorites()) {
+      userFavor.getFavoriteArticles().remove(article);
+    }
+    Article newArticle = articleRepository.save(article);
+    articleRepository.delete(newArticle);
   }
 
   @Override

@@ -1,6 +1,7 @@
 package com.frogsoft.frogsoftcms.model.article;
 
 import com.frogsoft.frogsoftcms.model.commment.Comment;
+import com.frogsoft.frogsoftcms.model.history.History;
 import com.frogsoft.frogsoftcms.model.user.User;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -45,9 +46,11 @@ public class Article {
   private Integer views;
 
   @ManyToMany
+  @JoinColumn(name = "id")
   private List<User> favorites;
 
   @ManyToMany
+  @JoinColumn(name = "id")
   private List<User> likes;
 
   @OneToMany(cascade = CascadeType.ALL)
@@ -67,5 +70,9 @@ public class Article {
   private Integer likesNum;
   @Column(nullable = false)
   private Integer favoritesNum;
+  @OneToMany(cascade = CascadeType.ALL)
+  @OnDelete(action = OnDeleteAction.CASCADE)
+  @JoinColumn(name = "article")
+  private Set<History> histories;
 
 }

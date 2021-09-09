@@ -45,6 +45,7 @@ public class FileServiceImpl implements FileService {
     int i = fileName.lastIndexOf('.');
     if (i > 0) {
       extension = fileName.substring(i + 1);
+      extension = "." + extension;
     }
     UUID uuid = UUID.randomUUID();
     String newFileName = uuid + extension;

@@ -24,7 +24,6 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnJava;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -49,9 +48,11 @@ public class User implements UserDetails {
   private String password;
 
   @ManyToMany
+  @JoinColumn(name = "id")
   private List<Article> favoriteArticles;
 
   @ManyToMany
+  @JoinColumn(name = "id")
   private List<Article> likeArticles;
 
   private String avatar;
