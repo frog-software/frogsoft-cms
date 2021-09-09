@@ -65,7 +65,6 @@ import 'md-editor-v3/lib/style.css';</script>
               :delay="500"
               :spinning="commentsLoading"
           >
-            <!--            TODO: CommentList-->
             <CommentList
                 :id="id?+id:1"
                 :page-size="8"
@@ -78,7 +77,7 @@ import 'md-editor-v3/lib/style.css';</script>
       <!--文章的附加信息-->
       <a-col span="7">
         <!-- 文章的附加信息-->
-        <a-card style="padding: 16px" title="文章信息">
+        <a-card style="margin-top: 16px" title="文章信息">
           <router-link
               :to="{name:'UserDetails',params:{username: article.author.username}}"
           >
@@ -105,9 +104,9 @@ import 'md-editor-v3/lib/style.css';</script>
           </h3>
 
         </a-card>
-        <a-card style="padding: 16px" title="文章操作">
+        <a-card style="margin-top: 16px" title="文章操作">
           <a-button
-              style="margin-top:16px;"
+              style="margin-bottom:8px"
               v-if="store.getters.loginStatus"
               :loading="btnFavoriteLoading"
               type="primary"
@@ -117,6 +116,7 @@ import 'md-editor-v3/lib/style.css';</script>
           </a-button>
           <br>
           <a-button
+              style="margin-top:8px"
               v-if="store.getters.loginStatus"
               :loading="btnLikeLoading"
               type="primary"

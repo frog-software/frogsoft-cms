@@ -1,12 +1,12 @@
 <script setup>
-</script>
+import store from '../../store'</script>
 <template>
   <div>
     <!--新提交的评论-->
     <a-comment v-show="replyTo===parent">
       <template #avatar>
         <a-avatar
-            :alt="user.nickname"
+            :alt="user.username"
             :src="user.avatar"
         />
       </template>
@@ -43,36 +43,41 @@
       <template #renderItem="{item}">
         <a-list-item>
           <a-comment
-              :author="item.user.username"
+              :author="item.author.username"
               :content="item.content"
               :datetime="item.time"
           >
             <template #avatar>
-              <router-link :to="{name:'UserDetails',params:{id:item.user.id}}">
-                <a-avatar :src="item.user.avatar"/>
+              <router-link :to="{name:'UserDetails',params:{username:item.author.username}}">
+                <a-avatar :src="item.author.avatar||'/avatar.png'"/>
               </router-link>
             </template>
 
             <template #actions>
               <a-button
-                  v-if="item.user.id===user.id"
+                  v-if="item.author.username===user.username"
                   :disabled="btnCommentSubmitting"
                   type="text"
                   @click="commentDelete(item.id)"
+                  style="font-size: 12px"
               >
                 删除评论
               </a-button>
-              <span
+              <a-button
+                  type="text"
                   @click="store.commit('changeReplyTo',item.id)"
+                  style="font-size: 12px"
               >
                 回复评论
-              </span>
-              <span
+              </a-button>
+              <a-button
                   v-if="replyTo===item.id"
                   @click="store.commit('changeReplyTo',0)"
+                  style="font-size: 12px"
+                  type="text"
               >
                 取消回复
-              </span>
+              </a-button>
             </template>
             <comment-list
                 :id="id"
@@ -91,7 +96,6 @@
 import axios        from 'axios';
 import {mapGetters} from 'vuex';
 import {message}    from 'ant-design-vue';
-import store        from '../../store';
 
 export default {
   // TODO 等待后端评论接口修复完成后更新
@@ -135,10 +139,17 @@ export default {
         message.error('登录后才能发表评论哦~')
         return
       }
+      let trueParent = parent
+      this.comments.forEach(item => {
+        if (item.id === parent && item.parent != 0) {
+          trueParent = item.parent
+          message.info('评论层级太多啦~自动帮你回复到上一级了')
+        }
+      })
       this.btnCommentSubmitting = true;
       const data                = {
         content: this.newCommentValue,
-        parent: this.parent,
+        parent: trueParent,
       };
       axios.post(`/v1/articles/${this.id}/comments`, data).then(async () => {
         await store.commit('updateComments', this.id);
