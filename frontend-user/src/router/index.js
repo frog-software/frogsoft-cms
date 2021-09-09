@@ -78,10 +78,10 @@ const routes = [
     component: () => import('../views/Users/UserSettings.vue'),
 
   },
-  // {
-  //   path: '*',
-  //   component: () => import('../views/NotFound.vue')
-  // },
+  {
+    path: '/:pathMatch(.*)*',
+    component: () => import('../views/NotFound.vue')
+  },
   {
     path: '/NotFound',
     name: 'NotFound',
