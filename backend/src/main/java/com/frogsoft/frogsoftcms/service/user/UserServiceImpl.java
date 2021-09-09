@@ -144,21 +144,12 @@ public class UserServiceImpl implements UserService {
   @Override
   public EntityModel<UserDto> alterUserInformation(String oldUserName,
       UserRequest userRequest, User authenticatedUser) {
-    if (!authenticatedUser.getRoles().contains(Roles.ROLE_ADMIN.getRole())) {
-      if (!authenticatedUser.getUsername().equals(oldUserName)) {
-        throw new UnauthorizedException("身份验证不一致，无法修改信息");
-      }
-    }
     User oldUser = userRepository.findByUsername(oldUserName);
     User newUser = userRepository.findByUsername(userRequest.getUsername());
     if (authenticatedUser.getRoles().contains(Roles.ROLE_ADMIN.getRole())) {
       oldUser.setRoles(userRequest.getRoles());
-      if (!oldUserName.equals(userRequest.getUsername())) {
-        if (newUser != null) {
-          throw new ConflictException("用户名已存在");
-        }
-      }
-    } else {
+    }
+    if (!oldUserName.equals(userRequest.getUsername())) {
       if (newUser != null) {
         throw new ConflictException("用户名已存在");
       }
