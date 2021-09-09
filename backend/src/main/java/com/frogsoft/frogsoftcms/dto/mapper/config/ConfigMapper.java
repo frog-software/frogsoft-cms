@@ -39,7 +39,8 @@ public class ConfigMapper {
     configDto.setFooterDto(footerDto);
     return configDto;
   }
-  public FrontConfigDto toFrontConfigDto(List<Config> configList){
+
+  public FrontConfigDto toFrontConfigDto(List<Config> configList) {
     FrontConfigDto frontConfigDto = new FrontConfigDto();
     HeaderDto headerDto = new HeaderDto();
     FooterDto footerDto = new FooterDto();

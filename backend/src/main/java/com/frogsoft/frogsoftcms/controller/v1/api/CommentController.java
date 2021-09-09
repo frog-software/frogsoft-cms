@@ -39,7 +39,7 @@ public class CommentController {
   public ResponseEntity<?> deleteComment(@PathVariable(name = "id") Long id,
       @AuthenticationPrincipal User authenticatedUser) {
     commentService.delete(id, authenticatedUser);
-    return ResponseEntity.ok(201);
+    return ResponseEntity.status(201).body(ResponseEntity.EMPTY.getBody());
   }
 
   @GetMapping("")

@@ -144,21 +144,12 @@ public class UserServiceImpl implements UserService {
   @Override
   public EntityModel<UserDto> alterUserInformation(String oldUserName,
       UserRequest userRequest, User authenticatedUser) {
-    if (!authenticatedUser.getRoles().contains(Roles.ROLE_ADMIN.getRole())) {
-      if (!authenticatedUser.getUsername().equals(oldUserName)) {
-        throw new UnauthorizedException("身份验证不一致，无法修改信息");
-      }
-    }
     User oldUser = userRepository.findByUsername(oldUserName);
     User newUser = userRepository.findByUsername(userRequest.getUsername());
     if (authenticatedUser.getRoles().contains(Roles.ROLE_ADMIN.getRole())) {
       oldUser.setRoles(userRequest.getRoles());
-      if (!oldUserName.equals(userRequest.getUsername())) {
-        if (newUser != null) {
-          throw new ConflictException("用户名已存在");
-        }
-      }
-    } else {
+    }
+    if (!oldUserName.equals(userRequest.getUsername())) {
       if (newUser != null) {
         throw new ConflictException("用户名已存在");
       }
@@ -185,30 +176,38 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public PagedModel<EntityModel<HistoryDto>> getUserHistory(String username, Pageable pageable) {
+  public PagedModel<?> getUserHistory(String username, Pageable pageable) {
     User user = userRepository.findByUsername(username);
     Page<HistoryDto> historyDtos = historyRepository.findAllByUser(user, pageable).map(
         historyMapper::toHistoryDto
     );
+    if (historyDtos.getContent().size() == 0) {
+      return historyDtoPagedResourcesAssembler.toEmptyModel(historyDtos, HistoryDto.class);
+    }
     return historyDtoPagedResourcesAssembler.toModel(historyDtos, historyModelAssembler);
   }
 
   @Override
-  public PagedModel<EntityModel<ArticleDto>> getUserFavor(String username, Pageable pageable) {
+  public PagedModel<?> getUserFavor(String username, Pageable pageable) {
     User user = userRepository.findByUsername(username);
     Page<ArticleDto> articleDtos = articleRepository.findByAuthorASCAdmin(user, "id", pageable).map(
         articleMapper::toArticleDto
     );
+    if (articleDtos.getContent().size() == 0) {
+      return historyDtoPagedResourcesAssembler.toEmptyModel(articleDtos, ArticleDto.class);
+    }
     return articleDtoPagedResourcesAssembler.toModel(articleDtos, articleModelAssembler);
   }
 
   @Override
-  public PagedModel<EntityModel<CommentDto>> getUserComment(String username, Pageable pageable) {
+  public PagedModel<?> getUserComment(String username, Pageable pageable) {
     User user = userRepository.findByUsername(username);
     Page<CommentDto> commentDtos = commentRepository.findAllByAuthor(user, pageable).map(
         commentMapper::toCommentDto
     );
-
+    if (commentDtos.getContent().size() == 0) {
+      return historyDtoPagedResourcesAssembler.toEmptyModel(commentDtos, CommentDto.class);
+    }
     return commentDtoPagedResourcesAssembler.toModel(commentDtos, commentModelAssembler);
   }
 }

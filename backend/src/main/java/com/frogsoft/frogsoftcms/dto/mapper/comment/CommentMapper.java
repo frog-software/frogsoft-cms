@@ -47,6 +47,7 @@ public class CommentMapper {
       if (comment.getParent() != null) {
         commentDto.setParent(comment.getParent().getId());
       }
+      commentDtoList.add(commentDto);
     }
     return commentDtoList;
   }
