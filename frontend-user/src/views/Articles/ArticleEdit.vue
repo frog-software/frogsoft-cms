@@ -1,6 +1,7 @@
 <script setup>
-import MdEditor from 'md-editor-v3';
-import 'md-editor-v3/lib/style.css';</script>
+import MdEditor         from 'md-editor-v3';
+import 'md-editor-v3/lib/style.css';
+import {UploadOutlined} from "@ant-design/icons-vue";</script>
 <template>
   <div
       v-show="isAuthor"
@@ -28,17 +29,16 @@ import 'md-editor-v3/lib/style.css';</script>
 
       <a-col span="12">
         <a-input v-model:value="article.cover"/>
-        <!--        TODO: 封面上传-->
-        <!--        <a-upload-->
-        <!--          :before-upload="beforeUpload"-->
-        <!--          :custom-request="customRequest"-->
-        <!--          :show-upload-list="false"-->
-        <!--        >-->
-        <!--          <a-button :loading="btnCoverLoading">-->
-        <!--            <a-icon type="upload" />-->
-        <!--            更换封面图片-->
-        <!--          </a-button>-->
-        <!--        </a-upload>-->
+        <a-upload
+            :before-upload="beforeUpload"
+            :custom-request="customRequest"
+            :show-upload-list="false"
+        >
+          <a-button :loading="btnCoverLoading">
+            <UploadOutlined/>
+            更换封面图片
+          </a-button>
+        </a-upload>
         <img
             :src="article.cover"
             alt="文章目前的封面图片"
@@ -110,13 +110,13 @@ import 'md-editor-v3/lib/style.css';</script>
         style="padding-top:10px;padding-bottom:60px;"
         type="flex"
     >
-      <!--      TODO:图片上传-->
       <!--      TODO:本地存储-->
       <MdEditor
           v-model="article.content"
           :toolbarsExclude="['htmlPreview', 'github']"
           editorClass="width:100%"
           style="width: 100%"
+          v-on:onUploadImg="onUploadImg"
       />
     </a-row>
 
@@ -250,67 +250,61 @@ export default {
       }
     },
 
-    // /**
-    //  * 上传图片
-    //  * @param file 即将上传的图片文件
-    //  */
-    // async imageUpload(file) {
-    //   return new Promise((resolve) => {
-    //     const formData = new FormData();
-    //     formData.append('file', file);
-    //     axios({
-    //       url: '/website/files',
-    //       method: 'post',
-    //       data: formData,
-    //       headers: { 'Content-Type': 'multipart/form-data' },
-    //     }).then((res) => {
-    //       resolve(res.data.url);
-    //       message.success('成功上传啦~');
-    //     }).catch((err) => {
-    //       message.destroy();
-    //       switch (err.response.status) {
-    //         case 401: {
-    //           message.error('无权限：请检查您的登录状态');
-    //           break;
-    //         }
-    //         default: {
-    //           message.error(err.toString());
-    //         }
-    //       }
-    //     });
-    //   });
-    // },
+    /**
+     * 上传图片
+     * @param image 即将上传的文件信息
+     */
+    async imageUpload(image) {
+      let result = ""
+      const data = new FormData();
+      data.append('file', image);
+      await axios({
+        url: '/v1/global/files',
+        method: 'post',
+        data,
+        headers: {'Content-Type': 'multipart/form-data'},
+      }).then((res) => {
+        result = res.data.uri;
+        message.success('成功上传啦~');
+      });
+      console.log(result)
+      return result
+    },
 
-    // /**
-    //  * 自定义上传文件请求
-    //  * @param data 需要上传文件
-    //  */
-    // customRequest(data) {
-    //   this.btnCoverLoading = true;
-    //   this.imageUpload(data.file).then((url) => {
-    //     this.article.cover = url;
-    //     this.btnCoverLoading = false;
-    //   });
-    // },
+    /**
+     * 自定义上传文件请求
+     * @param data 需要上传文件
+     */
+    async customRequest(data) {
+      this.btnCoverLoading = true;
+      this.article.cover   = await this.imageUpload(data.file);
+      this.btnCoverLoading = false;
 
-    // /**
-    //  * 在上传之前检查即将上传的文件
-    //  * @param file 即将上传的文件
-    //  */
-    // beforeUpload(file) {
-    //   const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
-    //   if (!isJpgOrPng) {
-    //     message.error('仅支持上传jpg或png文件!');
-    //   }
-    //   const isLt2M = file.size / 1024 / 1024 < 2;
-    //   if (!isLt2M) {
-    //     message.error('上传的图片大小不超过2MB!');
-    //   }
-    //   return isJpgOrPng && isLt2M;
-    // },
+    },
 
-  },
-};
+    /**
+     * 在上传之前检查即将上传的文件
+     * @param file 即将上传的文件
+     */
+    beforeUpload(file) {
+      const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+      if (!isJpgOrPng) {
+        message.error('仅支持上传jpg或png文件!');
+      }
+      const isLt2M = file.size / 1024 / 1024 < 2;
+      if (!isLt2M) {
+        message.error('上传的图片大小不超过2MB!');
+      }
+      return isJpgOrPng && isLt2M;
+    },
+
+    async onUploadImg(files, callback) {
+      console.log(files)
+      let back = Array.from(files).map((item) => this.imageUpload(item))
+      Promise.all(back).then(callback)
+    },
+  }
+}
 </script>
 
 <style scoped>

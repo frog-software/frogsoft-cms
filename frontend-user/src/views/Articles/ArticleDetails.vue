@@ -79,7 +79,7 @@ import 'md-editor-v3/lib/style.css';</script>
         <!-- 文章的附加信息-->
         <a-card style="margin-top: 16px" title="文章信息">
           <router-link
-              :to="{name:'UserDetails',params:{username: article.author.username}}"
+              :to="{name:'UserDetails',params:{username: article?.author?.username}}"
           >
             <a-card-meta :title="article.author.username">
               <template #avatar>

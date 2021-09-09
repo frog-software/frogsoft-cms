@@ -402,6 +402,7 @@ export default {
         message.success('成功上传啦~');
       });
     },
+
     /**
      * 在上传之前检查即将上传的文件
      * @param file 即将上传的文件
