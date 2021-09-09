@@ -1,6 +1,6 @@
 <script setup>
 import HeaderUser from './HeaderUser.vue';
-</script>
+import store      from '../../store'</script>
 <template>
   <div class="header">
     <a-row
@@ -8,17 +8,17 @@ import HeaderUser from './HeaderUser.vue';
         justify="space-around"
         type="flex"
     >
-      <a-col :span="3">
+      <a-col :span="5">
         <router-link to="/Home">
           <img
-              alt="E方言图标"
-              src="../../assets/logo.png"
-              width="120"
+              alt="网站页眉LOGO"
+              :src="store.getters.config.headerDto.logo"
+              style="max-height: 64px;max-width: 200px"
           >
         </router-link>
       </a-col>
 
-      <a-col :span="9">
+      <a-col :span="6">
         <a-menu
             v-model:selectedKeys="tab"
             mode="horizontal"
@@ -32,12 +32,6 @@ import HeaderUser from './HeaderUser.vue';
           <a-menu-item key="Articles">
             <router-link :to="{name:'Articles'}">
               文章
-            </router-link>
-          </a-menu-item>
-
-          <a-menu-item key="Tools">
-            <router-link :to="{name:'Tools'}">
-              工具
             </router-link>
           </a-menu-item>
         </a-menu>
@@ -59,9 +53,6 @@ import HeaderUser from './HeaderUser.vue';
 </template>
 
 <script>
-
-import store from '../../store';
-
 export default {
   name: 'Header',
   data() {

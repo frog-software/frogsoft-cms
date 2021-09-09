@@ -1,19 +1,19 @@
 <script setup>
-</script>
+import store from '../../store'</script>
 <template>
   <div>
     <!--新提交的评论-->
     <a-comment v-show="replyTo===parent">
       <template #avatar>
         <a-avatar
-            :alt="user.nickname"
+            :alt="user.username"
             :src="user.avatar"
         />
       </template>
       <template #content>
         <a-form-item>
           <a-textarea
-              v-model="newCommentValue"
+              v-model:value="newCommentValue"
               :rows="4"
           />
         </a-form-item>
@@ -43,36 +43,41 @@
       <template #renderItem="{item}">
         <a-list-item>
           <a-comment
-              :author="item.user.username"
+              :author="item.author.username"
               :content="item.content"
               :datetime="item.time"
           >
             <template #avatar>
-              <router-link :to="{name:'UserDetails',params:{id:item.user.id}}">
-                <a-avatar :src="item.user.avatar"/>
+              <router-link :to="{name:'UserDetails',params:{username:item.author.username}}">
+                <a-avatar :src="item.author.avatar||'/avatar.png'"/>
               </router-link>
             </template>
 
             <template #actions>
               <a-button
-                  v-if="item.user.id===user.id"
+                  v-if="item.author.username===user.username"
                   :disabled="btnCommentSubmitting"
                   type="text"
                   @click="commentDelete(item.id)"
+                  style="font-size: 12px"
               >
                 删除评论
               </a-button>
-              <span
+              <a-button
+                  type="text"
                   @click="store.commit('changeReplyTo',item.id)"
+                  style="font-size: 12px"
               >
                 回复评论
-              </span>
-              <span
+              </a-button>
+              <a-button
                   v-if="replyTo===item.id"
                   @click="store.commit('changeReplyTo',0)"
+                  style="font-size: 12px"
+                  type="text"
               >
                 取消回复
-              </span>
+              </a-button>
             </template>
             <comment-list
                 :id="id"
@@ -88,17 +93,16 @@
 </template>
 
 <script>
-import axios from 'axios';
+import axios        from 'axios';
 import {mapGetters} from 'vuex';
-import {message} from 'ant-design-vue';
-import store from '../../store';
+import {message}    from 'ant-design-vue';
 
 export default {
   name: 'CommentList',
   props: {
     parent: Number,
     pageSize: Number,
-    id: String
+    id: Number
   },
   data() {
     return {
@@ -115,7 +119,7 @@ export default {
     ]),
     filteredComments() {
       const result = [];
-      this.comments.forEach((item) => {
+      this.comments?.forEach((item) => {
         if (item.parent === this.parent) {
           result.push(item);
         }
@@ -130,12 +134,23 @@ export default {
      * @param parent 回复的评论的id，若无则为0
      */
     commentSubmit(parent) {
+      if (store.getters.loginStatus === false) {
+        message.error('登录后才能发表评论哦~')
+        return
+      }
+      let trueParent = parent
+      this.comments.forEach(item => {
+        if (item.id === parent && item.parent != 0) {
+          trueParent = item.parent
+          message.info('评论层级太多啦~自动帮你回复到上一级了')
+        }
+      })
       this.btnCommentSubmitting = true;
-      const data = {
+      const data                = {
         content: this.newCommentValue,
-        parent: this.parent,
+        parent: trueParent,
       };
-      axios.post(`/articles/${this.id}/comments`, data).then(async () => {
+      axios.post(`/v1/articles/${this.id}/comments`, data).then(async () => {
         await store.commit('updateComments', this.id);
         this.newCommentValue = '';
         message.success('评论发布成功');
@@ -152,7 +167,7 @@ export default {
      */
     commentDelete(id) {
       this.commentsLoading = true;
-      axios.delete(`/articles/${this.id}/comments`, {
+      axios.delete(`/v1/articles/${this.id}/comments`, {
         data: {
           id,
         },

@@ -1,26 +1,42 @@
 import {createStore} from 'vuex';
-import axios from 'axios';
-import moment from 'moment';
+import axios         from 'axios';
+import moment        from 'moment';
 
 moment.locale('zh-cn');
 
-const defaultUser = {
+const defaultUser   = {
   id: 0,
-  username: 'username',
-  nickname: 'nickname',
-  email: 'pxm@edialect.top',
-  avatar: 'https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png',
+  username: null,
+  email: 'email@frogsoft.com',
+  avatar: '/avatar.png',
+  roles: [],
   is_admin: false,
 };
-const store = createStore({
+const defaultConfig = {
+  favicon: '/frogsoft.svg',
+  title: 'Frogsoft CMS',
+  logo: '/frogsoft.png',
+  headerDto: {
+    logo: '/logo-with-text-black.svg',
+  },
+  footerDto: {
+    logo: '/logo-with-text-white.svg',
+  },
+};
+const store         = createStore({
   state: {
     tab: [],
     drawerVisibility: false,
     drawerLoading: false,
     user: Object.create(defaultUser),
-    publish_articles: [],
-    like_articles: [],
-    music: 6,
+    publishArticles: [],
+    favoriteArticles: [],
+    statistics: {
+      publishArticlesNum: 0,
+      viewsNum: 0,
+      likesNum: 0,
+      favoritesNum: 0,
+    },
     replyTo: 0,
     commentsLoading: false,
     comments: [
@@ -28,7 +44,7 @@ const store = createStore({
         id: 1234,
         user: {
           id: 0,
-          nickname: 'nickname',
+          username: 'username',
           avatar: 'http://dummyimage.com/100x100',
         },
         content: 'content',
@@ -36,6 +52,7 @@ const store = createStore({
         parent: 123,
       },
     ],
+    config: {...defaultConfig},
   },
   getters: {
     /**
@@ -44,7 +61,7 @@ const store = createStore({
      * @returns {boolean} 是否已经登录
      */
     loginStatus(state) {
-      return state.user.id > 0;
+      return !!state.user.username;
     },
 
     // getter区
@@ -60,11 +77,11 @@ const store = createStore({
     user(state) {
       return state.user;
     },
-    publish_articles(state) {
-      return state.publish_articles;
+    publishArticles(state) {
+      return state.publishArticles;
     },
-    like_articles(state) {
-      return state.like_articles;
+    favoriteArticles(state) {
+      return state.favoriteArticles;
     },
     music(state) {
       return state.music;
@@ -78,6 +95,12 @@ const store = createStore({
     commentsLoading(state) {
       return state.commentsLoading;
     },
+    config(state) {
+      return state.config;
+    },
+    statistics(state) {
+      return state.statistics
+    }
   },
   mutations: {
     tab(state, value) {
@@ -92,26 +115,33 @@ const store = createStore({
         this.commit('userUpdate');
       }
     },
-    userLogin(state, id) {
-      if (state.user.id.toString() === id) return;
-      state.user.id = Number(id);
-      localStorage.setItem('id', id);
+    userLogin(state, username) {
+      if (state.user.username === username) return;
+      state.user.username = username.toString();
+      localStorage.setItem('username', username);
       this.commit('userUpdate');
     },
     userLogout(state) {
-      localStorage.removeItem('id');
+      localStorage.removeItem('username');
       localStorage.removeItem('token');
-      state.user = Object.create(defaultUser);
-      state.publish_articles = [];
-      state.like_articles = [];
+      state.user             = {...defaultUser};
+      state.publishArticles  = [];
+      state.favoriteArticles = [];
       state.drawerVisibility = false;
     },
     userUpdate(state) {
       state.drawerLoading = true;
-      axios.get(`/users/${state.user.id}`).then((res) => {
-        state.user = res.data.user;
-        state.publish_articles = res.data.publish_articles;
-        state.like_articles = res.data.like_articles;
+      axios.get(`/v1/users/${state.user.username}`).then((res) => {
+        state.user.email       = res.data.email;
+        state.user.avatar      = res.data.avatar || defaultUser.avatar;
+        state.user.is_admin    = res.data.roles.includes('ROLE_ADMIN');
+        state.user.roles       = res.data.roles
+        state.publishArticles  = res.data.publishArticles;
+        state.favoriteArticles = res.data.favoriteArticles;
+        state.statistics       = res.data.statistics;
+      }).catch(() => {
+        this.commit('userLogout');
+      }).finally(() => {
         state.drawerLoading = false;
       });
     },
@@ -123,13 +153,28 @@ const store = createStore({
     },
     updateComments(state, id) {
       state.commentsLoading = true;
-      return axios.get(`/articles/${id}/comments`).then((res) => {
-        state.comments = res.data.comments;
+      return axios.get(`/v1/articles/${id}/comments`).then((res) => {
+        state.comments = res.data?._embedded?.commentDtoList || [];
         state.comments.forEach((item) => {
           item.time = moment(item.time).fromNow();
         });
       }).finally(() => {
         state.commentsLoading = false;
+      });
+    },
+    updateConfig(state) {
+      return axios.get('/v1/global/config/frontend-user').then((res) => {
+        state.config = {...defaultConfig};
+        Object(res.data)?.keys?.forEach((item) => {
+          if (typeof (res.data[item]) === 'object') {
+            Object(res.data[item])?.keys?.forEach((jtem) => {
+              state.config[item][jtem] = res.data[item][jtem];
+            });
+          } else if (res.data[item]) state.config[item] = res.data[item];
+        });
+      }).finally(() => {
+        document.title                      = state.config.title;
+        document.getElementById('qwq').href = state.config.favicon;
       });
     },
   },

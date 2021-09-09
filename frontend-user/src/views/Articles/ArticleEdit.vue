@@ -1,7 +1,7 @@
 <script setup>
-import MdEditor from 'md-editor-v3';
+import MdEditor         from 'md-editor-v3';
 import 'md-editor-v3/lib/style.css';
-</script>
+import {UploadOutlined} from "@ant-design/icons-vue";</script>
 <template>
   <div
       v-show="isAuthor"
@@ -29,17 +29,16 @@ import 'md-editor-v3/lib/style.css';
 
       <a-col span="12">
         <a-input v-model:value="article.cover"/>
-        <!--        TODO: 封面上传-->
-        <!--        <a-upload-->
-        <!--          :before-upload="beforeUpload"-->
-        <!--          :custom-request="customRequest"-->
-        <!--          :show-upload-list="false"-->
-        <!--        >-->
-        <!--          <a-button :loading="btnCoverLoading">-->
-        <!--            <a-icon type="upload" />-->
-        <!--            更换封面图片-->
-        <!--          </a-button>-->
-        <!--        </a-upload>-->
+        <a-upload
+            :before-upload="beforeUpload"
+            :custom-request="customRequest"
+            :show-upload-list="false"
+        >
+          <a-button :loading="btnCoverLoading">
+            <UploadOutlined/>
+            更换封面图片
+          </a-button>
+        </a-upload>
         <img
             :src="article.cover"
             alt="文章目前的封面图片"
@@ -86,21 +85,47 @@ import 'md-editor-v3/lib/style.css';
         />
       </a-col>
     </a-row>
+    <a-row
+        :gutter="12"
+        align="middle"
+        justify="center"
+        style="padding-top:10px;padding-bottom:60px;"
+        type="flex"
+    >
+      <a-col span="3">
+        <h3> 文章状态</h3>
+      </a-col>
+      <a-col span="3">
 
+        <a-switch v-model:checked="switchChecked"/>
+      </a-col>
+      <a-col span="9">
+        <h3>{{ switchChecked ? '正常显示' : '暂时屏蔽' }}</h3>
+      </a-col>
+    </a-row>
     <!--文章内容-->
     <a-row
         align="middle"
         justify="center"
+        style="padding-top:10px;padding-bottom:60px;"
         type="flex"
     >
-      <!--      TODO:图片上传-->
+      <!--      TODO:本地存储-->
       <MdEditor
           v-model="article.content"
           :toolbarsExclude="['htmlPreview', 'github']"
           editorClass="width:100%"
           style="width: 100%"
+          v-on:onUploadImg="onUploadImg"
       />
+    </a-row>
 
+    <a-row
+        align="middle"
+        justify="center"
+        style="padding-top:10px;padding-bottom:10px;"
+        type="flex"
+    >
       <a-button
           :loading="btnArticleLoading"
           type="primary"
@@ -113,9 +138,9 @@ import 'md-editor-v3/lib/style.css';
 </template>
 
 <script>
-import axios from 'axios';
-
+import axios     from 'axios'
 import {message} from 'ant-design-vue';
+import store     from "../../store";
 
 export default {
   name: 'ArticleEdit',
@@ -134,11 +159,12 @@ export default {
         description: '',
         content: '',
         cover: 'http://dummyimage.com/400x300',
+        status: 'NORMAL'
       },
       buttonContent: '创建文章',
       btnArticleLoading: false,
       btnCoverLoading: false,
-      isAuthor: false,
+      isAuthor: false
     };
   },
   computed: {
@@ -149,12 +175,24 @@ export default {
       if (this.$route.name === 'ArticleCreate') return 0;
       return +this.$attrs.id;
     },
+    switchChecked: {
+      get() {
+        return this.article.status === "NORMAL"
+      },
+      set(value) {
+        if (value) {
+          this.article.status = "NORMAL"
+        } else {
+          this.article.status = "BLOCKED"
+        }
+      }
+    }
   },
 
   watch: {
     $router() {
       this.getArticleDetails();
-    },
+    }
   },
 
   created() {
@@ -168,29 +206,9 @@ export default {
      */
     createArticle() {
       this.btnArticleLoading = true;
-      axios.post('/articles', {...this.article}).then((res) => {
+      axios.post('/v1/articles', {...this.article}).then((res) => {
         message.success('恭喜你，创建成功！');
         this.$router.push({name: 'ArticleDetails', params: {id: res.data.id.toString()}});
-      }).catch((err) => {
-        message.destroy();
-        switch (err.response.status) {
-          case 401: {
-            message.error('登录状态无效！请重新登录！');
-            break;
-          }
-          case 400: {
-            message.error('请完成所有内容！');
-            break;
-          }
-          case 500: {
-            message.error('服务器错误！请联系管理员！');
-            message.error(`错误内容:${err.response.data.msg}`);
-            break;
-          }
-          default: {
-            message.error('不应该出现这个错误啊！');
-          }
-        }
       }).finally(() => {
         this.btnArticleLoading = false;
       });
@@ -201,27 +219,15 @@ export default {
      */
     updateArticle() {
       this.btnArticleLoading = true;
-      axios.put(`/articles/${this.id}`, {
-        article: {
-          title: this.article.title,
-          description: this.article.description,
-          content: this.article.content,
-          cover: this.article.cover,
-        },
+      axios.put(`/v1/articles/${this.id}`, {
+        title: this.article.title,
+        description: this.article.description,
+        content: this.article.content,
+        cover: this.article.cover,
+        status: this.article.status
       }).then(() => {
         message.success('文章更新成功！');
         this.$router.push({name: 'ArticleDetails', params: {id: this.id.toString()}});
-      }).catch((err) => {
-        message.destroy();
-        switch (err.response.status) {
-          case 401: {
-            message.error('登录状态异常！请重新登录后再试！');
-            break;
-          }
-          default: {
-            message.error(err.toString());
-          }
-        }
       }).finally(() => {
         this.btnArticleLoading = false;
       });
@@ -233,78 +239,72 @@ export default {
      */
     getArticleDetails() {
       if (this.id) {
-        axios.get(`/articles/${this.id}`).then((res) => {
-          this.isAuthor = res.data.me.is_author;
+        axios.get(`/v1/articles/${this.id}`).then((res) => {
+          this.isAuthor = res.data.author.username === store.getters.user.username;
           if (this.isAuthor === false) {
             message.error('你没有权限编辑本文！');
             this.$router.push({name: 'Forbidden'});
           }
-          this.article = res.data.article;
+          this.article = res.data;
         });
       }
     },
 
-    // /**
-    //  * 上传图片
-    //  * @param file 即将上传的图片文件
-    //  */
-    // async imageUpload(file) {
-    //   return new Promise((resolve) => {
-    //     const formData = new FormData();
-    //     formData.append('file', file);
-    //     axios({
-    //       url: '/website/files',
-    //       method: 'post',
-    //       data: formData,
-    //       headers: { 'Content-Type': 'multipart/form-data' },
-    //     }).then((res) => {
-    //       resolve(res.data.url);
-    //       message.success('成功上传啦~');
-    //     }).catch((err) => {
-    //       message.destroy();
-    //       switch (err.response.status) {
-    //         case 401: {
-    //           message.error('无权限：请检查您的登录状态');
-    //           break;
-    //         }
-    //         default: {
-    //           message.error(err.toString());
-    //         }
-    //       }
-    //     });
-    //   });
-    // },
+    /**
+     * 上传图片
+     * @param image 即将上传的文件信息
+     */
+    async imageUpload(image) {
+      let result = ""
+      const data = new FormData();
+      data.append('file', image);
+      await axios({
+        url: '/v1/global/files',
+        method: 'post',
+        data,
+        headers: {'Content-Type': 'multipart/form-data'},
+      }).then((res) => {
+        result = res.data.uri;
+        message.success('成功上传啦~');
+      });
+      console.log(result)
+      return result
+    },
 
-    // /**
-    //  * 自定义上传文件请求
-    //  * @param data 需要上传文件
-    //  */
-    // customRequest(data) {
-    //   this.btnCoverLoading = true;
-    //   this.imageUpload(data.file).then((url) => {
-    //     this.article.cover = url;
-    //     this.btnCoverLoading = false;
-    //   });
-    // },
+    /**
+     * 自定义上传文件请求
+     * @param data 需要上传文件
+     */
+    async customRequest(data) {
+      this.btnCoverLoading = true;
+      this.article.cover   = await this.imageUpload(data.file);
+      this.btnCoverLoading = false;
 
-    // /**
-    //  * 在上传之前检查即将上传的文件
-    //  * @param file 即将上传的文件
-    //  */
-    // beforeUpload(file) {
-    //   const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
-    //   if (!isJpgOrPng) {
-    //     message.error('仅支持上传jpg或png文件!');
-    //   }
-    //   const isLt2M = file.size / 1024 / 1024 < 2;
-    //   if (!isLt2M) {
-    //     message.error('上传的图片大小不超过2MB!');
-    //   }
-    //   return isJpgOrPng && isLt2M;
-    // },
+    },
 
-  },
-};
+    /**
+     * 在上传之前检查即将上传的文件
+     * @param file 即将上传的文件
+     */
+    beforeUpload(file) {
+      const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+      if (!isJpgOrPng) {
+        message.error('仅支持上传jpg或png文件!');
+      }
+      const isLt2M = file.size / 1024 / 1024 < 2;
+      if (!isLt2M) {
+        message.error('上传的图片大小不超过2MB!');
+      }
+      return isJpgOrPng && isLt2M;
+    },
+
+    async onUploadImg(files, callback) {
+      console.log(files)
+      let back = Array.from(files).map((item) => this.imageUpload(item))
+      Promise.all(back).then(callback)
+    },
+  }
+}
 </script>
 
 <style scoped>

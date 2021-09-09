@@ -1,9 +1,5 @@
 <script setup>
-import {
-  LeftCircleOutlined,
-  RightCircleOutlined,
-} from '@ant-design/icons-vue';
-</script>
+import {LeftCircleOutlined, RightCircleOutlined} from '@ant-design/icons-vue';</script>
 <template>
   <div class="my_carousel">
     <a-carousel
@@ -12,22 +8,19 @@ import {
         :autoplay-speed="6000"
         :autoplay="true"
         :slide-to-scroll="current"
-        @click="console.log('carousel')"
     >
-      <template
-          #prevArrow
-          class="custom-slick-arrow"
-          style="left: 10px;"
-      >
-        <LeftCircleOutlined/>
+      <template v-slot:prevArrow>
+        <LeftCircleOutlined
+            class="custom-slick-arrow"
+            style="left: 10px;"
+        />
       </template>
 
-      <template
-          #nextArrow
-          class="custom-slick-arrow"
-          style="right: 10px"
-      >
-        <RightCircleOutlined/>
+      <template v-slot:nextArrow>
+        <RightCircleOutlined
+            class="custom-slick-arrow"
+            style="right: 10px"
+        />
       </template>
       <!--BUG:触屏下click无反应-->
       <router-link
@@ -47,7 +40,7 @@ import {
 </template>
 
 <script>
-import axios from 'axios';
+import axios     from 'axios';
 import {message} from 'ant-design-vue';
 
 export default {
@@ -59,11 +52,26 @@ export default {
     };
   },
   created() {
-    axios.get('/website/carousel', {}).then((res) => {
-      this.carousel = res.data.carousel;
+    this.carousel = []
+    axios.get('/v1/home/daily').then((res) => {
+      this.carousel.push({id: res.data.id, url: res.data.cover})
     }).catch((err) => {
-      message.error(err.toString());
-    });
+      if (err.response.status === 404) {
+        message.destroy()
+      }
+    })
+    axios.get('/v1/home/recommendations').then((res) => {
+      res.data?._embedded?.articleDtoList?.forEach(item => {
+        this.carousel.push({
+          id: item.id,
+          url: item.cover
+        })
+      })
+    }).catch((err) => {
+      if (err.response.status === 404) {
+        message.destroy()
+      }
+    })
   },
 };
 </script>
@@ -85,6 +93,7 @@ export default {
   font-size: 50px;
   color: #fff;
   opacity: 0.3;
+  z-index: 1000;
 }
 
 .ant-carousel >>> .custom-slick-arrow:before {

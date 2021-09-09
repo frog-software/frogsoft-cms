@@ -1,7 +1,7 @@
 <template>
   <div class="body">
     <!--上方进度条-->
-    <a-steps :current="current">
+    <a-steps v-model="current">
       <a-step
           v-for="item in steps"
           :key="item.title"
@@ -54,8 +54,8 @@
 
       <div v-if="current ===2">
         <a-result
-          status="success"
-          title="您已经成功重置密码！"
+            status="success"
+            title="您已经成功重置密码！"
         >
           <template #extra>
             <a-button
@@ -97,7 +97,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import axios     from 'axios';
 import {message} from 'ant-design-vue';
 
 export default {
@@ -133,7 +133,7 @@ export default {
     /**
      * 点击按钮下一步触发的事件
      */
-    next() {
+    async next() {
       this.btnNextStepLoading = true;
       switch (this.current) {
         case 0: {
@@ -141,12 +141,12 @@ export default {
             message.error('请输入用户名');
             break;
           }
-          this.current += this.sendCode();
+          this.current += await this.sendCode();
           break;
         }
         case 1: {
           if (this.password !== this.repeatedPassword) break;
-          this.current += this.resetPassword();
+          this.current += await this.resetPassword();
           break;
         }
         default: {
@@ -165,20 +165,18 @@ export default {
     /**
      * 根据输入的用户名获取邮箱地址存入email中
      * 并向邮箱发送验证码
+     * TODO 等待后端更新这个接口
      */
-    sendCode() {
+    async sendCode() {
       let result = 0;
-      axios.get('/users', {
-        username: this.username,
+      await axios.post(`/v1/auth/forget`, {}, {
+        params: {
+          username: this.username
+        }
       }).then(
           (res) => {
-            if (res.data.users.length === 0) {
-              message.error('用户不存在');
-            } else {
-              this.email = res.data.users[0].email;
-              axios.post('/website/email', {email: this.email}).then();
-              result = 1;
-            }
+            this.email = res.data.email
+            result     = 1
           },
       );
       return result;
@@ -186,17 +184,15 @@ export default {
     /**
      * 完成重置功能
      */
-    resetPassword() {
-      let result = 1;
-      axios.put('/login/forget', {
+    async resetPassword() {
+      let result = 0;
+      await axios.put('/v1/auth/forget', {
         username: this.username,
-        email: this.email,
-        code: this.code,
-        password: this.password,
-      }).then().catch((err) => {
-        message.error(err.toString());
-        result = 0;
-      });
+        varyficationcode: this.code,
+        newpassword: this.password,
+      }).then(() => {
+        result = 1
+      })
       return result;
     },
   },

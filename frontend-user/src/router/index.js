@@ -1,5 +1,5 @@
 import {createRouter, createWebHistory} from 'vue-router';
-import store from '../store';
+import store                            from '../store';
 
 const routes = [
   {
@@ -67,7 +67,7 @@ const routes = [
   },
   // Users区
   {
-    path: '/users/:id',
+    path: '/users/:username',
     name: 'UserDetails',
     props: true,
     component: () => import('../views/Users/UserDetails.vue'),
@@ -78,16 +78,10 @@ const routes = [
     component: () => import('../views/Users/UserSettings.vue'),
 
   },
-  // Tools区
   {
-    path: '/tools',
-    name: 'Tools',
-    component: () => import('../views/Tools/Tools.vue'),
+    path: '/:pathMatch(.*)*',
+    component: () => import('../views/NotFound.vue')
   },
-  // {
-  //   path: '*',
-  //   component: () => import('../views/NotFound.vue')
-  // },
   {
     path: '/NotFound',
     name: 'NotFound',

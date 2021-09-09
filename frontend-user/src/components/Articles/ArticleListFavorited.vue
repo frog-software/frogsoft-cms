@@ -1,36 +1,5 @@
-<script setup>
-import {CaretUpOutlined, CaretDownOutlined} from "@ant-design/icons-vue";
-</script>
 <template>
   <div>
-    <a-row justify="end" align="middle" :gutter="8">
-      <a-col>
-        排序方法
-      </a-col>
-      <a-col>
-        <a-radio-group v-model:value="sortBy" @change="getCurrentPageData(1)">
-          <a-radio-button value="publishDate">
-            更新时间
-          </a-radio-button>
-          <a-radio-button value="id">
-            发布时间
-          </a-radio-button>
-          <a-radio-button value="author">
-            作者
-          </a-radio-button>
-        </a-radio-group>
-      </a-col>
-      <a-col>
-        <a-radio-group v-model:value="order" @change="getCurrentPageData(1)">
-          <a-radio-button value="DESC">
-            <CaretUpOutlined/>
-          </a-radio-button>
-          <a-radio-button value="ASC">
-            <CaretDownOutlined/>
-          </a-radio-button>
-        </a-radio-group>
-      </a-col>
-    </a-row>
     <a-list
         :data-source="listSource"
         :pagination="pagination"
@@ -62,12 +31,13 @@ import {CaretUpOutlined, CaretDownOutlined} from "@ant-design/icons-vue";
 </template>
 <script>
 import axios from 'axios';
+import store from "../../store";
 
 export default {
-  name: 'ArticleList',
+  name: 'ArticleListCreated',
   props: {
     pageSize: Number,
-    searchContent: String,
+    username: String
   },
   data() {
     return {
@@ -75,8 +45,6 @@ export default {
       loading: false,
       currentPage: 1,
       totalElements: 0,
-      sortBy: 'publishDate',
-      order: 'DESC'
     };
   },
   computed: {
@@ -91,14 +59,10 @@ export default {
       };
     },
     queryParmas() {
-      let result = {
+      return {
         page: this.currentPage - 1,
-        size: this.pageSize,
-        sortBy: this.sortBy,
-        order: this.order
+        size: this.pageSize
       }
-      if (this.searchContent) result.search = this.searchContent
-      return result
     }
   },
   created() {
@@ -113,7 +77,7 @@ export default {
     getCurrentPageData(page) {
       this.currentPage = page
       this.loading     = true;
-      axios.get('/v1/articles', {params: this.queryParmas}).then((res) => {
+      axios.get(`/v1/users/${this.username}/favors`, {params: this.queryParmas}).then((res) => {
         this.listSource    = res.data._embedded?.articleDtoList || [];
         this.totalElements = res.data.page.totalElements
       }).finally(

@@ -29,7 +29,7 @@ export default axios
  */
 axios.interceptors.request.use(function (config) {
   // Do something before request is sent
-  config.headers.token = localStorage.getItem('token') || ""// 将token放到请求头发送给服务器
+  config.headers.Authorization = 'Bearer ' + (localStorage.getItem('token') || "")// 将token放到请求头发送给服务器
   return config
 }, function (error) {
   // Do something with request error
@@ -44,17 +44,8 @@ axios.interceptors.response.use(function (response) {
   return response
 }, function (error) {
   // 对响应错误做点什么
-  switch (error.response.status) {
-    case 401: {
-      message.error('权限错误！你无权进行该操作！')
-      break
-    }
-    default: {
-      message.error(error.toString())
-      console.log(error.response)
-      break
-    }
-  }
+  message.error(error.response.data.message)
+  // console.log(error.response)
   return Promise.reject(error)
 })
 

@@ -1,11 +1,8 @@
 <script setup>
-import {EyeOutlined} from '@ant-design/icons-vue';
-import MdEditor from 'md-editor-v3';
-import 'md-editor-v3/lib/style.css';
-
-// eslint-disable-next-line import/order
-import CommentList from '../../components/Articles/CommentList.vue';
-</script>
+import {EyeOutlined, LikeOutlined, StarOutlined} from '@ant-design/icons-vue';
+import CommentList                               from "../../components/Articles/CommentList.vue";
+import MdEditor                                  from 'md-editor-v3';
+import 'md-editor-v3/lib/style.css';</script>
 <template>
   <a-spin
       v-if="hasDeleted===false"
@@ -24,10 +21,9 @@ import CommentList from '../../components/Articles/CommentList.vue';
           <template #title>
             <h1> {{ article.title }} </h1>
           </template>
-
-          <template #extra>
+          <!--TODO 删除接口检验-->
+          <template #extra v-if="me.is_author">
             <a-button
-                v-if="me.is_author"
                 :loading="btnDeleteLoading"
                 type="primary"
                 @click="deleteArticle"
@@ -35,20 +31,11 @@ import CommentList from '../../components/Articles/CommentList.vue';
               删除
             </a-button>
             <router-link :to="{name:'ArticleEdit',params:{id: id}}">
-              <a-button
-                  v-if="me.is_author"
-                  type="primary"
-              >
+              <a-button type="primary">
                 编辑
               </a-button>
             </router-link>
-            <a-button
-                :loading="btnLikeLoading"
-                type="primary"
-                @click="btnLikeClick"
-            >
-              {{ me.liked ? "取消" : "" }}收藏
-            </a-button>
+
           </template>
 
           <template #cover>
@@ -68,14 +55,7 @@ import CommentList from '../../components/Articles/CommentList.vue';
               :previewOnly="true"
           ></MdEditor>
         </a-card>
-        <a-card>
-          <h3> 发布时间:&nbsp;&nbsp;{{ article.publish_time }} </h3>
-          <h3> 最近更新:&nbsp;&nbsp;{{ article.update_time }} </h3>
-          <h3>
-            <EyeOutlined/>
-            阅读量：{{ article.views }}
-          </h3>
-        </a-card>
+
         <!--评论区-->
         <a-card>
           <template #title>
@@ -97,16 +77,53 @@ import CommentList from '../../components/Articles/CommentList.vue';
       <!--文章的附加信息-->
       <a-col span="7">
         <!-- 文章的附加信息-->
-        <a-card>
-          <a-card-meta :title="article.author.nickname">
-            <template #avatar>
-              <router-link
-                  :to="{name:'UserDetails',params:{id:article.author.id.toString()}}"
-              >
-                <a-avatar :src="article.author.avatar"/>
-              </router-link>
-            </template>
-          </a-card-meta>
+        <a-card style="margin-top: 16px" title="文章信息">
+          <router-link
+              :to="{name:'UserDetails',params:{username: article?.author?.username}}"
+          >
+            <a-card-meta :title="article.author.username">
+              <template #avatar>
+                <a-avatar :src="article.author.avatar||'/avatar.png'"/>
+              </template>
+            </a-card-meta>
+          </router-link>
+          <br>
+          <h3> 发布时间:<br>&nbsp;&nbsp;&nbsp;&nbsp;{{ article.publishDate }} </h3>
+          <h3> 最近更新:<br>&nbsp;&nbsp;&nbsp;&nbsp;{{ article.updateDate }} </h3>
+          <h3>
+            <EyeOutlined/>
+            阅读量：{{ article.views }}
+          </h3>
+          <h3>
+            <StarOutlined/>
+            收藏量：{{ article.favorites }}
+          </h3>
+          <h3>
+            <LikeOutlined/>
+            点赞量：{{ article.likes }}
+          </h3>
+
+        </a-card>
+        <a-card style="margin-top: 16px" title="文章操作">
+          <a-button
+              style="margin-bottom:8px"
+              v-if="store.getters.loginStatus"
+              :loading="btnFavoriteLoading"
+              type="primary"
+              @click="btnFavoriteClick"
+          >
+            {{ me.favorited ? "取消" : "" }}收藏
+          </a-button>
+          <br>
+          <a-button
+              style="margin-top:8px"
+              v-if="store.getters.loginStatus"
+              :loading="btnLikeLoading"
+              type="primary"
+              @click="btnLikeClick"
+          >
+            {{ me.liked ? "取消" : "" }}点赞
+          </a-button>
         </a-card>
       </a-col>
     </a-row>
@@ -126,52 +143,49 @@ import CommentList from '../../components/Articles/CommentList.vue';
 </template>
 
 <script>
-import axios from 'axios';
+import axios     from 'axios';
 import {message} from 'ant-design-vue';
-import store from '../../store';
+import store     from '../../store';
 
 export default {
   name: 'ArticleDetails',
   beforeRouteEnter(to, from, next) {
-    if (to.params.id % 1 === 0) next();
-    else next({name: 'NotFound'});
+    if (+to.params.id % 1 === 0) {
+      next()
+    } else
+      next({name: 'NotFound'});
   },
   props: {id: String},
   data() {
     return {
       spinning: true,
       btnLikeLoading: false,
+      btnFavoriteLoading: false,
       btnDeleteLoading: false,
       hasDeleted: false, // 文章是否被删除
       article: {
         id: 0,
         author: {
-          id: 0,
           username: 'username',
-          nickname: 'nickname',
           email: 'edialect@edialect.top',
-          telephone: '',
-          registration_time: '2000-01-01 00:00:00',
-          login_time: '2000-01-01 00:00:00',
-          birthday: '2000-01-01 00:00:00',
-          avatar: 'http://dummyimage.com/100x100',
-          county: '',
-          town: '',
-          is_admin: false,
+          is_admin: false
         },
         likes: 0,
         views: 0,
-        like_users: [],
-        publish_time: '2000-01-01 00:00:00',
-        update_time: '2000-01-01 00:00:00',
+        favorites: 0,
         title: 'title',
         description: 'description',
         content: 'content',
         cover: 'http://dummyimage.com/160x90',
+        status: "NORMAL",
+        publishDate: "2021-09-01 00:00:00",
+        updateDate: "2021-09-01 00:00:00",
       },
       me: {
         liked: false,
         is_author: false,
+        favorited: false,
+        authored: false,
       },
     };
   },
@@ -181,12 +195,15 @@ export default {
     },
   },
   created() {
-    axios.get(`/articles/${this.id}`).then(async (res) => {
-      this.article = res.data.article;
-      this.me = res.data.me;
+    axios.get(`/v1/articles/${this.id}`).then(async (res) => {
+      this.article                 = {...res.data}
+      this.article.author.is_admin = res.data.author.roles.includes("ROLE_ADMIN")
+      this.me.is_author            = res.data.author.username === store.getters.user.username
+      this.me.liked                = res.data.liked || false
+      this.me.favorited            = res.data.favorited
+      this.me.authored             = res.data.authored
       store.commit('updateComments', this.id);
-    }).catch(() => {
-      message.destroy();
+    }).catch((err) => {
       this.$router.replace({name: 'NotFound'});
     }).finally(() => {
       this.spinning = false;
@@ -199,18 +216,42 @@ export default {
     btnLikeClick() {
       this.btnLikeLoading = true;
       if (this.me.liked) {
-        axios.delete(`/articles/${this.id}/like`).finally(() => {
+        axios.delete(`/v1/articles/${this.id}/like`).then(() => {
           this.me.liked = false;
           setTimeout(() => {
+            this.article.likes -= 1;
             this.btnLikeLoading = false;
           }, 500);
         });
       } else {
-        axios.post(`/articles/${this.id}/like`).finally(() => {
+        axios.post(`/v1/articles/${this.id}/like`).then(() => {
           this.me.liked = true;
-          // this.btnLikeLoading = false
           setTimeout(() => {
+            this.article.likes += 1;
             this.btnLikeLoading = false;
+          }, 500);
+        });
+      }
+    },
+    /**
+     * 点击按钮点赞/取消点赞触发事件
+     */
+    btnFavoriteClick() {
+      this.btnFavoriteLoading = true;
+      if (this.me.favorited) {
+        axios.delete(`/v1/articles/${this.id}/favor`).then(() => {
+          this.me.favorited = false;
+          setTimeout(() => {
+            this.article.favorites -= 1
+            this.btnFavoriteLoading = false;
+          }, 500);
+        });
+      } else {
+        axios.post(`/v1/articles/${this.id}/favor`).then(() => {
+          this.me.favorited = true;
+          setTimeout(() => {
+            this.article.favorites += 1
+            this.btnFavoriteLoading = false;
           }, 500);
         });
       }
@@ -220,11 +261,11 @@ export default {
      */
     deleteArticle() {
       this.btnDeleteLoading = true;
-      axios.delete(`/articles/${this.id}`).finally(() => {
-        // axios.delete('http://127.0.0.1:4523/mock/404238/articles/' + this.id).finally(() => {
+      axios.delete(`/v1/articles/${this.id}`).finally(() => {
+        // axios.delete('/v1http://127.0.0.1:4523/mock/404238/articles/' + this.id).finally(() => {
         setTimeout(() => {
           this.btnDeleteLoading = false;
-          this.hasDeleted = true;
+          this.hasDeleted       = true;
         }, 500);
       });
     },
