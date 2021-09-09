@@ -98,7 +98,6 @@ import {mapGetters} from 'vuex';
 import {message}    from 'ant-design-vue';
 
 export default {
-  // TODO 等待后端评论接口修复完成后更新
   name: 'CommentList',
   props: {
     parent: Number,

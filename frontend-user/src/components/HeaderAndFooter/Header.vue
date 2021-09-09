@@ -8,18 +8,17 @@ import store      from '../../store'</script>
         justify="space-around"
         type="flex"
     >
-      <a-col :span="3">
+      <a-col :span="5">
         <router-link to="/Home">
           <img
               alt="网站页眉LOGO"
               :src="store.getters.config.headerDto.logo"
-              :height="64"
               style="max-height: 64px;max-width: 200px"
           >
         </router-link>
       </a-col>
 
-      <a-col :span="9">
+      <a-col :span="6">
         <a-menu
             v-model:selectedKeys="tab"
             mode="horizontal"

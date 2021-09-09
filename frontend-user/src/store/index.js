@@ -15,12 +15,12 @@ const defaultUser   = {
 const defaultConfig = {
   favicon: '/frogsoft.svg',
   title: 'Frogsoft CMS',
-  logo: '/frogsoft.svg',
+  logo: '/frogsoft.png',
   headerDto: {
-    logo: '/frogsoft.svg',
+    logo: '/logo-with-text-black.svg',
   },
   footerDto: {
-    logo: '/avatar.png',
+    logo: '/logo-with-text-white.svg',
   },
 };
 const store         = createStore({
@@ -135,6 +135,7 @@ const store         = createStore({
         state.user.email       = res.data.email;
         state.user.avatar      = res.data.avatar || defaultUser.avatar;
         state.user.is_admin    = res.data.roles.includes('ROLE_ADMIN');
+        state.user.roles       = res.data.roles
         state.publishArticles  = res.data.publishArticles;
         state.favoriteArticles = res.data.favoriteArticles;
         state.statistics       = res.data.statistics;
