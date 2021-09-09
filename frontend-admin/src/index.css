@@ -154,3 +154,29 @@ select {
 .clearfix {
     *zoom: 1; /*IE/7/6*/
 }
+
+.gradient-background {
+    background: linear-gradient(260deg, #7df9bc, #ba71fd, #f7efb5);
+    background-size: 180% 180%;
+    animation: gradient-animation 9s ease infinite;
+}
+
+@keyframes gradient-animation {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.half-transparent-background {
+    background: #FFFFFF00;
+}
+
+input[type="text"], input[type="password"], input[type=submit]:focus, input[type="color"], textarea {
+    background-color: #FFFFFF00;
+}

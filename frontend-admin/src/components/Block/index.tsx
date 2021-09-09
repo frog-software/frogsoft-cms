@@ -1,6 +1,6 @@
-import React, { CSSProperties, FC, ReactNode } from 'react';
-import { Spin } from 'antd';
-import { ArrowLeftOutlined } from '@ant-design/icons';
+import React, { CSSProperties, FC, ReactNode }         from 'react';
+import { Spin }                                        from 'antd';
+import { ArrowLeftOutlined }                           from '@ant-design/icons';
 import {
   Body, Bottom, Header, Loading, Main, Title,
 } from './style';
@@ -26,6 +26,7 @@ const Block: FC<BlockProps> = (props) => {
     <Body
       style={{
         ...bodyStyle,
+        backgroundColor: '#FFFFFFA0',
         height: stretch ? `calc(100vh - ${stretch}px)` : 'auto',
         paddingBottom: stretch ? 64 : 0,
       }}

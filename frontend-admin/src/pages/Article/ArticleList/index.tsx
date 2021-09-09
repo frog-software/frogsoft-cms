@@ -10,171 +10,118 @@
 //
 //--------------------------------------------------------------------------
 
-import React, { FC, useEffect, useState }       from 'react';
-import { Article }                              from 'types/article';
-import Block                                    from 'components/Block';
+import React, { FC, useEffect, useState } from 'react';
+import { Article }                        from 'types/article';
+import Block                              from 'components/Block';
 import {
   Badge,
-  Button, Col, Divider, Input, message, Popconfirm, Row, Space, Table,
-} from 'antd';
-import { useQuery }                             from 'react-query';
-import { useHistory }                           from 'react-router';
-import { getArticleList }                       from 'services/article';
-import Search                                   from 'antd/es/input/Search';
-
-// const data = [
-//   {
-//     id: 66,
-//     author: {
-//       email: 'y.mvibxw@erqgb.py',
-//       username: '吕明',
-//       roles: [
-//         'ROLE_ADMIN',
-//         'ROLE_USER',
-//       ],
-//     },
-//     status: 'NORMAL',
-//     publishDate: '1981-01-19 16:53:16',
-//     updateDate: '2016-07-12 16:27:04',
-//     views: 4283877329703202,
-//     title: '己体把按这养边者着算加改商业究构北。',
-//     description: '了包元头铁位设体离算你长史团开话。',
-//     cover: 'http://dummyimage.com/468x60',
-//     likes: 1273300982987200,
-//     favorites: 4100051159772794,
-//   },
-//   {
-//     id: 90,
-//     author: {
-//       email: 'f.ewspypb@fbnoqfbdw.to',
-//       username: '邓强',
-//       roles: [
-//         'ROLE_ADMIN',
-//         'ROLE_USER',
-//       ],
-//     },
-//     status: 'NORMAL',
-//     publishDate: '2018-11-13 20:58:14',
-//     updateDate: '1989-10-02 16:36:08',
-//     views: 6904183919565666,
-//     title: '响以做铁识民以自生出子起从。',
-//     description: '声关什西南将向海计特日改极济史。',
-//     cover: 'http://dummyimage.com/125x125',
-//     likes: 7663311257487064,
-//     favorites: 4635370963450182,
-//   },
-//   {
-//     id: 31,
-//     author: {
-//       email: 'i.oucjx@aafriot.ye',
-//       username: '陈明',
-//       roles: [
-//         'ROLE_USER',
-//         'ROLE_ADMIN',
-//       ],
-//     },
-//     status: 'BLOCKED',
-//     publishDate: '2008-07-21 08:44:43',
-//     updateDate: '1970-02-27 11:45:30',
-//     views: 8437205898730658,
-//     title: '连候我上合造却权图么世学条果去至。',
-//     description: '比变件那按门记快断改办派油满断。',
-//     cover: 'http://dummyimage.com/120x240',
-//     likes: 1941214943792078,
-//     favorites: 3947843683658152,
-//   },
-//   {
-//     id: 79,
-//     author: {
-//       email: 'n.zukd@zjfhk.ag',
-//       username: '曹霞',
-//       roles: [
-//         'ROLE_USER',
-//         'ROLE_ADMIN',
-//       ],
-//     },
-//     status: 'BLOCKED',
-//     publishDate: '2006-05-07 23:41:06',
-//     updateDate: '2017-12-27 12:51:44',
-//     views: 4569196497073036,
-//     title: '部已工的委信提眼断心置前平活等。',
-//     description: '样在例成水想性队改时克气备龙。',
-//     cover: 'http://dummyimage.com/180x150',
-//     likes: 1492327820220490,
-//     favorites: 1556094858126586,
-//   },
-//   {
-//     id: 28,
-//     author: {
-//       email: 'j.kkirwvb@gvygdkccx.bg',
-//       username: '贾磊',
-//       roles: [
-//         'ROLE_USER',
-//       ],
-//     },
-//     status: 'NORMAL',
-//     publishDate: '1984-11-23 03:47:45',
-//     updateDate: '1978-12-18 01:01:50',
-//     views: 8141076698394888,
-//     title: '片商众厂头严方任次布院要性展接。',
-//     description: '任青也非较议料低区知风规位原响专东。',
-//     cover: 'http://dummyimage.com/120x600',
-//     likes: 3278789020721732,
-//     favorites: 4044612342336410,
-//   },
-//   {
-//     id: 67,
-//     author: {
-//       email: 'p.buuhnn@dfrerhmupf.lb',
-//       username: '沈涛',
-//       roles: [
-//         'ROLE_USER',
-//       ],
-//     },
-//     status: 'BLOCKED',
-//     publishDate: '1979-06-18 06:06:22',
-//     updateDate: '1974-04-23 12:53:34',
-//     views: 1310708183768456,
-//     title: '时发南布元回又团先去最布目。',
-//     description: '院八老况老拉连复十物原信因话上大的。',
-//     cover: 'http://dummyimage.com/120x600',
-//     likes: 4159781621601922,
-//     favorites: 193681022029452,
-//   },
-//   {
-//     id: 6,
-//     author: {
-//       email: 'o.ucs@irmplb.fj',
-//       username: '沈明',
-//       roles: [
-//         'ROLE_USER',
-//         'ROLE_ADMIN',
-//       ],
-//     },
-//     status: 'BLOCKED',
-//     publishDate: '1987-06-14 19:19:53',
-//     updateDate: '1986-06-03 17:12:10',
-//     views: 8430843536938252,
-//     title: '界布术图计十将复高价统流那安界写况。',
-//     description: '代你日温究备的包容合有然立经王西给国。',
-//     cover: 'http://dummyimage.com/180x150',
-//     likes: 502110888325088,
-//     favorites: 51228433386938,
-//   },
-// ];
+  Button, Col, notification, Popconfirm, Row, Space, Switch, Table,
+}                                            from 'antd';
+import { useQuery }                          from 'react-query';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { useHistory }                        from 'react-router';
+import { getArticleList, deleteArticle }     from 'services/article';
+import Search                                from 'antd/es/input/Search';
+import http                                  from 'utils/http';
+import { StarFilled, StarOutlined }          from '@ant-design/icons';
+import { getAnnouncementList } from 'services/announcement';
 
 const ArticleList: FC = () => {
-  const [articleList, setAricleList]  = useState<Article[]>();
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [pageSize, setPageSize]       = useState<number>(10);
-  const [totalItems, setTotalItems]   = useState<number>();
-  const history                       = useHistory();
+  const [articleList, setArticleList]               = useState<Article[]>();
+  const [currentPage, setCurrentPage]               = useState<number>(1);
+  const [pageSize, setPageSize]                     = useState<number>(10);
+  const [totalItems, setTotalItems]                 = useState<number>();
+  const [loading, setLoading]                       = useState<boolean>(false);
+  const history                                     = useHistory();
+  const [recommendArticleId, setRecommendArticleId] = useState<number>();
+  const [render, setRender]                         = useState<boolean>(false);
+  const [search, setSearch]                         = useState<string>();
+  const [announcementList, setAnnouncementList]     = useState<Article[]>([]);
 
-  // 删除文章
-  const handleDelete = () => {
-    console.log('点击了删除文章');
+  const {
+    isLoading, data, refetch, remove,
+  } = useQuery(
+    ['articleList', currentPage - 1, pageSize, search],
+    getArticleList,
+    {
+      staleTime: 5000,
+      onError: (err) => {
+        notification['error']({ message: String(err) });
+      },
+    },
+  );
+
+  const queryResult = useQuery(['announcementList'], getAnnouncementList);
+
+  useEffect(() => {
+    if (!queryResult.data) return;
+    setAnnouncementList(queryResult.data);
+  }, [queryResult]);
+
+  // 编辑每日推荐文章
+  const handleSetRecommend = (articleId: number) => {
+    setLoading(true);
+
+    const tempData = { articleId };
+
+    if (recommendArticleId === articleId) {
+      tempData.articleId = 0;
+      http.put('/v1/home/daily', tempData)
+        .then(() => {
+          notification['success']({ message: '取消每日设置成功' });
+          setRecommendArticleId(tempData.articleId);
+        })
+        .catch((error) => {
+          notification['error']({ message: '取消每日推荐设置失败', description: String(error) });
+        })
+        .finally(() => {
+          setRender(!render);
+          setLoading(false);
+        });
+    } else {
+      http.put('/v1/home/daily', tempData)
+        .then(() => {
+          notification['success']({ message: '每日推荐设置成功' });
+          setRecommendArticleId(tempData.articleId);
+        })
+        .catch((error) => {
+          notification['error']({ message: '每日推荐设置失败', description: String(error) });
+        })
+        .finally(() => {
+          setRender(!render);
+          setLoading(false);
+        });
+    }
   };
 
+  // 编辑公告设置
+  const handleSetAnnouncement = (article: Article, isAnnouncement: boolean) => {
+    setLoading(true);
+
+    if (isAnnouncement) {
+      announcementList.push(article);
+    } else {
+      announcementList?.splice(
+        announcementList?.findIndex((j) => j.id === article.id), 1,
+      );
+    }
+
+    http.put('/v1/home/announcements', { articleIds: announcementList?.map((i) => i.id) })
+      .then(() => {
+        notification['success']({ message: '公告设置成功' });
+      })
+      .catch((error) => {
+        notification['error']({ message: '公告设置失败', description: String(error) });
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+
+    setRender(!render);
+    setAnnouncementList(announcementList);
+  };
+
+  // 文章列表属性
   const tableColumns = [
     {
       key: 'id',
@@ -208,6 +155,20 @@ const ArticleList: FC = () => {
       key: 'status',
       dataIndex: 'status',
       title: '状态',
+      align: 'center',
+      width: 75,
+    },
+    {
+      key: 'star',
+      dataIndex: 'star',
+      title: '每日推荐',
+      align: 'center',
+    },
+    {
+      key: 'announcement',
+      dataIndex: 'announcement',
+      title: '公告设置',
+      width: 90,
     },
     {
       key: 'action',
@@ -219,6 +180,7 @@ const ArticleList: FC = () => {
               history.push(`/articles/${article.id}`);
             }}
             type="text"
+            style={{ color: 'var(--primary-color)' }}
           >
             查看详情
           </Button>
@@ -226,7 +188,24 @@ const ArticleList: FC = () => {
             title="确定删除该文章吗？删除之后不可恢复！"
             okText="确定"
             cancelText="取消"
-            onConfirm={handleDelete}
+            onConfirm={() => {
+              setLoading(true);
+              deleteArticle(article.id)
+                .then(() => {
+                  notification['success']({ message: '文章删除成功' });
+                  remove();
+                  refetch({
+                    throwOnError: true,
+                    cancelRefetch: false,
+                  });
+                })
+                .catch((error) => {
+                  notification['error']({ message: '文章删除失败', description: String(error) });
+                })
+                .finally(() => {
+                  setLoading(false);
+                });
+            }}
           >
             <Button danger type="text">删除文章</Button>
           </Popconfirm>
@@ -235,63 +214,69 @@ const ArticleList: FC = () => {
     },
   ];
 
-  // useEffect(() => {
-  //   (async () => {
-  //     const data = await http.get<JavaPagedModel<Article>>('http://127.0.0.1:4523/mock/419258/v1/articles');
-  //     // const data2 = pagedModelSimplifier(data);
-  //     setAricleList(data._embedded.articleDtoList);
-  //     setTotalItems(data.page.totalElements);
-  //     // setIsLoading(false);
-  //   })();
-  // }, [currentPage]);
-
-  const { isLoading, data } = useQuery(
-    ['articleList', currentPage - 1, pageSize],
-    getArticleList,
-    {
-      staleTime: 30000,
-      onError: (err) => {
-        message.error(String(err));
-      },
-    },
-  );
+  useEffect(() => {
+    (async () => {
+      const recommendArticle = await http.get<Article>('/v1/home/daily');
+      setRecommendArticleId(recommendArticle?.id);
+    })();
+  }, [render]);
 
   useEffect(() => {
-    if (!data) return;
+    (async () => {
+      if (!data) return;
 
-    const tableList = data.list.map((i) => ({
-      ...i,
-      status: i.status === 'NORMAL' ? (
-        <Badge status="processing" color="green" text="正常" />
-      ) : (
-        <Badge status="default" color="gray" text="屏蔽" />
-      ),
-    }));
+      const tableList = data?.list?.map((i) => ({
+        ...i,
+        status: i.status === 'NORMAL' ? (
+          <Badge status="processing" color="green" text="正常" />
+        ) : (
+          <Badge status="default" color="gray" text="屏蔽" />
+        ),
+        star: i.id === recommendArticleId ? (
+          <StarFilled
+            style={{ color: 'gold', marginTop: '4px', marginRight: '4px' }}
+            onClick={() => handleSetRecommend(i.id)}
+          />
+        ) : (
+          <StarOutlined
+            style={{ color: 'gold', marginTop: '4px', marginRight: '4px' }}
+            onClick={() => handleSetRecommend(i.id)}
+          />
+        ),
+        announcement: (
+          <Switch
+            checkedChildren="展示"
+            unCheckedChildren="取消"
+            checked={!!(~announcementList?.findIndex((j) => j.id === i.id))}
+            onChange={(value) => handleSetAnnouncement(i, value)}
+          />
+        ),
+      }));
 
-    setAricleList(tableList as any);
-    setTotalItems(data.page.total);
-  }, [data]);
+      setArticleList(tableList as any);
+      setTotalItems(data.page.total);
+    })();
+  }, [data, recommendArticleId, announcementList, render]);
 
   return (
     <>
       <Block
         title="文章列表"
         description={(
-          <Space>
-            <Input />
-            <Search placeholder="input search text" onSearch={() => (console.log('nbnb'))} enterButton />
-          </Space>
+          <Search
+            placeholder="输入文章搜索关键字"
+            onSearch={(value) => setSearch(value)}
+            enterButton
+            style={{ marginTop: '20px', marginRight: '100px' }}
+          />
         )}
       >
         <Row>
-          <Col span={4} offset={20}>
-            <Search placeholder="input search text" onSearch={() => (console.log('nbnb'))} enterButton />
-          </Col>
           <Col span={24}>
             <Table
               rowKey="id"
-              loading={isLoading}
-              columns={tableColumns}
+              loading={isLoading || loading}
+              columns={tableColumns as any}
               dataSource={articleList}
               pagination={{
                 pageSize,

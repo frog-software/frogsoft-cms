@@ -10,11 +10,18 @@
 //
 //--------------------------------------------------------------------------
 
+import { Article }    from 'types/article';
+import { History }    from 'types/history';
+import { Statistics } from 'types/statistics';
+
 export interface User {
   email: string,
   username: string,
+  avatar?: string
   roles: string[],
-  favouriteArticles?: number[],
-  comments?: number[],
-  histories?: number[]
+  favoriteArticles?: Article[],
+  publishArticles?: Article[],
+  comments?: Comment[],
+  historyArticles?: History[],
+  statistics?: Statistics
 }

@@ -14,17 +14,33 @@ service.interceptors.request.use((conf) => {
 }, (err) => Promise.reject(err));
 
 service.interceptors.response.use((res) => res,
-  (err) => {
-    switch (err?.response?.status) {
+  ({ response }) => {
+    switch (response?.status) {
       case 401:
-        message.error('你没有权限');
+        message.error('你没有权限访问该页面，请登录');
+        window.location.href = '/auth/login';
+        break;
+      case 403:
+        message.error('禁止访问！');
+        // to login page
+        break;
+      case 404:
+        // message.error('资源不存在！');
+        // to login page
+        break;
+      case 409:
+        message.error('用户名已存在！');
         // to login page
         break;
       default:
-        message.error('未知错误');
+        message.error(response?.data?.message);
         break;
     }
-    return Promise.reject(err);
+    // eslint-disable-next-line prefer-promise-reject-errors
+    return Promise.reject({
+      status: response?.status,
+      message: response?.data?.message,
+    });
   });
 
 export function get<T>(url: string, data: object = {}) {

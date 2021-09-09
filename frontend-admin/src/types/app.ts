@@ -1,3 +1,3 @@
 export interface Configuration {
-  test?: any
+  isBackgroundDisabled?: boolean
 }
