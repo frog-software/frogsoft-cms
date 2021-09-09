@@ -21,7 +21,6 @@ import { useHistory }                     from 'react-router';
 import Meta                               from 'antd/es/card/Meta';
 import { getAnnouncementList }            from 'services/announcement';
 import { useQuery }                       from 'react-query';
-import { useDispatch, useSelector }       from 'react-redux';
 
 const Announcement: FC = () => {
   const [announcementList, setAnnouncementList] = useState<Article[]>();
@@ -30,11 +29,10 @@ const Announcement: FC = () => {
   const [currentArticle, setCurrentArticle]     = useState<Article>();
 
   const queryResult = useQuery(['announcementList'], getAnnouncementList);
-
   useEffect(() => {
     if (!queryResult.data) return;
     setAnnouncementList(queryResult.data);
-  }, [queryResult.data]);
+  }, [queryResult]);
 
   return (
     <>

@@ -62,7 +62,7 @@ function UserNavBar() {
                 });
               }}
             >
-              {`${config.isBackgroundDisabled ? '打开动画' : '关闭动画'}`}
+              {`${config.isBackgroundDisabled ? '打开背景' : '关闭背景'}`}
             </Menu.Item>
           </Menu.SubMenu>
         </Menu>

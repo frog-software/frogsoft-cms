@@ -25,6 +25,7 @@
     "@typescript-eslint/dot-notation": "off",
     "no-param-reassign": "warn",
     "padded-blocks":"warn",
-    "arrow-body-style": "warn"
+    "arrow-body-style": "warn",
+    "no-bitwise": "off"
   }
 }

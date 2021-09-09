@@ -10,17 +10,17 @@
 //
 //--------------------------------------------------------------------------
 
-import http                                     from 'utils/http';
-import { pagedModelSimplifier }                 from 'utils/common';
-import { JavaPagedModel, SimplifiedPagedModel } from 'types/common';
-import { Article }                              from 'types/article';
+import http                          from 'utils/http';
+import { collectionModelSimplifier } from 'utils/common';
+import { JavaCollectionModel }       from 'types/common';
+import { Article }                   from 'types/article';
 
 const ANNOUNCEMENT_V1_URL = '/v1/home/announcements';
 
 export const getAnnouncementList = () => new Promise<Article[]>((resolve, reject) => {
-  http.get<JavaPagedModel<Article>>(ANNOUNCEMENT_V1_URL)
+  http.get<JavaCollectionModel<Article>>(ANNOUNCEMENT_V1_URL)
     .then((res) => {
-      const simplifiedModel = pagedModelSimplifier(res);
+      const simplifiedModel = collectionModelSimplifier(res);
       resolve(simplifiedModel.list);
     })
     .catch((err) => {

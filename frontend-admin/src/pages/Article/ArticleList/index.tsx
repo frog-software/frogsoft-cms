@@ -15,15 +15,16 @@ import { Article }                        from 'types/article';
 import Block                              from 'components/Block';
 import {
   Badge,
-  Button, Col, notification, Popconfirm, Row, Space, Table,
-}                                         from 'antd';
-import { useQuery }                       from 'react-query';
+  Button, Col, notification, Popconfirm, Row, Space, Switch, Table,
+}                                            from 'antd';
+import { useQuery }                          from 'react-query';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { useHistory }                     from 'react-router';
-import { getArticleList, deleteArticle }  from 'services/article';
-import Search                             from 'antd/es/input/Search';
-import http                               from 'utils/http';
-import { StarFilled, StarOutlined }       from '@ant-design/icons';
+import { useHistory }                        from 'react-router';
+import { getArticleList, deleteArticle }     from 'services/article';
+import Search                                from 'antd/es/input/Search';
+import http                                  from 'utils/http';
+import { StarFilled, StarOutlined }          from '@ant-design/icons';
+import { getAnnouncementList } from 'services/announcement';
 
 const ArticleList: FC = () => {
   const [articleList, setArticleList]               = useState<Article[]>();
@@ -34,7 +35,8 @@ const ArticleList: FC = () => {
   const history                                     = useHistory();
   const [recommendArticleId, setRecommendArticleId] = useState<number>();
   const [render, setRender]                         = useState<boolean>(false);
-  const [search, setSearch] = useState<string>();
+  const [search, setSearch]                         = useState<string>();
+  const [announcementList, setAnnouncementList]     = useState<Article[]>([]);
 
   const {
     isLoading, data, refetch, remove,
@@ -48,6 +50,13 @@ const ArticleList: FC = () => {
       },
     },
   );
+
+  const queryResult = useQuery(['announcementList'], getAnnouncementList);
+
+  useEffect(() => {
+    if (!queryResult.data) return;
+    setAnnouncementList(queryResult.data);
+  }, [queryResult]);
 
   // 编辑每日推荐文章
   const handleSetRecommend = (articleId: number) => {
@@ -85,6 +94,33 @@ const ArticleList: FC = () => {
     }
   };
 
+  // 编辑公告设置
+  const handleSetAnnouncement = (article: Article, isAnnouncement: boolean) => {
+    setLoading(true);
+
+    if (isAnnouncement) {
+      announcementList.push(article);
+    } else {
+      announcementList?.splice(
+        announcementList?.findIndex((j) => j.id === article.id), 1,
+      );
+    }
+
+    http.put('/v1/home/announcements', { articleIds: announcementList?.map((i) => i.id) })
+      .then(() => {
+        notification['success']({ message: '公告设置成功' });
+      })
+      .catch((error) => {
+        notification['error']({ message: '公告设置失败', description: String(error) });
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+
+    setRender(!render);
+    setAnnouncementList(announcementList);
+  };
+
   // 文章列表属性
   const tableColumns = [
     {
@@ -95,7 +131,6 @@ const ArticleList: FC = () => {
         compare: (a, b) => a.id - b.id,
         multiple: 2,
       },
-      minWidth: '90px',
     },
     {
       key: 'title',
@@ -120,12 +155,20 @@ const ArticleList: FC = () => {
       key: 'status',
       dataIndex: 'status',
       title: '状态',
-      minWidth: '90px',
+      align: 'center',
+      width: 75,
     },
     {
       key: 'star',
       dataIndex: 'star',
       title: '每日推荐',
+      align: 'center',
+    },
+    {
+      key: 'announcement',
+      dataIndex: 'announcement',
+      title: '公告设置',
+      width: 90,
     },
     {
       key: 'action',
@@ -200,12 +243,20 @@ const ArticleList: FC = () => {
             onClick={() => handleSetRecommend(i.id)}
           />
         ),
+        announcement: (
+          <Switch
+            checkedChildren="展示"
+            unCheckedChildren="取消"
+            checked={!!(~announcementList?.findIndex((j) => j.id === i.id))}
+            onChange={(value) => handleSetAnnouncement(i, value)}
+          />
+        ),
       }));
 
       setArticleList(tableList as any);
       setTotalItems(data.page.total);
     })();
-  }, [data, recommendArticleId]);
+  }, [data, recommendArticleId, announcementList, render]);
 
   return (
     <>
@@ -221,14 +272,11 @@ const ArticleList: FC = () => {
         )}
       >
         <Row>
-          {/*<Col span={4} offset={20}>*/}
-          {/*  */}
-          {/*</Col>*/}
           <Col span={24}>
             <Table
               rowKey="id"
               loading={isLoading || loading}
-              columns={tableColumns}
+              columns={tableColumns as any}
               dataSource={articleList}
               pagination={{
                 pageSize,

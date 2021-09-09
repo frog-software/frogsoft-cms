@@ -17,7 +17,7 @@ export interface Comment {
   id: number,
   author: User,
   article: Article,
-  status: number,
+  status: string,
   content: string,
   publishDate: string,
   likes: number,
