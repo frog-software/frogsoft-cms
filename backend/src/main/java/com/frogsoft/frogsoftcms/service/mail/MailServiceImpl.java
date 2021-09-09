@@ -10,13 +10,10 @@ import java.util.Properties;
 import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.Context;
 
 @Service
 @RequiredArgsConstructor
@@ -24,8 +21,6 @@ import org.thymeleaf.context.Context;
 public class MailServiceImpl implements MailService {
 
   private final ConfigRepository configRepository;
-  @Autowired
-  TemplateEngine templateEngine;
 
 
   private static JavaMailSenderImpl createMailSender(String host, int port, String username,
@@ -51,11 +46,11 @@ public class MailServiceImpl implements MailService {
     Config email_password = configRepository.findByConfigKey("email_password");
     Config email_port = configRepository.findByConfigKey("email_port");
     Config email_host = configRepository.findByConfigKey("email_host");
+    Config email_body = configRepository.findByConfigKey("email_body");
+    Config email_title = configRepository.findByConfigKey("email_title");
     //创建邮件正文
-    Context context = new Context();
-    context.setVariable("verifyCode", code.getCode());
-    //将模块引擎内容解析成html字符串
-    String emailContent = templateEngine.process("emailTemplate", context);
+    String emailContent = email_body.getConfigValue();
+    emailContent = emailContent.replace("[[${verifyCode}]]", code.getCode());
     try {
       JavaMailSenderImpl sender = createMailSender(email_host.getConfigValue(),
           Integer.parseInt(email_port.getConfigValue()),
@@ -67,7 +62,7 @@ public class MailServiceImpl implements MailService {
       MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
       helper.setFrom(email_account.getConfigValue());
       helper.setTo(email);
-      helper.setSubject("验证码");
+      helper.setSubject(email_title.getConfigValue());
       helper.setText(emailContent, true);
 
       sender.send(message);

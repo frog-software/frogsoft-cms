@@ -57,22 +57,22 @@ public class ArticleServiceImpl implements ArticleService {
   @Override
   public EntityModel<ArticleMeDto> getOneArticle(Long id, String role, Long userId) {
     Article article;
+    User user = userRepository.findById(userId).orElse(null);
     if (role.equals("admin")) {
       article = articleRepository.findById(id)
           .orElseThrow(() -> new ArticleNotFoundException(id));
     } else {
-      article = articleRepository.findByIdAndStatus(id, Status.NORMAL)
+      article = articleRepository.findByIdAndStatus(id, user, Status.NORMAL)
           .orElseThrow(() -> new ArticleNotFoundException(id));
     }
     article.setViews(article.getViews() + 1);
     History history = new History();
     history.setArticle(article)
         .setTime(LocalDateTime.now())
-        .setUser(userRepository.findById(userId)
-            .orElse(null));
+        .setUser(user);
     historyRepository.save(history);
     Article newArticle = articleRepository.save(article);
-    User user = userRepository.findById(userId).orElse(null);
+    System.out.println(newArticle);
     return articleModelAssembler.toMeModel(articleMapper.toArticleMeDto(newArticle, user));
   }
 
@@ -119,6 +119,8 @@ public class ArticleServiceImpl implements ArticleService {
       throw new ConflictException("该用户已点赞");
     }
     article.getLikes().add(likedUser);
+    likedUser.getLikeArticles().add(article);
+    userRepository.save(likedUser);
     article.setLikesNum(article.getLikesNum() + 1);
     Article newArticle = articleRepository.save(article);
     return articleModelAssembler.toModel(articleMapper.toArticleDto(newArticle));
@@ -137,6 +139,8 @@ public class ArticleServiceImpl implements ArticleService {
     article.getLikes().remove(unlikedUser);
     article.setLikesNum(article.getLikesNum() - 1);
     Article newArticle = articleRepository.save(article);
+    unlikedUser.getLikeArticles().remove(article);
+    userRepository.save(unlikedUser);
     return articleModelAssembler.toModel(articleMapper.toArticleDto(newArticle));
   }
 
@@ -152,6 +156,8 @@ public class ArticleServiceImpl implements ArticleService {
     }
     article.getFavorites().add(favoredUser);
     article.setFavoritesNum(article.getFavoritesNum() + 1);
+    favoredUser.getFavoriteArticles().add(article);
+    userRepository.save(favoredUser);
     Article newArticle = articleRepository.save(article);
     return articleModelAssembler.toModel(articleMapper.toArticleDto(newArticle));
   }
@@ -169,11 +175,14 @@ public class ArticleServiceImpl implements ArticleService {
     article.getFavorites().remove(unfavoredUser);
     article.setFavoritesNum(article.getFavoritesNum() - 1);
     Article newArticle = articleRepository.save(article);
+    unfavoredUser.getFavoriteArticles().remove(article);
+    userRepository.save(unfavoredUser);
     return articleModelAssembler.toModel(articleMapper.toArticleDto(newArticle));
   }
 
   @Override
-  public PagedModel<EntityModel<ArticleDto>> findAll(String role, String sortBy, String order,
+  public PagedModel<EntityModel<ArticleDto>> findAll(Long userId, String role, String sortBy,
+      String order,
       Pageable pageable) {
     if (role.equals("admin")) {
       if (order.equals("ASC")) {
@@ -186,12 +195,15 @@ public class ArticleServiceImpl implements ArticleService {
         return pagedResourcesAssembler.toModel(articles, articleModelAssembler);
       }
     } else {
+      User user = userRepository.findById(userId).orElse(null);
       if (order.equals("ASC")) {
-        Page<ArticleDto> articles = articleRepository.findAllASC(Status.NORMAL, sortBy, pageable)
+        Page<ArticleDto> articles = articleRepository
+            .findAllASC(user, Status.NORMAL, sortBy, pageable)
             .map(articleMapper::toArticleDto);
         return pagedResourcesAssembler.toModel(articles, articleModelAssembler);
       } else {
-        Page<ArticleDto> articles = articleRepository.findAllDESC(Status.NORMAL, sortBy, pageable)
+        Page<ArticleDto> articles = articleRepository
+            .findAllDESC(user, Status.NORMAL, sortBy, pageable)
             .map(articleMapper::toArticleDto);
         return pagedResourcesAssembler.toModel(articles, articleModelAssembler);
       }
@@ -200,7 +212,8 @@ public class ArticleServiceImpl implements ArticleService {
   }
 
   @Override
-  public PagedModel<EntityModel<ArticleDto>> findBySearch(String search, String role, String sortBy,
+  public PagedModel<EntityModel<ArticleDto>> findBySearch(Long userId, String search, String role,
+      String sortBy,
       String order, Pageable pageable) {
     if (role.equals("admin")) {
       if (order.equals("ASC")) {
@@ -216,21 +229,23 @@ public class ArticleServiceImpl implements ArticleService {
       }
 
     } else {
+      User user = userRepository.findById(userId).orElse(null);
       if (order.equals("ASC")) {
         Page<ArticleDto> articles = articleRepository
-            .findBySearchASC(search, Status.NORMAL, sortBy, pageable)
+            .findBySearchASC(user, search, Status.NORMAL, sortBy, pageable)
             .map(articleMapper::toArticleDto);
         return pagedResourcesAssembler.toModel(articles, articleModelAssembler);
       } else {
         Page<ArticleDto> articles = articleRepository
-            .findBySearchDESC(search, Status.NORMAL, sortBy, pageable)
+            .findBySearchDESC(user, search, Status.NORMAL, sortBy, pageable)
             .map(articleMapper::toArticleDto);
         return pagedResourcesAssembler.toModel(articles, articleModelAssembler);
       }
     }
   }
 
-  public PagedModel<?> findByAuthor(String authorName, String role, String sortBy, String order,
+  public PagedModel<?> findByAuthor(Long userId, String authorName, String role, String sortBy,
+      String order,
       Pageable pageable) {
     User author = userRepository.findByUsername(authorName);
     if (role.equals("admin")) {
@@ -245,22 +260,23 @@ public class ArticleServiceImpl implements ArticleService {
         return pagedResourcesAssembler.toModel(articles, articleModelAssembler);
       }
     } else {
+      User user = userRepository.findById(userId).orElse(null);
       if (order.equals("ASC")) {
-
         Page<ArticleDto> articles = articleRepository
-            .findByAuthorASC(author, Status.NORMAL, sortBy, pageable)
+            .findByAuthorASC(user, author, Status.NORMAL, sortBy, pageable)
             .map(articleMapper::toArticleDto);
         return pagedResourcesAssembler.toModel(articles, articleModelAssembler);
       } else {
         Page<ArticleDto> articles = articleRepository
-            .findByAuthorDESC(author, Status.NORMAL, sortBy, pageable)
+            .findByAuthorDESC(user, author, Status.NORMAL, sortBy, pageable)
             .map(articleMapper::toArticleDto);
         return pagedResourcesAssembler.toModel(articles, articleModelAssembler);
       }
     }
   }
 
-  public PagedModel<?> findBySearchAndAuthor(String search, String authorName, String role,
+  public PagedModel<?> findBySearchAndAuthor(Long userId, String search, String authorName,
+      String role,
       String sortBy, String order, Pageable pageable) {
     User author = userRepository.findByUsername(authorName);
     if (role.equals("admin")) {
@@ -277,14 +293,15 @@ public class ArticleServiceImpl implements ArticleService {
       }
 
     } else {
+      User user = userRepository.findById(userId).orElse(null);
       if (order.equals("ASC")) {
         Page<ArticleDto> articles = articleRepository
-            .findBySearchAndAuthorASC(search, author, Status.NORMAL, sortBy, pageable)
+            .findBySearchAndAuthorASC(user, search, author, Status.NORMAL, sortBy, pageable)
             .map(articleMapper::toArticleDto);
         return pagedResourcesAssembler.toModel(articles, articleModelAssembler);
       } else {
         Page<ArticleDto> articles = articleRepository
-            .findBySearchAndAuthorDESC(search, author, Status.NORMAL, sortBy, pageable)
+            .findBySearchAndAuthorDESC(user, search, author, Status.NORMAL, sortBy, pageable)
             .map(articleMapper::toArticleDto);
         return pagedResourcesAssembler.toModel(articles, articleModelAssembler);
       }

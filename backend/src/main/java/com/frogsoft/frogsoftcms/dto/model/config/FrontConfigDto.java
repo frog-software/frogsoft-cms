@@ -6,6 +6,7 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(chain = true)
 public class FrontConfigDto {
+
   private String favicon;
   private String title;
   private String logo;

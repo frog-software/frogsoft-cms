@@ -114,7 +114,7 @@ public class HomeServiceImpl implements HomeService {
     Long articlePickupId = dailyArticleSetRequest.getArticleId();
     Config dailyPickupConfig = configRepository.findByConfigKey("DailyPickup");
 
-    if(articlePickupId == 0L){
+    if (articlePickupId == 0L) {
       configRepository.save(
           dailyPickupConfig.setConfigValue(articlePickupId.toString())
       );
