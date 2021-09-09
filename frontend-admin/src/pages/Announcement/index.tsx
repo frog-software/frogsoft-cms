@@ -10,47 +10,35 @@
 //
 //--------------------------------------------------------------------------
 
-import React, { FC, useEffect, useState }                 from 'react';
-import Block                                              from 'components/Block';
-import http                                               from 'utils/http';
-import { Article }                                        from 'types/article';
-import { JavaCollectionModel } from 'types/common';
-import { collectionModelSimplifier }                      from 'utils/common';
+import React, { FC, useEffect, useState } from 'react';
+import Block                              from 'components/Block';
+import { Article }                        from 'types/article';
 import {
-  Card, Col, Descriptions, Image, Modal, Row, Empty,
-}                                                         from 'antd';
+  Card, Col, Descriptions, Empty, Image, Modal, Row,
+}                                         from 'antd';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { useHistory }                                     from 'react-router';
-import Meta                                               from 'antd/es/card/Meta';
+import { useHistory }                     from 'react-router';
+import Meta                               from 'antd/es/card/Meta';
+import { getAnnouncementList }            from 'services/announcement';
+import { useQuery }                       from 'react-query';
+import { useDispatch, useSelector }       from 'react-redux';
 
 const Announcement: FC = () => {
   const [announcementList, setAnnouncementList] = useState<Article[]>();
-  const [loading, setLoading]                   = useState<boolean>(false);
   const history                                 = useHistory();
   const [isModalVisible, setIsModalVisible]     = useState(false);
   const [currentArticle, setCurrentArticle]     = useState<Article>();
 
-  useEffect(() => {
-    setLoading(true);
+  const queryResult = useQuery(['announcementList'], getAnnouncementList);
 
-    http.get<JavaCollectionModel<Article>>('/v1/home/announcements')
-      .then((data) => {
-        const simplifiedData = collectionModelSimplifier(data);
-        setAnnouncementList(simplifiedData.list);
-        // notification['success']({ message: '获取公告成功' });
-      })
-      .catch(() => {
-        // notification['error']({ message: '获取公告失败', description: String(error) });
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-    // const data = await http.get<JavaCollectionModel<Article>>('http://127.0.0.1:4523/mock/419258/v1/home/announcements');
-  }, []);
+  useEffect(() => {
+    if (!queryResult.data) return;
+    setAnnouncementList(queryResult.data);
+  }, [queryResult.data]);
 
   return (
     <>
-      <Block title="本站公告" loading={loading}>
+      <Block title="本站公告" loading={queryResult.isLoading}>
         {
           !announcementList ? (
             <Empty />

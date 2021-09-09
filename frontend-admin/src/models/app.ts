@@ -4,7 +4,7 @@ import { User }          from 'types/user';
 
 interface State {
   configuration: Configuration,
-  userInfo: User
+  userInfo: User,
 }
 
 export const app = createModel({

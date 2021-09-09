@@ -1,12 +1,12 @@
 //+-------------------------------------------------------------------------
 //
-//  // ---- What is this file about? --- //
+//  公告
 //
-//  File:       article.ts
+//  File:       announcement.ts
 //
 //  Directory:  src/services
 //
-//  History:    9月-05-2021   QQK  Created
+//  History:    Sep-09-2021   Charlie Chiang  Created
 //
 //--------------------------------------------------------------------------
 

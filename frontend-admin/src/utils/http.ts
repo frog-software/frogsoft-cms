@@ -36,7 +36,11 @@ service.interceptors.response.use((res) => res,
         message.error(response?.data?.message);
         break;
     }
-    return Promise.reject(response?.data?.message);
+    // eslint-disable-next-line prefer-promise-reject-errors
+    return Promise.reject({
+      status: response?.status,
+      message: response?.data?.message,
+    });
   });
 
 export function get<T>(url: string, data: object = {}) {
