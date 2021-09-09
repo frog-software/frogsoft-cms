@@ -72,6 +72,7 @@ public class ArticleServiceImpl implements ArticleService {
         .setUser(user);
     historyRepository.save(history);
     Article newArticle = articleRepository.save(article);
+    System.out.println(newArticle);
     return articleModelAssembler.toMeModel(articleMapper.toArticleMeDto(newArticle, user));
   }
 
@@ -118,6 +119,8 @@ public class ArticleServiceImpl implements ArticleService {
       throw new ConflictException("该用户已点赞");
     }
     article.getLikes().add(likedUser);
+    likedUser.getLikeArticles().add(article);
+    userRepository.save(likedUser);
     article.setLikesNum(article.getLikesNum() + 1);
     Article newArticle = articleRepository.save(article);
     return articleModelAssembler.toModel(articleMapper.toArticleDto(newArticle));
@@ -136,6 +139,8 @@ public class ArticleServiceImpl implements ArticleService {
     article.getLikes().remove(unlikedUser);
     article.setLikesNum(article.getLikesNum() - 1);
     Article newArticle = articleRepository.save(article);
+    unlikedUser.getLikeArticles().remove(article);
+    userRepository.save(unlikedUser);
     return articleModelAssembler.toModel(articleMapper.toArticleDto(newArticle));
   }
 
@@ -151,6 +156,8 @@ public class ArticleServiceImpl implements ArticleService {
     }
     article.getFavorites().add(favoredUser);
     article.setFavoritesNum(article.getFavoritesNum() + 1);
+    favoredUser.getFavoriteArticles().add(article);
+    userRepository.save(favoredUser);
     Article newArticle = articleRepository.save(article);
     return articleModelAssembler.toModel(articleMapper.toArticleDto(newArticle));
   }
@@ -168,6 +175,8 @@ public class ArticleServiceImpl implements ArticleService {
     article.getFavorites().remove(unfavoredUser);
     article.setFavoritesNum(article.getFavoritesNum() - 1);
     Article newArticle = articleRepository.save(article);
+    unfavoredUser.getFavoriteArticles().remove(article);
+    userRepository.save(unfavoredUser);
     return articleModelAssembler.toModel(articleMapper.toArticleDto(newArticle));
   }
 

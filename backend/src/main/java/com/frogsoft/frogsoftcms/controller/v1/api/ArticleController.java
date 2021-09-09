@@ -104,7 +104,6 @@ public class ArticleController {
       }
       userId = authenticatedUser.getId();
     }
-
     return ResponseEntity.status(201).body(articleService.getOneArticle(id, role, userId));
   }
 

@@ -190,8 +190,8 @@ public class UserServiceImpl implements UserService {
     Page<HistoryDto> historyDtos = historyRepository.findAllByUser(user, pageable).map(
         historyMapper::toHistoryDto
     );
-    if(historyDtos.getContent().size() == 0){
-      return historyDtoPagedResourcesAssembler.toEmptyModel(historyDtos,HistoryDto.class);
+    if (historyDtos.getContent().size() == 0) {
+      return historyDtoPagedResourcesAssembler.toEmptyModel(historyDtos, HistoryDto.class);
     }
     return historyDtoPagedResourcesAssembler.toModel(historyDtos, historyModelAssembler);
   }
@@ -202,8 +202,8 @@ public class UserServiceImpl implements UserService {
     Page<ArticleDto> articleDtos = articleRepository.findByAuthorASCAdmin(user, "id", pageable).map(
         articleMapper::toArticleDto
     );
-    if(articleDtos.getContent().size() == 0){
-      return historyDtoPagedResourcesAssembler.toEmptyModel(articleDtos,ArticleDto.class);
+    if (articleDtos.getContent().size() == 0) {
+      return historyDtoPagedResourcesAssembler.toEmptyModel(articleDtos, ArticleDto.class);
     }
     return articleDtoPagedResourcesAssembler.toModel(articleDtos, articleModelAssembler);
   }
@@ -214,8 +214,8 @@ public class UserServiceImpl implements UserService {
     Page<CommentDto> commentDtos = commentRepository.findAllByAuthor(user, pageable).map(
         commentMapper::toCommentDto
     );
-    if(commentDtos.getContent().size() == 0){
-      return historyDtoPagedResourcesAssembler.toEmptyModel(commentDtos,CommentDto.class);
+    if (commentDtos.getContent().size() == 0) {
+      return historyDtoPagedResourcesAssembler.toEmptyModel(commentDtos, CommentDto.class);
     }
     return commentDtoPagedResourcesAssembler.toModel(commentDtos, commentModelAssembler);
   }
