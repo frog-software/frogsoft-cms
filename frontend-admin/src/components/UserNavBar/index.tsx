@@ -5,7 +5,10 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 
 function UserNavBar() {
-  const { configuration: config } = useSelector((state: RootState) => state.app);
+  const {
+    configuration: config,
+    userInfo,
+  } = useSelector((state: RootState) => state.app);
   const dispatch                = useDispatch<Dispatch>().app;
 
   return (
@@ -28,13 +31,13 @@ function UserNavBar() {
               <Row align="middle">
                 <Col>
                   <Avatar
-                    src={'https://thirdwx.qlogo.cn/mmopen/vi_32/DYAIOgq83eqVJJtgvHibagHget2EDq2Vd663ibQy3bCnq79xHoc3bz8JeU6lAmiasy5w0eyGmr4b6f9kTwSI9nuEg/132' || ''}
+                    src={userInfo.avatar || '/logo.svg'}
                     style={{ marginRight: 8 }}
                   />
                 </Col>
                 <Col>
                   <div>
-                    用户名
+                    {userInfo.username}
                   </div>
                 </Col>
               </Row>

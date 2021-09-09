@@ -10,6 +10,7 @@ import Preview                        from 'components/Preview';
 import UserNavBar                     from 'components/UserNavBar';
 import { queryClient }                from './store';
 import './customAntd.less';
+import { getUser }                    from 'services/user';
 
 const Home              = React.lazy(() => import('./pages/Home'));
 const UserPage          = React.lazy(() => import('./pages/User'));
@@ -31,6 +32,11 @@ function App() {
 
     if (!localStorage.getItem('token')) {
       history.replace('/auth/login');
+    }
+
+    const localUsername = localStorage.getItem('username');
+    if (localUsername) {
+      getUser(localUsername).then((res) => { dispatch.setUserInfo(res); });
     }
   }, []);
 

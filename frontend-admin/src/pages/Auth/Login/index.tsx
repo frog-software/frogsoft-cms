@@ -41,6 +41,7 @@ const Login: FC = () => {
     })
       .then((res) => {
         localStorage.setItem('token', res.token);
+        localStorage.setItem('username', formData.username);
         window.location.href = '/home';
       })
       .catch((err) => {

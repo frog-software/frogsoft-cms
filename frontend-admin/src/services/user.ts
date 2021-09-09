@@ -35,9 +35,13 @@ export const getUserList = (queryContext: QueryFunctionContext<any, any>) => {
   });
 };
 
+export const getUser = (username: string) => http.get<User>(`/v1/users/${username}`);
+
 // 删除用户
 export const deleteUser = (username: string) => http.del(`/v1/users/${username}`);
 
 export default {
   getUserList,
+  getUser,
+  deleteUser,
 };

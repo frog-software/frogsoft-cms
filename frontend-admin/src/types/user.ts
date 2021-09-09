@@ -17,6 +17,7 @@ import { Statistics } from 'types/statistics';
 export interface User {
   email: string,
   username: string,
+  avatar?: string
   roles: string[],
   favoriteArticles?: Article[],
   publishArticles?: Article[],

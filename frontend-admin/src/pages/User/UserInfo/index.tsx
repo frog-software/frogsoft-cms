@@ -37,8 +37,8 @@ import { useForm }                                   from 'antd/es/form/Form';
 import { useHistory }                                from 'react-router';
 import { Column }                                    from '@ant-design/charts';
 import { CloudOutlined, FormOutlined, StarOutlined } from '@ant-design/icons';
-import { Article }                                   from 'types/article';
-import { deleteUser }                                from 'services/user';
+import { Article }             from 'types/article';
+import { deleteUser, getUser } from 'services/user';
 
 const UserInfo: FC = () => {
   const params: { username: string }    = useParams();
@@ -57,7 +57,7 @@ const UserInfo: FC = () => {
 
   useEffect(() => {
     (async () => {
-      const data = await http.get<User>(`v1/users/${params.username}`);
+      const data = await getUser(params.username);
 
       // 用户创建的文章
       const tempCreatedList = data?.publishArticles?.map((i) => ({
