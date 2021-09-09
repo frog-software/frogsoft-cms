@@ -107,7 +107,6 @@ public class ArticleServiceImpl implements ArticleService {
     }
     User user = userRepository.findById(authenticateUser.getId())
         .orElseThrow(() -> new UserNotFoundException(authenticateUser.getId()));
-    System.out.println(user.getArticles());
     article.setAuthor(null);
     for (User userLike : article.getLikes()) {
       userLike.getLikeArticles().remove(article);
