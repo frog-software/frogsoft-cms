@@ -10,12 +10,9 @@
 //
 //--------------------------------------------------------------------------
 
-import { User }    from 'types/user';
-import { Article } from 'types/article';
-
 export interface History {
   id: number,
   time: string,
-  user: User,
-  article: Article
+  userId: number,
+  articleId: number
 }

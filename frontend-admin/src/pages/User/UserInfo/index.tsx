@@ -81,16 +81,7 @@ const UserInfo: FC = () => {
       }));
       setFavoriteList(tempFavoriteList as any);
 
-      // 用户浏览过的文章
-      const tempViewList = data?.historyArticles?.map((i) => ({
-        ...i,
-        status: i.article.status === 'NORMAL' ? (
-          <Badge status="processing" color="green" text="正常" />
-        ) : (
-          <Badge status="default" color="gray" text="屏蔽" />
-        ),
-      }));
-      setViewList(tempViewList as any);
+      setViewList(data?.historyArticles as any);
 
       setUserInfo(data);
     })();
@@ -190,13 +181,13 @@ const UserInfo: FC = () => {
     data: statisticsTable,
     xField: 'type',
     yField: 'count',
-    columnStyle: { fill: '#d6e4ff' },
+    columnStyle: { fill: '#d3adf7' },
     label: {
-
       position: 'middle',
       style: {
-        fill: '#597ef7',
-        opacity: 0.7,
+        fill: '#ffffff',
+        opacity: 1,
+        fontSize: 16,
       },
     },
     meta: {
@@ -250,6 +241,7 @@ const UserInfo: FC = () => {
               history.push(`/articles/${article.id}`);
             }}
             type="text"
+            style={{ color: 'var(--primary-color)' }}
           >
             查看详情
           </Button>
@@ -262,36 +254,26 @@ const UserInfo: FC = () => {
   const historyColumns = [
     {
       key: 'id',
-      dataIndex: ['article', 'id'],
-      title: '文章ID',
+      dataIndex: 'id',
+      title: '浏览记录ID',
       sorter: {
         compare: (a, b) => a.id - b.id,
         multiple: 2,
       },
     },
     {
-      key: 'title',
-      dataIndex: ['article', 'title'],
-      title: '标题',
+      key: 'articleId',
+      dataIndex: 'articleId',
+      title: '文章作者ID',
     },
     {
-      key: 'author',
-      dataIndex: ['article', 'author', 'username'],
-      title: '作者',
-    },
-    {
-      key: 'publishDate',
-      dataIndex: ['article', 'publishDate'],
-      title: '发布时间',
+      key: 'time',
+      dataIndex: 'time',
+      title: '浏览时间',
       sorter: {
-        compare: (a, b) => a.publishDate - b.publishDate,
+        compare: (a, b) => a.time - b.time,
         multiple: 1,
       },
-    },
-    {
-      key: 'status',
-      dataIndex: 'status',
-      title: '状态',
     },
     {
       key: 'action',
@@ -303,6 +285,7 @@ const UserInfo: FC = () => {
               history.push(`/articles/${article.id}`);
             }}
             type="text"
+            style={{ color: 'var(--primary-color)' }}
           >
             查看详情
           </Button>
