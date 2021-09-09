@@ -39,7 +39,7 @@ const ArticleInfo: FC = () => {
   const [articleDetail]                     = useForm();
   const [articleContent]                    = useForm();
   const history                             = useHistory();
-  const { Option }                            = Select;
+  const { Option }                          = Select;
   const [detailLoading, setDetailLoading]   = useState<boolean>(false);
   const [contentLoading, setContentLoading] = useState<boolean>(false);
   const [commentLoading, setCommentLoading] = useState<boolean>(false);
@@ -252,7 +252,7 @@ const ArticleInfo: FC = () => {
                   <Image
                     width={155}
                     alt="Article Cover"
-                    src="http://pic.soutu123.cn/element_origin_min_pic/16/08/31/1457c67986055d6.jpg"
+                    src={articleInfo?.cover}
                   />
                 </Col>
                 <Col span={20}>
