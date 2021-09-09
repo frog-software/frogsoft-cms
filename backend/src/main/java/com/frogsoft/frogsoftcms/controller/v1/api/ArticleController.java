@@ -85,7 +85,7 @@ public class ArticleController {
 
   @GetMapping("/{id}/comments")
   public ResponseEntity<?> getComments(@PathVariable(name = "id") Long id) {
-    return ResponseEntity.status(201).body(commentService.getComment(id));
+    return ResponseEntity.status(200).body(commentService.getComment(id));
   }
 
   @GetMapping("/{id}")
