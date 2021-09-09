@@ -35,8 +35,8 @@ public class Comment {
   @JoinColumn(referencedColumnName = "id")
   private User author;
 
-  @ManyToOne(cascade = CascadeType.ALL)
-  @OnDelete(action = OnDeleteAction.CASCADE)
+  @ManyToOne
+  @JoinColumn(referencedColumnName = "id")
   private Article article;
 
   private Status status;
