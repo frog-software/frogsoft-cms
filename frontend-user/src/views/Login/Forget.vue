@@ -1,7 +1,7 @@
 <template>
   <div class="body">
     <!--上方进度条-->
-    <a-steps :current="current">
+    <a-steps v-model="current">
       <a-step
           v-for="item in steps"
           :key="item.title"
@@ -133,7 +133,7 @@ export default {
     /**
      * 点击按钮下一步触发的事件
      */
-    next() {
+    async next() {
       this.btnNextStepLoading = true;
       switch (this.current) {
         case 0: {
@@ -141,12 +141,12 @@ export default {
             message.error('请输入用户名');
             break;
           }
-          this.current += this.sendCode();
+          this.current += await this.sendCode();
           break;
         }
         case 1: {
           if (this.password !== this.repeatedPassword) break;
-          this.current += this.resetPassword();
+          this.current += await this.resetPassword();
           break;
         }
         default: {
@@ -184,16 +184,15 @@ export default {
     /**
      * 完成重置功能
      */
-    resetPassword() {
-      let result = 1;
-      axios.put('/v1/auth/forget', {
+    async resetPassword() {
+      let result = 0;
+      await axios.put('/v1/auth/forget', {
         username: this.username,
-        email: this.email,
         varyficationcode: this.code,
         newpassword: this.password,
-      }).catch((err) => {
-        result = 0;
-      });
+      }).then(() => {
+        result = 1
+      })
       return result;
     },
   },
