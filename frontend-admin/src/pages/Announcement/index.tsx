@@ -28,7 +28,8 @@ const Announcement: FC = () => {
   const [isModalVisible, setIsModalVisible]     = useState(false);
   const [currentArticle, setCurrentArticle]     = useState<Article>();
 
-  const queryResult = useQuery(['announcementList'], getAnnouncementList);
+  const queryResult = useQuery(['announcementList'], getAnnouncementList, { retry: 0 });
+
   useEffect(() => {
     if (!queryResult.data) return;
     setAnnouncementList(queryResult.data);
@@ -38,7 +39,7 @@ const Announcement: FC = () => {
     <>
       <Block title="本站公告" loading={queryResult.isLoading}>
         {
-          !announcementList ? (
+          !announcementList?.length ? (
             <Empty />
           ) : (
             <>

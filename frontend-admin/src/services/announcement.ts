@@ -24,9 +24,7 @@ export const getAnnouncementList = () => new Promise<Article[]>((resolve, reject
       resolve(simplifiedModel.list);
     })
     .catch((err) => {
-      if (err.status !== 404) {
-        reject(err);
-      }
+      reject(err);
     });
 });
 

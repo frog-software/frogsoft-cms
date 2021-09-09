@@ -267,7 +267,7 @@ const ArticleList: FC = () => {
             placeholder="输入文章搜索关键字"
             onSearch={(value) => setSearch(value)}
             enterButton
-            style={{ marginTop: '10px' }}
+            style={{ marginTop: '20px', marginRight: '100px' }}
           />
         )}
       >

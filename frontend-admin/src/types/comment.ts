@@ -19,7 +19,7 @@ export interface Comment {
   article: Article,
   status: string,
   content: string,
-  publishDate: string,
+  publishDateTime: string,
   likes: number,
   parent: number
 }

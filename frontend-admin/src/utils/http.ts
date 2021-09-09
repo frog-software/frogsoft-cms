@@ -25,7 +25,7 @@ service.interceptors.response.use((res) => res,
         // to login page
         break;
       case 404:
-        message.error('资源不存在！');
+        // message.error('资源不存在！');
         // to login page
         break;
       case 409:

@@ -51,21 +51,29 @@ const ArticleInfo: FC = () => {
       setDetailLoading(true);
       setContentLoading(true);
       setCommentLoading(true);
-      const article = await http.get<Article>(`v1/articles/${params.id}`);
-      setArticleInfo(article);
 
-      const comments           = await http.get<JavaCollectionModel<Comment>>(`v1/articles/${params.id}/comments`);
-      const simplifiedComments = collectionModelSimplifier<Comment>(comments);
+      await http.get<Article>(`v1/articles/${params.id}`)
+        .then((article) => {
+          setArticleInfo(article);
+        })
+        .catch((error) => {
+          notification['error']({ message: '文章信息加载失败', description: String(error) });
+        });
 
-      const tableList = simplifiedComments?.list?.map((i) => ({
-        ...i,
-        status: i.status === 'NORMAL' ? (
-          <Badge status="processing" color="green" text="正常" />
-        ) : (
-          <Badge status="default" color="gray" text="屏蔽" />
-        ),
-      }));
-      setCommentList(tableList as any);
+      await http.get<JavaCollectionModel<Comment>>(`v1/articles/${params.id}/comments`)
+        .then((comments) => {
+          const simplifiedComments = collectionModelSimplifier<Comment>(comments);
+
+          const tableList = simplifiedComments?.list?.map((i) => ({
+            ...i,
+            status: i.status === 'NORMAL' ? (
+              <Badge status="processing" color="green" text="正常" />
+            ) : (
+              <Badge status="default" color="gray" text="屏蔽" />
+            ),
+          }));
+          setCommentList(tableList as any);
+        });
 
       setDetailLoading(false);
       setContentLoading(false);
@@ -170,8 +178,8 @@ const ArticleInfo: FC = () => {
       title: '评论内容',
     },
     {
-      key: 'publishDate',
-      dataIndex: 'publishDate',
+      key: 'publishDateTime',
+      dataIndex: 'publishDateTime',
       title: '评论时间',
     },
     {
@@ -252,7 +260,7 @@ const ArticleInfo: FC = () => {
                     <DescriptionsItem label="文章ID">{articleInfo?.id ?? '未定义'}</DescriptionsItem>
                     <DescriptionsItem label="文章发表时间">{articleInfo?.publishDate ?? '未定义'}</DescriptionsItem>
                     <br />
-                    <DescriptionsItem label="文章作者">{articleInfo?.author.username ?? '未定义'}</DescriptionsItem>
+                    <DescriptionsItem label="文章作者">{articleInfo?.author?.username ?? '未定义'}</DescriptionsItem>
                     <DescriptionsItem label="最后一次更新时间">{articleInfo?.updateDate ?? '未定义'}</DescriptionsItem>
                     <br />
                     <Descriptions.Item label="文章状态" span={3}>
@@ -379,7 +387,7 @@ const ArticleInfo: FC = () => {
           )
         }
         <Divider orientation="right" style={{ fontSize: '15px' }}>
-          {`${articleInfo?.author.username} - ${articleInfo?.updateDate}`}
+          {`${articleInfo?.author?.username} - ${articleInfo?.updateDate}`}
         </Divider>
       </Block>
 
