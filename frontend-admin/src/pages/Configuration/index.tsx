@@ -163,7 +163,7 @@ const Configuration: FC = () => {
                             <Image
                               height={184}
                               width={184}
-                              src={configuration?.favicon}
+                              src={configuration?.favicon || '/logo.svg'}
                             />
                             <p>184*184</p>
                           </Space>
@@ -176,7 +176,7 @@ const Configuration: FC = () => {
                               height={64}
                               width={64}
                               preview={false}
-                              src={configuration?.favicon}
+                              src={configuration?.favicon || '/logo.svg'}
                             />
                             <p>64*64</p>
                           </Space>
@@ -188,7 +188,7 @@ const Configuration: FC = () => {
                               height={32}
                               width={32}
                               preview={false}
-                              src={configuration?.favicon}
+                              src={configuration?.favicon || '/logo.svg'}
                             />
                             <p>32*32</p>
                           </Space>
