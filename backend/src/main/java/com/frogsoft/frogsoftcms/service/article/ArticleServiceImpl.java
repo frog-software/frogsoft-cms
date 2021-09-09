@@ -72,7 +72,6 @@ public class ArticleServiceImpl implements ArticleService {
         .setUser(user);
     historyRepository.save(history);
     Article newArticle = articleRepository.save(article);
-    System.out.println(newArticle);
     return articleModelAssembler.toMeModel(articleMapper.toArticleMeDto(newArticle, user));
   }
 
@@ -105,7 +104,11 @@ public class ArticleServiceImpl implements ArticleService {
         throw new ForbiddenException("无权限删除该文章");
       }
     }
-    articleRepository.delete(article);
+    article.setAuthor(null);
+    article.setLikes(null);
+    article.setFavorites(null);
+    Article newArticle = articleRepository.save(article);
+    articleRepository.delete(newArticle);
   }
 
   @Override
