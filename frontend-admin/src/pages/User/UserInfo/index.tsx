@@ -20,7 +20,7 @@ import {
   Button,
   Col,
   Descriptions,
-  Form,
+  Form, Image,
   Input,
   notification,
   Popconfirm,
@@ -29,7 +29,7 @@ import {
   Switch,
   Table,
   Tabs,
-}                                                    from 'antd';
+} from 'antd';
 import http                                          from 'utils/http';
 import DescriptionsItem                              from 'antd/es/descriptions/Item';
 import { useForm }                                   from 'antd/es/form/Form';
@@ -129,6 +129,7 @@ const UserInfo: FC = () => {
       email: userInfo.email,
       username: data.username,
       roles: data.roles,
+      avatar: data.avatar,
     };
 
     http.put(`/v1/users/${params.username}`, tempData)
@@ -336,10 +337,11 @@ const UserInfo: FC = () => {
         <Row>
           <Col span={2}>
             <Avatar
-              size={64}
+              size={72}
               alt="User Avatar"
               shape="circle"
-              src="http://pic.soutu123.cn/element_origin_min_pic/16/08/31/1457c67986055d6.jpg!/fw/700/quality/90/unsharp/true/compress/true"
+              src={<Image src={userInfo?.avatar || '/logo.svg'} />}
+              style={{ marginLeft: '8px', marginTop: '5px' }}
             />
           </Col>
           <Col span={22}>
@@ -380,6 +382,13 @@ const UserInfo: FC = () => {
                         unCheckedChildren="普通用户"
                         defaultChecked={userInfo?.roles.includes('ROLE_ADMIN')}
                       />
+                    </Form.Item>
+                    <Form.Item
+                      name="avatar"
+                      label="用户头像"
+                      initialValue={userInfo?.avatar}
+                    >
+                      <Input />
                     </Form.Item>
                   </Form>
                 </Col>
