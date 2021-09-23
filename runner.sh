@@ -24,12 +24,15 @@ export HEADER_INFO="${BLUE}[INFO]$OFF "
 export HEADER_WARN="${YELLOW}[WARN]$OFF "
 export HEADER_ERROR="${RED}[ERROR]$OFF "
 
-# The file used to store the pid of a proviously started background process
+# The file used to store the pid of a previously started background process
 export PID_FILE_NAME="started_process.pid"
 
-# Default state
+# Default states
+# Skip the build process in `start`
 export SKIP_BUILD=false
+# Run in the background (similar to -d/--detach in `Docker`)
 export DETACH=false
+# Print debug messages
 export VERBOSE=false
 
 # [Customizable]
@@ -37,7 +40,26 @@ export VERBOSE=false
 # You can also define RUNNER_SCRIPT_DIR in .env file
 RUNNER_SCRIPT_DIR="."
 
-# Load environment variables from .env and .env.local (always loads)
+# Parse arguments (only parse --verbose)
+POSITIONAL=()
+while [[ $# -gt 0 ]]; do
+    key="$1"
+    case $key in
+    -v | --verbose)
+        VERBOSE=true
+        shift
+        ;;
+    *)
+        POSITIONAL+=("$1")
+        shift
+        ;;
+    esac
+done
+
+# restore positional parameters
+set -- "${POSITIONAL[@]}"
+
+# Load .env (always loads)
 if [ -f ".env" ]; then
     if [ "${VERBOSE}" = true ]; then
         echo -e "${HEADER_INFO}loading environment variables from .env"
@@ -45,6 +67,7 @@ if [ -f ".env" ]; then
     export $(echo $(cat ".env" | sed 's/#.*//g' | xargs) | envsubst)
 fi
 
+# Load .env.local (always loads)
 if [ -f ".env.local" ]; then
     if [ "${VERBOSE}" = true ]; then
         echo -e "${HEADER_INFO}loading environment variables from .env.local"
@@ -52,8 +75,9 @@ if [ -f ".env.local" ]; then
     export $(echo $(cat ".env.local" | sed 's/#.*//g' | xargs) | envsubst)
 fi
 
+# Append a `/`
 RUNNER_SCRIPT_DIR+="/"
-# List environments in current directory
+# List environments in ${RUNNER_SCRIPT_DIR} (directory), e.g. ENV_LIST = [dev, prod, test]
 ENV_LIST=$(ls -d ${RUNNER_SCRIPT_DIR}runner_scripts_* 2>/dev/null)
 if [ "${ENV_LIST}" = "" ]; then
     echo -e "${HEADER_ERROR}Missing runner scripts. You must have runner scripts for at least one environment."
@@ -62,19 +86,17 @@ fi
 ENV_LIST=${ENV_LIST[@]//${RUNNER_SCRIPT_DIR}runner_scripts_/}
 ENV_LIST=(${ENV_LIST})
 
-# [Customizable]
+# [Customizable] predefine some variables
 # ---- Fallback environment if no env is specified by the user (by default is the first one in the env list)
 # You can also define DEFAULT_ENV in .env file
 if [[ -z "${DEFAULT_ENV}" ]]; then
     DEFAULT_ENV=${ENV_LIST[0]}
 fi
-# the .env.[mode] file associated with that env
-ENV_FILE=".env.${DEFAULT_ENV}"
 
 function usage() {
     echo -e "server-app-runner"
     echo -e ""
-    echo -e "./runner.sh start | build | stop | update [enviromnent] [-d | --detach] [--skip-build] [-v | --verbose] [--file env] [-h | --help]"
+    echo -e "./runner.sh start | build | stop | update [environment] [-d | --detach] [--skip-build] [-v | --verbose] [--file env] [-h | --help]"
     echo -e "\t start:        build your project, stop a previous process, then start a new one"
     echo -e "\t build:        build your project"
     echo -e "\t stop:         stop a previously started background process"
@@ -88,6 +110,7 @@ function usage() {
     echo -e ""
 }
 
+# Check if an array contains a certain element (helper function)
 containsElement() {
     local e match="$1"
     shift
@@ -113,8 +136,7 @@ check_is_valid_env() {
     esac
 }
 
-# Parse auguments
-POSITIONAL=()
+# Parse arguments
 while [[ $# -gt 0 ]]; do
     key="$1"
     case $key in
@@ -143,7 +165,13 @@ while [[ $# -gt 0 ]]; do
         shift
         ;;
     --file)
-        ENV_FILE="$2"
+        # Load user specified env file
+        if [ -f "$2" ]; then
+            if [ "${VERBOSE}" = true ]; then
+                echo -e "${HEADER_INFO}loading environment variables from $2"
+            fi
+            export $(echo $(cat "$2" | sed 's/#.*//g' | xargs) | envsubst)
+        fi
         shift
         shift
         ;;
@@ -153,10 +181,6 @@ while [[ $# -gt 0 ]]; do
         ;;
     -d | --detach)
         export DETACH=true
-        shift
-        ;;
-    -v | --verbose)
-        VERBOSE=true
         shift
         ;;
     -h | --help)
@@ -172,9 +196,6 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-# restore positional parameters
-set -- "${POSITIONAL[@]}"
-
 # Check arguments
 if [ "${SKIP_BUILD}" = true ] && [ "${COMMAND}" != start ]; then
     echo -e "${HEADER_ERROR}You can only pair --skip-build with \"start\""
@@ -186,13 +207,11 @@ if [ "${DETACH}" = true ] && [ "${COMMAND}" != start ]; then
     exit 1
 fi
 
-# Check environment (RUNNER_ENV)
-# if the env is not vaild, the default value is used
+# Check environments (the user's input)
+# if the env is not valid, the default value (${DEFAULT_ENV}) is used
 case $RUNNER_ENV in
 "" | --skip-build | -d | --detach | -v | --verbose | --file)
-    if [ "${COMMAND}" != stop ]; then
-        echo -e "${HEADER_WARN}No environment set, falling back to ${DEFAULT_ENV}"
-    fi
+    echo -e "${HEADER_WARN}No environment set, falling back to ${DEFAULT_ENV}"
     RUNNER_ENV=${DEFAULT_ENV}
     ;;
 *)
@@ -200,7 +219,7 @@ case $RUNNER_ENV in
     ;;
 esac
 
-# Load environment variables from .env.[mode] and .env.[mode].local (only loads in that environment)
+# Load .env.[mode] (only loads in that environment)
 if [ -f "${ENV_FILE}" ]; then
     if [ "${VERBOSE}" = true ]; then
         echo -e "${HEADER_INFO}loading environment variables from ${ENV_FILE}"
@@ -208,6 +227,7 @@ if [ -f "${ENV_FILE}" ]; then
     export $(echo $(cat "${ENV_FILE}" | sed 's/#.*//g' | xargs) | envsubst)
 fi
 
+# Load .env.[mode].local (only loads in that environment)
 if [ -f "${ENV_FILE}.local" ]; then
     if [ "${VERBOSE}" = true ]; then
         echo -e "${HEADER_INFO}loading environment variables from ${ENV_FILE}.local"
@@ -215,7 +235,7 @@ if [ -f "${ENV_FILE}.local" ]; then
     export $(echo $(cat "${ENV_FILE}.local" | sed 's/#.*//g' | xargs) | envsubst)
 fi
 
-# Show configuration (verbose)
+# Show configuration (verbose option)
 if [ "${VERBOSE}" = true ]; then
     echo -e "${HEADER_INFO}operation   = ${BLUE}${COMMAND}${OFF}"
 
@@ -228,8 +248,7 @@ if [ "${VERBOSE}" = true ]; then
     echo -e "${HEADER_INFO}detach      = ${COLOR}${DETACH}${OFF}"
 fi
 
-# Define some functions
-
+# Define some functions to run the scripts
 handle_error() {
     echo -e "${HEADER_ERROR}$1 failed"
     exit 1
@@ -263,7 +282,7 @@ update() {
     bash ${RUNNER_SCRIPT_DIR}runner_scripts_"${RUNNER_ENV}"/update.sh || handle_error "update"
 }
 
-# Actually run the scripts
+# Actually run the scripts, according to different environments
 case $COMMAND in
 start)
     if [ "${SKIP_BUILD}" = false ]; then
