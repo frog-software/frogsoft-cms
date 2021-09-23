@@ -3,8 +3,7 @@ if [ "${DETACH}" = true ]; then
     docker-compose \
         --file docker-compose-dev.yml \
         --env-file .env.dev \
-        --detach \
-        up || exit 1
+        up --detach || exit 1
 else
     docker-compose \
         --file docker-compose-dev.yml \
