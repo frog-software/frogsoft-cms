@@ -32,10 +32,6 @@ build/
 ### VS Code ###
 .vscode/
 
-.env
-.env.dev
-.env.prod
-
 *.err
 *.out
 *.pid
