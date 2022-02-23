@@ -1,3 +1,6 @@
+<script setup>
+import store from "../../store";
+</script>
 <template>
   <div class="login">
     <a-row
@@ -7,8 +10,8 @@
     >
       <a-col>
         <img
-            :width="300"
             :src="store.getters.config.logo"
+            :width="300"
         >
       </a-col>
     </a-row>
@@ -123,11 +126,11 @@
 
       <a-col span="4">
         <a-button
-            type="primary"
             :disabled="!email"
             :loading="btnCodeLoading"
-            @click="sendCode(email)"
             style="width: 100%"
+            type="primary"
+            @click="sendCode(email)"
         >
           发送验证码
         </a-button>
@@ -136,16 +139,16 @@
     <a-row
         align="middle"
         justify="center"
-        type="flex"
         style="padding-bottom: 8px;padding-top: 16px"
+        type="flex"
     >
       <a-col span="2">
         <a-button
-            type="primary"
-            :loading="btnRegisterLoading"
             :disabled="!(username&&password&&email&&code)"
-            @click="finishRegister"
+            :loading="btnRegisterLoading"
             style="width: 100%"
+            type="primary"
+            @click="finishRegister"
         >
           注册
         </a-button>
@@ -170,9 +173,8 @@
 </template>
 
 <script>
-import axios     from 'axios';
-import {message} from 'ant-design-vue';
-import store     from "../../store";
+import axios       from 'axios';
+import { message } from 'ant-design-vue';
 
 export default {
   name: 'Register',
@@ -194,13 +196,15 @@ export default {
      */
     sendCode(email) {
       this.btnCodeLoading = true;
-      axios.post('/v1/global/email', null, {params: {email}}).then(
-          () => {
-            message.success(`验证码已成功发送至${email}`);
-          },
-      ).finally(() => {
-        this.btnCodeLoading = false;
-      });
+      axios.post('/v1/global/email', null, { params: { email } })
+          .then(
+              () => {
+                message.success(`验证码已成功发送至${email}`);
+              },
+          )
+          .finally(() => {
+            this.btnCodeLoading = false;
+          });
     },
     /**
      * 完成注册任务
@@ -215,10 +219,11 @@ export default {
           password: this.password,
           email: this.email,
           code: this.code,
-        }).then(() => {
-          message.success('注册成功！');
-          this.$router.push({name: 'Login'});
-        });
+        })
+            .then(() => {
+              message.success('注册成功！');
+              this.$router.push({ name: 'Login' });
+            });
       }
       this.btnRegisterLoading = false;
     },

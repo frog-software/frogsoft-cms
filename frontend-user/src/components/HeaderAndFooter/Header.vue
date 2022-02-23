@@ -1,3 +1,7 @@
+<script setup>
+import HeaderUser from './HeaderUser.vue';
+import store      from '../../store';
+</script>
 <template>
   <div class="header">
     <a-row
@@ -8,8 +12,8 @@
       <a-col :span="5">
         <router-link to="/Home">
           <img
-              alt="网站页眉LOGO"
               :src="store.getters.config.headerDto.logo"
+              alt="网站页眉LOGO"
               style="max-height: 64px;max-width: 200px"
           >
         </router-link>
@@ -50,8 +54,6 @@
 </template>
 
 <script>
-import HeaderUser from './HeaderUser.vue';
-import store      from '../../store'
 
 export default {
   name: 'Header',

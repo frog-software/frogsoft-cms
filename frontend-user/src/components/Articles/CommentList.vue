@@ -1,3 +1,6 @@
+<script setup>
+import store from '../../store';
+</script>
 <template>
   <div>
     <!--新提交的评论-->
@@ -55,24 +58,24 @@
               <a-button
                   v-if="item.author.username===user.username"
                   :disabled="btnCommentSubmitting"
+                  style="font-size: 12px"
                   type="text"
                   @click="commentDelete(item.id)"
-                  style="font-size: 12px"
               >
                 删除评论
               </a-button>
               <a-button
+                  style="font-size: 12px"
                   type="text"
                   @click="store.commit('changeReplyTo',item.id)"
-                  style="font-size: 12px"
               >
                 回复评论
               </a-button>
               <a-button
                   v-if="replyTo===item.id"
-                  @click="store.commit('changeReplyTo',0)"
                   style="font-size: 12px"
                   type="text"
+                  @click="store.commit('changeReplyTo',0)"
               >
                 取消回复
               </a-button>
@@ -91,17 +94,16 @@
 </template>
 
 <script>
-import axios        from 'axios';
-import {mapGetters} from 'vuex';
-import {message}    from 'ant-design-vue';
-import store        from '../../store'
+import axios          from 'axios';
+import { mapGetters } from 'vuex';
+import { message }    from 'ant-design-vue';
 
 export default {
   name: 'CommentList',
   props: {
     parent: Number,
     pageSize: Number,
-    id: Number
+    id: Number,
   },
   data() {
     return {
@@ -134,31 +136,33 @@ export default {
      */
     commentSubmit(parent) {
       if (store.getters.loginStatus === false) {
-        message.error('登录后才能发表评论哦~')
-        return
+        message.error('登录后才能发表评论哦~');
+        return;
       }
-      let trueParent = parent
-      this.comments.forEach(item => {
+      let trueParent = parent;
+      this.comments.forEach((item) => {
         if (item.id === parent && item.parent != 0) {
-          trueParent = item.parent
-          message.info('评论层级太多啦~自动帮你回复到上一级了')
+          trueParent = item.parent;
+          message.info('评论层级太多啦~自动帮你回复到上一级了');
         }
-      })
+      });
       this.btnCommentSubmitting = true;
       const data                = {
         content: this.newCommentValue,
         parent: trueParent,
       };
-      axios.post(`/v1/articles/${this.id}/comments`, data).then(async () => {
-        await store.commit('updateComments', this.id);
-        this.newCommentValue = '';
-        message.success('评论发布成功');
-      }).finally(() => {
-        setTimeout(() => {
-          this.btnCommentSubmitting = false;
-          store.commit('changeReplyTo', 0);
-        }, 500);
-      });
+      axios.post(`/v1/articles/${this.id}/comments`, data)
+          .then(async () => {
+            await store.commit('updateComments', this.id);
+            this.newCommentValue = '';
+            message.success('评论发布成功');
+          })
+          .finally(() => {
+            setTimeout(() => {
+              this.btnCommentSubmitting = false;
+              store.commit('changeReplyTo', 0);
+            }, 500);
+          });
     },
     /**
      * 删除评论
@@ -170,11 +174,12 @@ export default {
         data: {
           id,
         },
-      }).then(async () => {
-        message.success('成功删除评论');
-        await store.commit('updateComments', this.id);
-        this.commentsLoading = false;
-      });
+      })
+          .then(async () => {
+            message.success('成功删除评论');
+            await store.commit('updateComments', this.id);
+            this.commentsLoading = false;
+          });
     },
   },
 };

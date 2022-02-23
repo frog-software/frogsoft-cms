@@ -1,8 +1,8 @@
 <template>
   <a-result
       status="404"
-      title="404"
       sub-title="对不起，你所访问的页面不存在！"
+      title="404"
   >
     <template #extra>
       <router-link :to="{name:'Home'}">

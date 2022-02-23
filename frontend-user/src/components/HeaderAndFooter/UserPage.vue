@@ -1,3 +1,8 @@
+<script setup>
+import store                from '../../store';
+import ArticleListFavorited from '../Articles/ArticleListFavorited.vue';
+import ArticleListCreated   from '../Articles/ArticleListCreated.vue';
+</script>
 <template>
   <a-spin :spinning="drawerLoading">
     <a-descriptions layout="vertical">
@@ -22,7 +27,7 @@
         {{ user.email }}
       </a-descriptions-item>
       <a-descriptions-item label="权限">
-        {{ user.is_admin ? "管理员" : "普通用户" }}
+        {{ user.is_admin ? '管理员' : '普通用户' }}
       </a-descriptions-item>
       <a-descriptions-item label="文章发布量">
         {{ statistics.publishArticlesNum }}
@@ -44,8 +49,8 @@
           tab="我创作的文章"
       >
         <ArticleListCreated
-            :username="store.getters.user.username"
             :page-size="4"
+            :username="store.getters.user.username"
         />
       </a-tab-pane>
       <a-tab-pane
@@ -53,8 +58,8 @@
           tab="收藏列表"
       >
         <ArticleListFavorited
-            :username="store.getters.user.username"
             :page-size="4"
+            :username="store.getters.user.username"
         />
       </a-tab-pane>
       <template #tabBarExtraContent>
@@ -76,9 +81,6 @@
 
 <script>
 import {mapGetters}         from 'vuex';
-import store                from '../../store';
-import ArticleListFavorited from '../Articles/ArticleListFavorited.vue';
-import ArticleListCreated   from "../Articles/ArticleListCreated.vue";
 
 export default {
   name: 'UserPage',

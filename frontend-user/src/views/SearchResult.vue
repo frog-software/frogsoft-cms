@@ -1,24 +1,22 @@
 <template>
-
   <a-card>
     <template #title>
       <a-input-search
           v-model:value="searchContent"
-          placeholder="请输入搜索内容"
           enter-button
+          placeholder="请输入搜索内容"
           size="large"
           @search="$router.push({name:'Search',query:{key:searchContent}})"
       />
     </template>
     <ArticleList
-        :search-content="keyWords"
         :page-size="8"
+        :search-content="keyWords"
     />
   </a-card>
 </template>
 
 <script>
-import axios       from 'axios';
 import ArticleList from '../components/Articles/ArticleList.vue';
 
 export default {
@@ -30,7 +28,7 @@ export default {
   data() {
     return {
       searchContent: '',
-      search: ''
+      search: '',
     };
   },
 

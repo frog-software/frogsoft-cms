@@ -35,8 +35,7 @@ export default {
     if (window.localStorage.getItem('username')) {
       store.commit('userLogin', window.localStorage.getItem('username'));
     }
-    store.commit('updateConfig')
-
+    store.commit('updateConfig');
   },
   mounted() {
     window.addEventListener('resize', this.onResize);

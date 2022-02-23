@@ -1,9 +1,14 @@
+<script setup>
+import Carousel      from '../components/HomeBody/Carousel.vue';
+import Announcements from '../components/HomeBody/Announcements.vue';
+import store         from '../store';
+</script>
 <template>
   <div class="body">
     <a-row
         align="middle"
         justify="center"
-        style="padding-top:10px;padding-bottom:10px;padding-right:0px;padding-left:0px;"
+        style="padding: 10px 0px;"
         type="flex"
     >
       <a-col span="23">
@@ -14,7 +19,7 @@
     <a-row
         align="middle"
         justify="center"
-        style="padding-top:10px;padding-bottom:20px;padding-right:0px;padding-left:0px;"
+        style="padding: 10px 0px 20px;"
         type="flex"
     >
       <a-col span="24">
@@ -23,8 +28,8 @@
             style="text-align: center"
         >
           <img
-              alt="网站 LOGO"
               :src="store.getters.config.logo"
+              alt="网站 LOGO"
               style="max-width: 300px;margin: 30px"
           >
           <a-input-search
@@ -33,8 +38,7 @@
               style="width:70%"
               @search="$router.push({ name: 'Search', query: { key: searchContent } })"
           />
-          <div style="text-align: left;font-size: 8px;margin:20px 20px;line-height: 8px">
-          </div>
+          <div style="text-align: left;font-size: 8px;margin:20px 20px;line-height: 8px"/>
         </a-card>
       </a-col>
     </a-row>
@@ -53,9 +57,6 @@
 </template>
 
 <script>
-import Carousel      from '../components/HomeBody/Carousel.vue';
-import Announcements from '../components/HomeBody/Announcements.vue';
-import store         from '../store'
 
 export default {
   name: 'Home',

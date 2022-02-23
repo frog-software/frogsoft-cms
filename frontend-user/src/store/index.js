@@ -1,6 +1,6 @@
-import {createStore} from 'vuex';
-import axios         from 'axios';
-import moment        from 'moment';
+import { createStore } from 'vuex';
+import axios           from 'axios';
+import moment          from 'moment';
 
 moment.locale('zh-cn');
 
@@ -52,7 +52,7 @@ const store         = createStore({
         parent: 123,
       },
     ],
-    config: {...defaultConfig},
+    config: { ...defaultConfig },
   },
   getters: {
     /**
@@ -99,15 +99,17 @@ const store         = createStore({
       return state.config;
     },
     statistics(state) {
-      return state.statistics
-    }
+      return state.statistics;
+    },
   },
   mutations: {
     tab(state, value) {
       const list = ['Home', 'Articles', 'Tools'];
       if (list.indexOf(value[0]) >= 0) {
         state.tab = Object.assign([], value);
-      } else state.tab = [];
+      } else {
+        state.tab = [];
+      }
     },
     drawerVisibility(state, value) {
       state.drawerVisibility = value;
@@ -124,26 +126,29 @@ const store         = createStore({
     userLogout(state) {
       localStorage.removeItem('username');
       localStorage.removeItem('token');
-      state.user             = {...defaultUser};
+      state.user             = { ...defaultUser };
       state.publishArticles  = [];
       state.favoriteArticles = [];
       state.drawerVisibility = false;
     },
     userUpdate(state) {
       state.drawerLoading = true;
-      axios.get(`/v1/users/${state.user.username}`).then((res) => {
-        state.user.email       = res.data.email;
-        state.user.avatar      = res.data.avatar || defaultUser.avatar;
-        state.user.is_admin    = res.data.roles.includes('ROLE_ADMIN');
-        state.user.roles       = res.data.roles
-        state.publishArticles  = res.data.publishArticles;
-        state.favoriteArticles = res.data.favoriteArticles;
-        state.statistics       = res.data.statistics;
-      }).catch(() => {
-        this.commit('userLogout');
-      }).finally(() => {
-        state.drawerLoading = false;
-      });
+      axios.get(`/v1/users/${state.user.username}`)
+        .then((res) => {
+          state.user.email       = res.data.email;
+          state.user.avatar      = res.data.avatar || defaultUser.avatar;
+          state.user.is_admin    = res.data.roles.includes('ROLE_ADMIN');
+          state.user.roles       = res.data.roles;
+          state.publishArticles  = res.data.publishArticles;
+          state.favoriteArticles = res.data.favoriteArticles;
+          state.statistics       = res.data.statistics;
+        })
+        .catch(() => {
+          this.commit('userLogout');
+        })
+        .finally(() => {
+          state.drawerLoading = false;
+        });
     },
     changeMusic(state, id) {
       state.music = id;
@@ -153,29 +158,38 @@ const store         = createStore({
     },
     updateComments(state, id) {
       state.commentsLoading = true;
-      return axios.get(`/v1/articles/${id}/comments`).then((res) => {
-        state.comments = res.data?._embedded?.commentDtoList || [];
-        state.comments.forEach((item) => {
-          item.time = moment(item.time).fromNow();
+      return axios.get(`/v1/articles/${id}/comments`)
+        .then((res) => {
+          state.comments = res.data?._embedded?.commentDtoList || [];
+          state.comments.forEach((item) => {
+            item.time = moment(item.time)
+              .fromNow();
+          });
+        })
+        .finally(() => {
+          state.commentsLoading = false;
         });
-      }).finally(() => {
-        state.commentsLoading = false;
-      });
     },
     updateConfig(state) {
-      return axios.get('/v1/global/config/frontend-user').then((res) => {
-        state.config = {...defaultConfig};
-        Object(res.data)?.keys?.forEach((item) => {
-          if (typeof (res.data[item]) === 'object') {
-            Object(res.data[item])?.keys?.forEach((jtem) => {
-              state.config[item][jtem] = res.data[item][jtem];
+      return axios.get('/v1/global/config/frontend-user')
+        .then((res) => {
+          state.config = { ...defaultConfig };
+          Object(res.data)
+            ?.keys
+            ?.forEach((item) => {
+              if (typeof (res.data[item]) === 'object') {
+                Object(res.data[item])
+                  ?.keys
+                  ?.forEach((jtem) => {
+                    state.config[item][jtem] = res.data[item][jtem];
+                  });
+              } else if (res.data[item]) state.config[item] = res.data[item];
             });
-          } else if (res.data[item]) state.config[item] = res.data[item];
+        })
+        .finally(() => {
+          document.title                      = state.config.title;
+          document.getElementById('qwq').href = state.config.favicon;
         });
-      }).finally(() => {
-        document.title                      = state.config.title;
-        document.getElementById('qwq').href = state.config.favicon;
-      });
     },
   },
   actions: {},

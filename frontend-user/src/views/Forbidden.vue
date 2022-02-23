@@ -1,8 +1,8 @@
 <template>
   <a-result
       status="403"
-      title="403"
       sub-title="对不起，你没有访问该页面的权限！"
+      title="403"
   >
     <template #extra>
       <router-link :to="{name:'Home'}">

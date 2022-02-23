@@ -1,20 +1,23 @@
+<script setup>
+import {LeftCircleOutlined, RightCircleOutlined} from '@ant-design/icons-vue';
+</script>
 <template>
   <div class="my_carousel">
     <a-carousel
         ref="zmd"
-        arrows
-        :autoplay-speed="6000"
         :autoplay="true"
+        :autoplay-speed="6000"
         :slide-to-scroll="current"
+        arrows
     >
-      <template v-slot:prevArrow>
+      <template #prevArrow>
         <LeftCircleOutlined
             class="custom-slick-arrow"
             style="left: 10px;"
         />
       </template>
 
-      <template v-slot:nextArrow>
+      <template #nextArrow>
         <RightCircleOutlined
             class="custom-slick-arrow"
             style="right: 10px"
@@ -24,8 +27,8 @@
       <router-link
           v-for="item in carousel"
           :key="item.id"
-          style="touch-action: none"
           :to="{name:'ArticleDetails', params:{id:item.id.toString()}}"
+          style="touch-action: none"
       >
         <img
             :alt="item.id"
@@ -38,9 +41,8 @@
 </template>
 
 <script>
-import axios                                     from 'axios';
-import {message}                                 from 'ant-design-vue';
-import {LeftCircleOutlined, RightCircleOutlined} from '@ant-design/icons-vue';
+import axios from 'axios';
+import { message } from 'ant-design-vue';
 
 export default {
   name: 'Carousel',
@@ -55,26 +57,33 @@ export default {
     };
   },
   created() {
-    this.carousel = []
-    axios.get('/v1/home/daily').then((res) => {
-      this.carousel.push({id: res.data.id, url: res.data.cover})
-    }).catch((err) => {
-      if (err.response.status === 404) {
-        message.destroy()
-      }
-    })
-    axios.get('/v1/home/recommendations').then((res) => {
-      res.data?._embedded?.articleDtoList?.forEach(item => {
-        this.carousel.push({
-          id: item.id,
-          url: item.cover
+    this.carousel = [];
+    axios.get('/v1/home/daily')
+        .then((res) => {
+          this.carousel.push({
+            id: res.data.id,
+            url: res.data.cover
+          });
         })
-      })
-    }).catch((err) => {
-      if (err.response.status === 404) {
-        message.destroy()
-      }
-    })
+        .catch((err) => {
+          if (err.response.status === 404) {
+            message.destroy();
+          }
+        });
+    axios.get('/v1/home/recommendations')
+        .then((res) => {
+          res.data?._embedded?.articleDtoList?.forEach((item) => {
+            this.carousel.push({
+              id: item.id,
+              url: item.cover,
+            });
+          });
+        })
+        .catch((err) => {
+          if (err.response.status === 404) {
+            message.destroy();
+          }
+        });
   },
 };
 </script>

@@ -97,8 +97,8 @@
 </template>
 
 <script>
-import axios     from 'axios';
-import {message} from 'ant-design-vue';
+import axios       from 'axios';
+import { message } from 'ant-design-vue';
 
 export default {
   name: 'Forget',
@@ -169,16 +169,17 @@ export default {
      */
     async sendCode() {
       let result = 0;
-      await axios.post(`/v1/auth/forget`, {}, {
+      await axios.post('/v1/auth/forget', {}, {
         params: {
-          username: this.username
-        }
-      }).then(
-          (res) => {
-            this.email = res.data.email
-            result     = 1
-          },
-      );
+          username: this.username,
+        },
+      })
+          .then(
+              (res) => {
+                this.email = res.data.email;
+                result     = 1;
+              },
+          );
       return result;
     },
     /**
@@ -190,9 +191,10 @@ export default {
         username: this.username,
         varyficationcode: this.code,
         newpassword: this.password,
-      }).then(() => {
-        result = 1
       })
+          .then(() => {
+            result = 1;
+          });
       return result;
     },
   },
