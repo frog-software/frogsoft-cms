@@ -1,4 +1,4 @@
-<srcipt setup>
+<script setup>
 import store       from '../../store';
 import {DownOutlined, UploadOutlined} from '@ant-design/icons-vue';
 function emailAvailable(email) {

@@ -1,7 +1,3 @@
-<script setup>
-import ArticleList from '../../components/Articles/ArticleList.vue';
-</script>
-
 <template>
   <div class="body">
     <a-spin
