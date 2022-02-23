@@ -1,5 +1,6 @@
 <script setup>
-import store from "../../store";</script>
+import store from '../../store';
+</script>
 <template>
   <div class="footer">
     <a-row
@@ -9,8 +10,8 @@ import store from "../../store";</script>
     >
       <a-col span="3">
         <img
-            alt="网站页脚Footer"
             :src="store.getters.config.footerDto.logo"
+            alt="网站页脚Footer"
             width="240"
         >
       </a-col>
@@ -18,21 +19,25 @@ import store from "../../store";</script>
         <h4 style="color: white">
           相关链接：
           <a-button
-              type="link"
               href="https://github.com/frog-software"
+              type="link"
           >
             Github - frog-software
           </a-button>
           <a-button
-              type="link"
               href="https://github.com/frog-software/frogsoft-cms"
+              type="link"
           >
             Github - Frogsoft CMS
           </a-button>
         </h4>
         <h4>
           Copyrights © {{ new Date().getFullYear() }}
-          <a-button type="link" herf="https://github.com/frog-software" style="padding: 0">
+          <a-button
+              herf="https://github.com/frog-software"
+              style="padding: 0"
+              type="link"
+          >
             Frogsoft
           </a-button>
           . All Rights Reserved.

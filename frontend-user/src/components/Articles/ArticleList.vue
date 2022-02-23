@@ -3,12 +3,19 @@ import {CaretUpOutlined, CaretDownOutlined} from "@ant-design/icons-vue";
 </script>
 <template>
   <div>
-    <a-row justify="end" align="middle" :gutter="8">
+    <a-row
+        :gutter="8"
+        align="middle"
+        justify="end"
+    >
       <a-col>
         排序方法
       </a-col>
       <a-col>
-        <a-radio-group v-model:value="sortBy" @change="getCurrentPageData(1)">
+        <a-radio-group
+            v-model:value="sortBy"
+            @change="getCurrentPageData(1)"
+        >
           <a-radio-button value="publishDate">
             更新时间
           </a-radio-button>
@@ -21,7 +28,10 @@ import {CaretUpOutlined, CaretDownOutlined} from "@ant-design/icons-vue";
         </a-radio-group>
       </a-col>
       <a-col>
-        <a-radio-group v-model:value="order" @change="getCurrentPageData(1)">
+        <a-radio-group
+            v-model:value="order"
+            @change="getCurrentPageData(1)"
+        >
           <a-radio-button value="DESC">
             <CaretUpOutlined/>
           </a-radio-button>
@@ -33,8 +43,8 @@ import {CaretUpOutlined, CaretDownOutlined} from "@ant-design/icons-vue";
     </a-row>
     <a-list
         :data-source="listSource"
-        :pagination="pagination"
         :loading="{spinning: loading, delay: 200}"
+        :pagination="pagination"
         item-layout="vertical"
     >
       <template #renderItem="{item}">
@@ -76,7 +86,7 @@ export default {
       currentPage: 1,
       totalElements: 0,
       sortBy: 'publishDate',
-      order: 'DESC'
+      order: 'DESC',
     };
   },
   computed: {
@@ -91,36 +101,38 @@ export default {
       };
     },
     queryParmas() {
-      let result = {
+      const result = {
         page: this.currentPage - 1,
         size: this.pageSize,
         sortBy: this.sortBy,
-        order: this.order
-      }
-      if (this.searchContent) result.search = this.searchContent
-      return result
-    }
-  },
-  created() {
-    this.getCurrentPageData(1)
+        order: this.order,
+      };
+      if (this.searchContent) result.search = this.searchContent;
+      return result;
+    },
   },
   watch: {
     searchContent() {
-      this.getCurrentPageData(1)
-    }
+      this.getCurrentPageData(1);
+    },
+  },
+  created() {
+    this.getCurrentPageData(1);
   },
   methods: {
     getCurrentPageData(page) {
-      this.currentPage = page
+      this.currentPage = page;
       this.loading     = true;
-      axios.get('/v1/articles', {params: this.queryParmas}).then((res) => {
-        this.listSource    = res.data._embedded?.articleDtoList || [];
-        this.totalElements = res.data.page.totalElements
-      }).finally(
-          () => {
-            this.loading = false;
-          },
-      );
+      axios.get('/v1/articles', { params: this.queryParmas })
+          .then((res) => {
+            this.listSource    = res.data._embedded?.articleDtoList || [];
+            this.totalElements = res.data.page.totalElements;
+          })
+          .finally(
+              () => {
+                this.loading = false;
+              },
+          );
     },
 
   },

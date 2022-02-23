@@ -1,7 +1,7 @@
 <script setup>
 import store                from '../../store';
 import ArticleListFavorited from '../Articles/ArticleListFavorited.vue';
-import ArticleListCreated   from "../Articles/ArticleListCreated.vue";
+import ArticleListCreated   from '../Articles/ArticleListCreated.vue';
 </script>
 <template>
   <a-spin :spinning="drawerLoading">
@@ -27,7 +27,7 @@ import ArticleListCreated   from "../Articles/ArticleListCreated.vue";
         {{ user.email }}
       </a-descriptions-item>
       <a-descriptions-item label="权限">
-        {{ user.is_admin ? "管理员" : "普通用户" }}
+        {{ user.is_admin ? '管理员' : '普通用户' }}
       </a-descriptions-item>
       <a-descriptions-item label="文章发布量">
         {{ statistics.publishArticlesNum }}
@@ -49,8 +49,8 @@ import ArticleListCreated   from "../Articles/ArticleListCreated.vue";
           tab="我创作的文章"
       >
         <ArticleListCreated
-            :username="store.getters.user.username"
             :page-size="4"
+            :username="store.getters.user.username"
         />
       </a-tab-pane>
       <a-tab-pane
@@ -58,8 +58,8 @@ import ArticleListCreated   from "../Articles/ArticleListCreated.vue";
           tab="收藏列表"
       >
         <ArticleListFavorited
-            :username="store.getters.user.username"
             :page-size="4"
+            :username="store.getters.user.username"
         />
       </a-tab-pane>
       <template #tabBarExtraContent>

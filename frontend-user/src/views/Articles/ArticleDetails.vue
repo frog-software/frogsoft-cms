@@ -1,8 +1,10 @@
 <script setup>
 import {EyeOutlined, LikeOutlined, StarOutlined} from '@ant-design/icons-vue';
-import CommentList                               from "../../components/Articles/CommentList.vue";
-import MdEditor                                  from 'md-editor-v3';
-import 'md-editor-v3/lib/style.css';</script>
+import CommentList from '../../components/Articles/CommentList.vue';
+import MdEditor    from 'md-editor-v3';
+import 'md-editor-v3/lib/style.css';
+import store       from '../../store';
+</script>
 <template>
   <a-spin
       v-if="hasDeleted===false"
@@ -22,7 +24,10 @@ import 'md-editor-v3/lib/style.css';</script>
             <h1> {{ article.title }} </h1>
           </template>
           <!--TODO 删除接口检验-->
-          <template #extra v-if="me.is_author">
+          <template
+              v-if="me.is_author"
+              #extra
+          >
             <a-button
                 :loading="btnDeleteLoading"
                 type="primary"
@@ -35,7 +40,6 @@ import 'md-editor-v3/lib/style.css';</script>
                 编辑
               </a-button>
             </router-link>
-
           </template>
 
           <template #cover>
@@ -52,8 +56,8 @@ import 'md-editor-v3/lib/style.css';</script>
         <a-card>
           <MdEditor
               v-model="article.content"
-              :previewOnly="true"
-          ></MdEditor>
+              :preview-only="true"
+          />
         </a-card>
 
         <!--评论区-->
@@ -77,7 +81,10 @@ import 'md-editor-v3/lib/style.css';</script>
       <!--文章的附加信息-->
       <a-col span="7">
         <!-- 文章的附加信息-->
-        <a-card style="margin-top: 16px" title="文章信息">
+        <a-card
+            style="margin-top: 16px"
+            title="文章信息"
+        >
           <router-link
               :to="{name:'UserDetails',params:{username: article?.author?.username}}"
           >
@@ -102,27 +109,29 @@ import 'md-editor-v3/lib/style.css';</script>
             <LikeOutlined/>
             点赞量：{{ article.likes }}
           </h3>
-
         </a-card>
-        <a-card style="margin-top: 16px" title="文章操作">
+        <a-card
+            style="margin-top: 16px"
+            title="文章操作"
+        >
           <a-button
-              style="margin-bottom:8px"
               v-if="store.getters.loginStatus"
               :loading="btnFavoriteLoading"
+              style="margin-bottom:8px"
               type="primary"
               @click="btnFavoriteClick"
           >
-            {{ me.favorited ? "取消" : "" }}收藏
+            {{ me.favorited ? '取消' : '' }}收藏
           </a-button>
           <br>
           <a-button
-              style="margin-top:8px"
               v-if="store.getters.loginStatus"
               :loading="btnLikeLoading"
+              style="margin-top:8px"
               type="primary"
               @click="btnLikeClick"
           >
-            {{ me.liked ? "取消" : "" }}点赞
+            {{ me.liked ? '取消' : '' }}点赞
           </a-button>
         </a-card>
       </a-col>
@@ -143,19 +152,19 @@ import 'md-editor-v3/lib/style.css';</script>
 </template>
 
 <script>
-import axios     from 'axios';
-import {message} from 'ant-design-vue';
-import store     from '../../store';
+import axios       from 'axios';
+import { message } from 'ant-design-vue';
 
 export default {
   name: 'ArticleDetails',
   beforeRouteEnter(to, from, next) {
     if (+to.params.id % 1 === 0) {
-      next()
-    } else
-      next({name: 'NotFound'});
+      next();
+    } else {
+      next({ name: 'NotFound' });
+    }
   },
-  props: {id: String},
+  props: { id: String },
   data() {
     return {
       spinning: true,
@@ -168,7 +177,7 @@ export default {
         author: {
           username: 'username',
           email: 'edialect@edialect.top',
-          is_admin: false
+          is_admin: false,
         },
         likes: 0,
         views: 0,
@@ -177,9 +186,9 @@ export default {
         description: 'description',
         content: 'content',
         cover: 'http://dummyimage.com/160x90',
-        status: "NORMAL",
-        publishDate: "2021-09-01 00:00:00",
-        updateDate: "2021-09-01 00:00:00",
+        status: 'NORMAL',
+        publishDate: '2021-09-01 00:00:00',
+        updateDate: '2021-09-01 00:00:00',
       },
       me: {
         liked: false,
@@ -195,19 +204,22 @@ export default {
     },
   },
   created() {
-    axios.get(`/v1/articles/${this.id}`).then(async (res) => {
-      this.article                 = {...res.data}
-      this.article.author.is_admin = res.data.author.roles.includes("ROLE_ADMIN")
-      this.me.is_author            = res.data.author.username === store.getters.user.username
-      this.me.liked                = res.data.liked || false
-      this.me.favorited            = res.data.favorited
-      this.me.authored             = res.data.authored
-      store.commit('updateComments', this.id);
-    }).catch((err) => {
-      this.$router.replace({name: 'NotFound'});
-    }).finally(() => {
-      this.spinning = false;
-    });
+    axios.get(`/v1/articles/${this.id}`)
+        .then(async (res) => {
+          this.article                 = { ...res.data };
+          this.article.author.is_admin = res.data.author.roles.includes('ROLE_ADMIN');
+          this.me.is_author            = res.data.author.username === store.getters.user.username;
+          this.me.liked                = res.data.liked || false;
+          this.me.favorited            = res.data.favorited;
+          this.me.authored             = res.data.authored;
+          store.commit('updateComments', this.id);
+        })
+        .catch((err) => {
+          this.$router.replace({ name: 'NotFound' });
+        })
+        .finally(() => {
+          this.spinning = false;
+        });
   },
   methods: {
     /**
@@ -216,21 +228,23 @@ export default {
     btnLikeClick() {
       this.btnLikeLoading = true;
       if (this.me.liked) {
-        axios.delete(`/v1/articles/${this.id}/like`).then(() => {
-          this.me.liked = false;
-          setTimeout(() => {
-            this.article.likes -= 1;
-            this.btnLikeLoading = false;
-          }, 500);
-        });
+        axios.delete(`/v1/articles/${this.id}/like`)
+            .then(() => {
+              this.me.liked = false;
+              setTimeout(() => {
+                this.article.likes -= 1;
+                this.btnLikeLoading = false;
+              }, 500);
+            });
       } else {
-        axios.post(`/v1/articles/${this.id}/like`).then(() => {
-          this.me.liked = true;
-          setTimeout(() => {
-            this.article.likes += 1;
-            this.btnLikeLoading = false;
-          }, 500);
-        });
+        axios.post(`/v1/articles/${this.id}/like`)
+            .then(() => {
+              this.me.liked = true;
+              setTimeout(() => {
+                this.article.likes += 1;
+                this.btnLikeLoading = false;
+              }, 500);
+            });
       }
     },
     /**
@@ -239,21 +253,23 @@ export default {
     btnFavoriteClick() {
       this.btnFavoriteLoading = true;
       if (this.me.favorited) {
-        axios.delete(`/v1/articles/${this.id}/favor`).then(() => {
-          this.me.favorited = false;
-          setTimeout(() => {
-            this.article.favorites -= 1
-            this.btnFavoriteLoading = false;
-          }, 500);
-        });
+        axios.delete(`/v1/articles/${this.id}/favor`)
+            .then(() => {
+              this.me.favorited = false;
+              setTimeout(() => {
+                this.article.favorites -= 1;
+                this.btnFavoriteLoading = false;
+              }, 500);
+            });
       } else {
-        axios.post(`/v1/articles/${this.id}/favor`).then(() => {
-          this.me.favorited = true;
-          setTimeout(() => {
-            this.article.favorites += 1
-            this.btnFavoriteLoading = false;
-          }, 500);
-        });
+        axios.post(`/v1/articles/${this.id}/favor`)
+            .then(() => {
+              this.me.favorited = true;
+              setTimeout(() => {
+                this.article.favorites += 1;
+                this.btnFavoriteLoading = false;
+              }, 500);
+            });
       }
     },
     /**
@@ -261,13 +277,14 @@ export default {
      */
     deleteArticle() {
       this.btnDeleteLoading = true;
-      axios.delete(`/v1/articles/${this.id}`).finally(() => {
-        // axios.delete('/v1http://127.0.0.1:4523/mock/404238/articles/' + this.id).finally(() => {
-        setTimeout(() => {
-          this.btnDeleteLoading = false;
-          this.hasDeleted       = true;
-        }, 500);
-      });
+      axios.delete(`/v1/articles/${this.id}`)
+          .finally(() => {
+            // axios.delete('/v1http://127.0.0.1:4523/mock/404238/articles/' + this.id).finally(() => {
+            setTimeout(() => {
+              this.btnDeleteLoading = false;
+              this.hasDeleted       = true;
+            }, 500);
+          });
     },
   },
 };

@@ -2,8 +2,8 @@
   <div>
     <a-list
         :data-source="listSource"
-        :pagination="pagination"
         :loading="{spinning: loading, delay: 200}"
+        :pagination="pagination"
         item-layout="vertical"
     >
       <template #renderItem="{item}">
@@ -31,13 +31,12 @@
 </template>
 <script>
 import axios from 'axios';
-import store from "../../store";
 
 export default {
   name: 'ArticleListCreated',
   props: {
     pageSize: Number,
-    username: String
+    username: String,
   },
   data() {
     return {
@@ -61,30 +60,32 @@ export default {
     queryParmas() {
       return {
         page: this.currentPage - 1,
-        size: this.pageSize
-      }
-    }
-  },
-  created() {
-    this.getCurrentPageData(1)
+        size: this.pageSize,
+      };
+    },
   },
   watch: {
     searchContent() {
-      this.getCurrentPageData(1)
-    }
+      this.getCurrentPageData(1);
+    },
+  },
+  created() {
+    this.getCurrentPageData(1);
   },
   methods: {
     getCurrentPageData(page) {
-      this.currentPage = page
+      this.currentPage = page;
       this.loading     = true;
-      axios.get(`/v1/users/${this.username}/favors`, {params: this.queryParmas}).then((res) => {
-        this.listSource    = res.data._embedded?.articleDtoList || [];
-        this.totalElements = res.data.page.totalElements
-      }).finally(
-          () => {
-            this.loading = false;
-          },
-      );
+      axios.get(`/v1/users/${this.username}/favors`, { params: this.queryParmas })
+          .then((res) => {
+            this.listSource    = res.data._embedded?.articleDtoList || [];
+            this.totalElements = res.data.page.totalElements;
+          })
+          .finally(
+              () => {
+                this.loading = false;
+              },
+          );
     },
 
   },

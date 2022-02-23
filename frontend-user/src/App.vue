@@ -27,16 +27,16 @@ import store from './store';
 export default {
   beforeCreate() {
     document.addEventListener('DOMContentLoaded', () => {
-      const width = document.documentElement.clientWidth;
-      document.body.style.zoom = `${Number(width / 12).toString()}%`;
+      const width              = document.documentElement.clientWidth;
+      document.body.style.zoom = `${Number(width / 12)
+          .toString()}%`;
     });
   },
   created() {
     if (window.localStorage.getItem('username')) {
       store.commit('userLogin', window.localStorage.getItem('username'));
     }
-    store.commit('updateConfig')
-
+    store.commit('updateConfig');
   },
   mounted() {
     window.addEventListener('resize', this.onResize);
@@ -48,8 +48,9 @@ export default {
   methods: {
     onResize() {
       setTimeout(() => {
-        const width = document.documentElement.clientWidth;
-        document.body.style.zoom = `${Number(width / 12).toString()}%`;
+        const width              = document.documentElement.clientWidth;
+        document.body.style.zoom = `${Number(width / 12)
+            .toString()}%`;
       });
     },
   },

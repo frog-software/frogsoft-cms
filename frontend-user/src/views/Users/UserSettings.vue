@@ -54,7 +54,6 @@ function emailAvailable(email) {
             />
           </a-form-item>
 
-
           <a-form-item :wrapper-col="{ span: 24, offset: 5 }">
             <a-button
                 v-if="!editing"
@@ -243,11 +242,16 @@ function emailAvailable(email) {
 </template>
 
 <script>
-import moment    from 'moment';
+import moment      from 'moment';
 import 'moment/locale/zh-cn';
-import axios     from 'axios';
-import {message} from 'ant-design-vue';
-import store     from '../../store';
+import axios       from 'axios';
+import { message } from 'ant-design-vue';
+import store       from '../../store';
+
+function emailAvailable(email) {
+  const regex = /^[A-Za-z0-9\u4e00-\u9fa5]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/;
+  return !regex.test(email);
+}
 
 export default {
   name: 'UserSettings',
@@ -272,12 +276,12 @@ export default {
 
       // ui需要用到的变量
       labelCol: {
-        xs: {span: 24},
-        sm: {span: 7},
+        xs: { span: 24 },
+        sm: { span: 7 },
       },
       wrapperCol: {
-        xs: {span: 24},
-        sm: {span: 12},
+        xs: { span: 24 },
+        sm: { span: 12 },
       },
 
       btnCodeLoading: false,
@@ -291,7 +295,7 @@ export default {
      * @returns {number} 资料完成度百分比
      */
     percent() {
-      let now = 3.0;
+      const now = 3.0;
       return parseInt((now * 100) / 8, 10);
     },
     currentUsername() {
@@ -301,15 +305,15 @@ export default {
   },
   watch: {
     'store.getters.user': function () {
-      this.user = {...store.getters.user};
+      this.user = { ...store.getters.user };
     },
   },
   created() {
     if (!store.getters.loginStatus) {
-      message.error('请先登录')
-      this.$router.push({name: 'Login'})
+      message.error('请先登录');
+      this.$router.push({ name: 'Login' });
     }
-    this.user = {...store.getters.user};
+    this.user = { ...store.getters.user };
   },
   methods: {
     /**
@@ -321,21 +325,24 @@ export default {
         axios.put(`/v1/users/${this.user.username}/password`, {
           oldPassword: this.oldPassword,
           newPassword: this.newPassword,
-        }).then(() => {
-          message.success('更改密码成功');
-        }).catch((err) => {
-          switch (err.response.status) {
-            case 401: {
-              message.error('原密码错误！');
-              break;
-            }
-            default: {
-              break;
-            }
-          }
-        }).finally(() => {
-          this.btnPasswordLoading = false;
-        });
+        })
+            .then(() => {
+              message.success('更改密码成功');
+            })
+            .catch((err) => {
+              switch (err.response.status) {
+                case 401: {
+                  message.error('原密码错误！');
+                  break;
+                }
+                default: {
+                  break;
+                }
+              }
+            })
+            .finally(() => {
+              this.btnPasswordLoading = false;
+            });
       } else {
         message.error('两次输入的密码不一致');
       }
@@ -345,15 +352,18 @@ export default {
      */
     sendCode(email) {
       this.btnCodeLoading = true;
-      axios.post('/v1/global/email', null, {params: {email}}).then(
-          () => {
-            message.success(`验证码已成功发送至${email}`);
-          },
-      ).catch(() => {
-        message.error('发送失败！');
-      }).finally(() => {
-        this.btnCodeLoading = false;
-      });
+      axios.post('/v1/global/email', null, { params: { email } })
+          .then(
+              () => {
+                message.success(`验证码已成功发送至${email}`);
+              },
+          )
+          .catch(() => {
+            message.error('发送失败！');
+          })
+          .finally(() => {
+            this.btnCodeLoading = false;
+          });
     },
     /**
      * 修改邮箱按钮
@@ -363,27 +373,30 @@ export default {
       axios.put(`/v1/users/${this.user.username}/email`, {
         newemail: this.newEmail,
         varyficationcode: this.emailCode,
-      }).then(() => {
-        store.commit('userUpdate');
-        message.success('修改成功！');
-      }).finally(() => {
-        this.btnEmailLoading = false;
-      });
+      })
+          .then(() => {
+            store.commit('userUpdate');
+            message.success('修改成功！');
+          })
+          .finally(() => {
+            this.btnEmailLoading = false;
+          });
     },
     /**
      * 更新用户信息
      * @return {Promise<void>}
      */
     async updateUser() {
-      return axios.put(`/v1/users/${store.getters.user.username}`, this.user).then((res) => {
-        message.success('修改成功！');
-        if (this.user.username !== store.getters.user.username) {
-          store.commit('userLogout');
-          this.$router.push({name: "Login"})
-        } else {
-          store.commit('userUpdate')
-        }
-      });
+      return axios.put(`/v1/users/${store.getters.user.username}`, this.user)
+          .then((res) => {
+            message.success('修改成功！');
+            if (this.user.username !== store.getters.user.username) {
+              store.commit('userLogout');
+              this.$router.push({ name: 'Login' });
+            } else {
+              store.commit('userUpdate');
+            }
+          });
     },
     /**
      * 上传图片
@@ -396,11 +409,12 @@ export default {
         url: '/v1/global/files',
         method: 'post',
         data,
-        headers: {'Content-Type': 'multipart/form-data'},
-      }).then((res) => {
-        this.user.avatar = res.data.uri;
-        message.success('成功上传啦~');
-      });
+        headers: { 'Content-Type': 'multipart/form-data' },
+      })
+          .then((res) => {
+            this.user.avatar = res.data.uri;
+            message.success('成功上传啦~');
+          });
     },
 
     /**

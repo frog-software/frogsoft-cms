@@ -1,6 +1,5 @@
 <script setup>
-import ArticleList from '../../components/Articles/ArticleList.vue';
-</script>
+import ArticleList from '../../components/Articles/ArticleList.vue';</script>
 
 <template>
   <div class="body">
@@ -22,7 +21,7 @@ export default {
     return {
       spinning: false,
     };
-  }
+  },
 };
 </script>
 

@@ -9,8 +9,8 @@ import store from '../../store';
     >
       <a-col>
         <img
-            alt="网站主LOGO"
             :src="store.getters.config.logo"
+            alt="网站主LOGO"
             style="width: 300px;"
         >
       </a-col>
@@ -95,9 +95,8 @@ import store from '../../store';
 </template>
 
 <script>
-import axios     from 'axios';
-import {message} from 'ant-design-vue';
-
+import axios       from 'axios';
+import { message } from 'ant-design-vue';
 
 export default {
   name: 'Login',
@@ -112,12 +111,13 @@ export default {
       axios.post('/v1/auth/login', {
         username: this.username,
         password: this.password,
-      }).then((res) => {
-        store.commit('userLogin', res.data.username);
-        localStorage.setItem('token', res.data.token);
-        message.success('登录成功');
-        this.$router.push({name: 'Home'});
-      });
+      })
+          .then((res) => {
+            store.commit('userLogin', res.data.username);
+            localStorage.setItem('token', res.data.token);
+            message.success('登录成功');
+            this.$router.push({ name: 'Home' });
+          });
     },
   },
 };

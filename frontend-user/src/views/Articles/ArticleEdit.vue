@@ -1,7 +1,8 @@
 <script setup>
-import MdEditor         from 'md-editor-v3';
+import MdEditor from 'md-editor-v3';
 import 'md-editor-v3/lib/style.css';
-import {UploadOutlined} from "@ant-design/icons-vue";</script>
+import {UploadOutlined} from "@ant-design/icons-vue";
+</script>
 <template>
   <div
       v-show="isAuthor"
@@ -96,7 +97,6 @@ import {UploadOutlined} from "@ant-design/icons-vue";</script>
         <h3> 文章状态</h3>
       </a-col>
       <a-col span="3">
-
         <a-switch v-model:checked="switchChecked"/>
       </a-col>
       <a-col span="9">
@@ -113,10 +113,10 @@ import {UploadOutlined} from "@ant-design/icons-vue";</script>
       <!--      TODO:本地存储-->
       <MdEditor
           v-model="article.content"
-          :toolbarsExclude="['htmlPreview', 'github']"
-          editorClass="width:100%"
+          :toolbars-exclude="['htmlPreview', 'github']"
+          editor-class="width:100%"
           style="width: 100%"
-          v-on:onUploadImg="onUploadImg"
+          @onUploadImg="onUploadImg"
       />
     </a-row>
 
@@ -131,24 +131,28 @@ import {UploadOutlined} from "@ant-design/icons-vue";</script>
           type="primary"
           @click="id?updateArticle():createArticle()"
       >
-        {{ id ? "更新文章" : "创建文章" }}
+        {{ id ? '更新文章' : '创建文章' }}
       </a-button>
     </a-row>
   </div>
 </template>
 
 <script>
-import axios     from 'axios'
-import {message} from 'ant-design-vue';
-import store     from "../../store";
+import axios       from 'axios';
+import { message } from 'ant-design-vue';
+import store       from '../../store';
 
 export default {
   name: 'ArticleEdit',
 
   beforeRouteEnter(to, from, next) {
-    if (to.name === 'ArticleCreate') next();
-    else if (to.params.id % 1 === 0) next();
-    else next({name: 'NotFound'});
+    if (to.name === 'ArticleCreate') {
+      next();
+    } else if (to.params.id % 1 === 0) {
+      next();
+    } else {
+      next({ name: 'NotFound' });
+    }
   },
   // props: { articleID: String },
   data() {
@@ -159,12 +163,12 @@ export default {
         description: '',
         content: '',
         cover: 'http://dummyimage.com/400x300',
-        status: 'NORMAL'
+        status: 'NORMAL',
       },
       buttonContent: '创建文章',
       btnArticleLoading: false,
       btnCoverLoading: false,
-      isAuthor: false
+      isAuthor: false,
     };
   },
   computed: {
@@ -177,27 +181,30 @@ export default {
     },
     switchChecked: {
       get() {
-        return this.article.status === "NORMAL"
+        return this.article.status === 'NORMAL';
       },
       set(value) {
         if (value) {
-          this.article.status = "NORMAL"
+          this.article.status = 'NORMAL';
         } else {
-          this.article.status = "BLOCKED"
+          this.article.status = 'BLOCKED';
         }
-      }
-    }
+      },
+    },
   },
 
   watch: {
     $router() {
       this.getArticleDetails();
-    }
+    },
   },
 
   created() {
-    if (this.$route.name === 'ArticleCreate') this.isAuthor = true;
-    else this.getArticleDetails();
+    if (this.$route.name === 'ArticleCreate') {
+      this.isAuthor = true;
+    } else {
+      this.getArticleDetails();
+    }
   },
 
   methods: {
@@ -206,12 +213,17 @@ export default {
      */
     createArticle() {
       this.btnArticleLoading = true;
-      axios.post('/v1/articles', {...this.article}).then((res) => {
-        message.success('恭喜你，创建成功！');
-        this.$router.push({name: 'ArticleDetails', params: {id: res.data.id.toString()}});
-      }).finally(() => {
-        this.btnArticleLoading = false;
-      });
+      axios.post('/v1/articles', { ...this.article })
+          .then((res) => {
+            message.success('恭喜你，创建成功！');
+            this.$router.push({
+              name: 'ArticleDetails',
+              params: { id: res.data.id.toString() }
+            });
+          })
+          .finally(() => {
+            this.btnArticleLoading = false;
+          });
     },
 
     /**
@@ -224,13 +236,18 @@ export default {
         description: this.article.description,
         content: this.article.content,
         cover: this.article.cover,
-        status: this.article.status
-      }).then(() => {
-        message.success('文章更新成功！');
-        this.$router.push({name: 'ArticleDetails', params: {id: this.id.toString()}});
-      }).finally(() => {
-        this.btnArticleLoading = false;
-      });
+        status: this.article.status,
+      })
+          .then(() => {
+            message.success('文章更新成功！');
+            this.$router.push({
+              name: 'ArticleDetails',
+              params: { id: this.id.toString() }
+            });
+          })
+          .finally(() => {
+            this.btnArticleLoading = false;
+          });
     },
 
     /**
@@ -239,14 +256,15 @@ export default {
      */
     getArticleDetails() {
       if (this.id) {
-        axios.get(`/v1/articles/${this.id}`).then((res) => {
-          this.isAuthor = res.data.author.username === store.getters.user.username;
-          if (this.isAuthor === false) {
-            message.error('你没有权限编辑本文！');
-            this.$router.push({name: 'Forbidden'});
-          }
-          this.article = res.data;
-        });
+        axios.get(`/v1/articles/${this.id}`)
+            .then((res) => {
+              this.isAuthor = res.data.author.username === store.getters.user.username;
+              if (this.isAuthor === false) {
+                message.error('你没有权限编辑本文！');
+                this.$router.push({ name: 'Forbidden' });
+              }
+              this.article = res.data;
+            });
       }
     },
 
@@ -255,20 +273,21 @@ export default {
      * @param image 即将上传的文件信息
      */
     async imageUpload(image) {
-      let result = ""
+      let result = '';
       const data = new FormData();
       data.append('file', image);
       await axios({
         url: '/v1/global/files',
         method: 'post',
         data,
-        headers: {'Content-Type': 'multipart/form-data'},
-      }).then((res) => {
-        result = res.data.uri;
-        message.success('成功上传啦~');
-      });
-      console.log(result)
-      return result
+        headers: { 'Content-Type': 'multipart/form-data' },
+      })
+          .then((res) => {
+            result = res.data.uri;
+            message.success('成功上传啦~');
+          });
+      console.log(result);
+      return result;
     },
 
     /**
@@ -279,7 +298,6 @@ export default {
       this.btnCoverLoading = true;
       this.article.cover   = await this.imageUpload(data.file);
       this.btnCoverLoading = false;
-
     },
 
     /**
@@ -299,12 +317,14 @@ export default {
     },
 
     async onUploadImg(files, callback) {
-      console.log(files)
-      let back = Array.from(files).map((item) => this.imageUpload(item))
-      Promise.all(back).then(callback)
+      console.log(files);
+      const back = Array.from(files)
+          .map((item) => this.imageUpload(item));
+      Promise.all(back)
+          .then(callback);
     },
-  }
-}
+  },
+};
 </script>
 
 <style scoped>

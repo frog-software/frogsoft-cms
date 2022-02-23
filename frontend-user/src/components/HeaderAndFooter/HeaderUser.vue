@@ -1,7 +1,7 @@
 <script setup>
 import UserOutlined from '@ant-design/icons-vue/UserOutlined';
-import UserPage from './UserPage.vue';
-import store from '../../store';
+import UserPage     from './UserPage.vue';
+import store        from '../../store';
 </script>
 <template>
   <!--没有登录时显示的内容-->
